@@ -24,10 +24,18 @@
 
 struct _MyappWindow
 {
-	AdwApplicationWindow  parent_instance;
+	AdwApplicationWindow parent_instance;
 
 	/* Template widgets */
-	GtkLabel            *label;
+	GtkImage      *meme_preview;
+	AdwEntryRow   *top_text_entry;
+	AdwEntryRow   *bottom_text_entry;
+	GtkButton     *export_button;
+	GtkButton     *load_image_button;
+
+	/* Internal data */
+	GdkPixbuf     *original_image;
+	GdkPixbuf     *meme_pixbuf;
 };
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
@@ -38,7 +46,12 @@ myapp_window_class_init (MyappWindowClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Example/myapp-window.ui");
-	gtk_widget_class_bind_template_child (widget_class, MyappWindow, label);
+
+	gtk_widget_class_bind_template_child (widget_class, MyappWindow, meme_preview);
+	gtk_widget_class_bind_template_child (widget_class, MyappWindow, top_text_entry);
+	gtk_widget_class_bind_template_child (widget_class, MyappWindow, bottom_text_entry);
+	gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
+	gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
 }
 
 static void

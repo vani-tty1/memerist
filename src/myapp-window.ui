@@ -3,13 +3,18 @@
   <requires lib="gtk" version="4.0"/>
   <requires lib="Adw" version="1.0"/>
   <template class="MyappWindow" parent="AdwApplicationWindow">
-    <property name="title" translatable="yes">Test App by: Giovanni</property>
-    <property name="default-width">800</property>
-    <property name="default-height">600</property>
+    <property name="title" translatable="yes">Meme Generator</property>
+    <property name="default-width">900</property>
+    <property name="default-height">700</property>
     <property name="content">
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <property name="title">Meme Generator</property>
+              </object>
+            </property>
             <child type="end">
               <object class="GtkMenuButton">
                 <property name="primary">True</property>
@@ -21,11 +26,93 @@
           </object>
         </child>
         <property name="content">
-          <object class="GtkLabel" id="label">
-            <property name="label" translatable="yes">Giovanni @2025</property>
-            <style>
-              <class name="title-1"/>
-            </style>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+
+
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
+                <property name="hexpand">false</property>
+                <property name="width-request">300</property>
+
+
+                <child>
+                  <object class="GtkButton" id="load_image_button">
+                    <property name="label">Load Image</property>
+                    <property name="halign">fill</property>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </child>
+
+
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title">Meme Text</property>
+
+                    <child>
+                      <object class="AdwEntryRow" id="top_text_entry">
+                        <property name="title">Top Text</property>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="AdwEntryRow" id="bottom_text_entry">
+                        <property name="title">Bottom Text</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+
+                <child>
+                  <object class="GtkButton" id="export_button">
+                    <property name="label">Export Meme</property>
+                    <property name="halign">fill</property>
+                    <property name="sensitive">false</property>
+                  </object>
+                </child>
+
+
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">true</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+
+                <child>
+                  <object class="GtkFrame">
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <child>
+                      <object class="GtkImage" id="meme_preview">
+                        <property name="pixel-size">500</property>
+                        <property name="icon-name">image-x-generic-symbolic</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </property>
       </object>
@@ -34,15 +121,11 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
-      </item>
-      <item>
         <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
         <attribute name="action">app.shortcuts</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_About Test App</attribute>
+        <attribute name="label" translatable="yes">_About Meme Generator</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
