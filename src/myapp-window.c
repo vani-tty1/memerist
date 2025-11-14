@@ -174,12 +174,13 @@ static void
 draw_text_with_outline (cairo_t *cr, const char *text, double x, double y, double max_width)
 {
 	cairo_text_extents_t extents;
+	double font_size;
 
 
 	cairo_select_font_face (cr, "Impact", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 
 
-	double font_size = 60.0;
+	font_size = 60.0;
 	cairo_set_font_size (cr, font_size);
 	cairo_text_extents (cr, text, &extents);
 
