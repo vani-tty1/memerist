@@ -2,8 +2,6 @@
 
 The ultimate tool for creating memes built upon GTK-4 and Libadwaita for the GNOME desktop.
 
-
-
 ## Features
 - Import images
 - Add top and bottom text
@@ -11,16 +9,13 @@ The ultimate tool for creating memes built upon GTK-4 and Libadwaita for the GNO
 - Clean, native GNOME interface
 - Let It Happen
 
-
-## Screenshots
-# Sample MEME
+# Sample MEMES
 <img width="1024" height="1024" alt="meme" src="https://github.com/user-attachments/assets/63163370-6972-4fa7-a5ee-81ae1c13c31e" />
 
 <img width="950" height="750" alt="image" src="https://github.com/user-attachments/assets/7daf03d6-61b7-4382-915d-b998ca371a56" />
 
-Demo
 <img width="950" height="750" alt="image" src="https://github.com/user-attachments/assets/350843ca-83be-4de2-88e4-73e324774602" />
-
+Demo
 
 ## Installation
 ```bash
