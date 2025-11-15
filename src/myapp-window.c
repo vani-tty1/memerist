@@ -300,6 +300,7 @@ render_meme (MyappWindow *self)
 	cairo_surface_t *surface;
 	cairo_t *cr;
 	GdkTexture *texture;
+	GdkPixbuf *rgba_pixbuf;
 
 	if (self->original_image == NULL)
 		return;
@@ -310,15 +311,18 @@ render_meme (MyappWindow *self)
 	width = gdk_pixbuf_get_width (self->original_image);
 	height = gdk_pixbuf_get_height (self->original_image);
 
-	g_clear_object (&self->meme_pixbuf);
-	self->meme_pixbuf = gdk_pixbuf_copy (self->original_image);
+	if (!gdk_pixbuf_get_has_alpha (self->original_image)) {
+		rgba_pixbuf = gdk_pixbuf_add_alpha (self->original_image, FALSE, 0, 0, 0);
+	} else {
+		rgba_pixbuf = gdk_pixbuf_copy (self->original_image);
+	}
 
 	surface = cairo_image_surface_create_for_data (
-		gdk_pixbuf_get_pixels (self->meme_pixbuf),
-		CAIRO_FORMAT_RGB24,
+		gdk_pixbuf_get_pixels (rgba_pixbuf),
+		CAIRO_FORMAT_ARGB32,
 		width,
 		height,
-		gdk_pixbuf_get_rowstride (self->meme_pixbuf)
+		gdk_pixbuf_get_rowstride (rgba_pixbuf)
 	);
 
 	cr = cairo_create (surface);
@@ -337,7 +341,9 @@ render_meme (MyappWindow *self)
 
 	cairo_surface_flush (surface);
 	cairo_destroy (cr);
-	cairo_surface_destroy (surface);
+
+	g_clear_object (&self->meme_pixbuf);
+	self->meme_pixbuf = rgba_pixbuf;
 
 	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	texture = gdk_texture_new_for_pixbuf (self->meme_pixbuf);
@@ -345,6 +351,8 @@ render_meme (MyappWindow *self)
 
 	gtk_image_set_from_paintable (self->meme_preview, GDK_PAINTABLE (texture));
 	g_object_unref (texture);
+
+	cairo_surface_destroy (surface);
 }
 
 static void
