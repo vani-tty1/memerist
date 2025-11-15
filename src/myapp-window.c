@@ -37,6 +37,7 @@ struct _MyappWindow
 	AdwEntryRow   *bottom_text_entry;
 	GtkButton     *export_button;
 	GtkButton     *load_image_button;
+	GtkButton     *clear_button;
 
 	GdkPixbuf     *original_image;
 	GdkPixbuf     *meme_pixbuf;
