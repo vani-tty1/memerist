@@ -8,4 +8,3 @@ Type=Application
 Categories=Graphics;Photography;
 Keywords=meme;image;text;caption;overlay;funny;
 StartupNotify=true
-DBusActivatable=true

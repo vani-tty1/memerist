@@ -10,8 +10,11 @@ The ultimate tool for creating memes built upon GTK-4 and Libadwaita for the GNO
 - Let It Happen
 
 # Sample MEMES
-<img width="950" height="750" alt="image" src="https://github.com/user-attachments/assets/3f0336b0-721e-48a4-818f-4c36e8516137" />
+<img width="1024" height="1024" alt="meme" src="https://github.com/user-attachments/assets/63163370-6972-4fa7-a5ee-81ae1c13c31e" />
+
 <img width="950" height="750" alt="image" src="https://github.com/user-attachments/assets/97e6a40d-1434-4f1b-b672-703a0a6941bb" />
+
+
 <img width="950" height="750" alt="image" src="https://github.com/user-attachments/assets/350843ca-83be-4de2-88e4-73e324774602" />
 
 
