@@ -70,29 +70,6 @@
         fill="#1c71d8" opacity="0.4"/>
   <circle cx="100" cy="50" r="6" fill="#f9f06b" opacity="0.5"/>
 
-
-  <text x="81" y="52" font-family="Impact, sans-serif" font-size="10"
-        font-weight="bold" text-anchor="middle"
-        fill="none" stroke="#000000" stroke-width="2.5" stroke-linejoin="round">
-    TOP
-  </text>
-  <text x="81" y="52" font-family="Impact, sans-serif" font-size="10"
-        font-weight="bold" text-anchor="middle" fill="#ffffff">
-    TOP
-  </text>
-
-
-  <text x="81" y="96" font-family="Impact, sans-serif" font-size="10"
-        font-weight="bold" text-anchor="middle"
-        fill="none" stroke="#000000" stroke-width="2.5" stroke-linejoin="round">
-    TEXT
-  </text>
-  <text x="81" y="96" font-family="Impact, sans-serif" font-size="10"
-        font-weight="bold" text-anchor="middle" fill="#ffffff">
-    TEXT
-  </text>
-
-
   <rect x="8" y="8" width="112" height="112" rx="12" ry="12"
         fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
 </svg>
