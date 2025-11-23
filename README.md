@@ -34,7 +34,8 @@ You need to install this packages in order to build this program:
 
 ```bash
 git clone https://github.com/Vani1-2/gnome-meme-generator.git
-cd gnome-meme-generator
+cd gnome-meme-generat(Memerist:109581): Gtk-WARNING **: 18:14:54.357: Failed to load icon /usr/local/share/icons/hicolor/scalable/apps/org.gnome.Memerist.svg: Error opening file /usr/local/share/icons/hicolor/scalable/apps/org.gnome.Memerist.svg: No such file or directory
+or
 meson setup build
 meson compile -C build
 #Optional

@@ -84,7 +84,7 @@ myapp_application_about_action (GSimpleAction *action,
 	                       "application-icon", "org.gnome.Memerist",
 	                       "developer-name", "Giovanni",
 	                       "translator-credits", _("translator-credits"),
-	                       "version", "0.0.25-alpha.7",
+	                       "version", "0.0.29-alpha.8",
 	                       "developers", developers,
 	                       "copyright", "© 2025 Giovanni",
 	                       NULL);
