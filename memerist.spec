@@ -1,5 +1,5 @@
 Name:           Memerist
-Version:        0.0.40.beta.2
+Version:        0.0.55.beta.5
 Release:        1%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
@@ -48,6 +48,5 @@ rm -f /usr/local/share/icons/hicolor/symbolic/apps/org.gnome.Memerist-symbolic.s
 
 
 %changelog
-* Fri Nov 28 2025 Giovanni <giovanni@example.com> - 0.0.38.beta.5
-- Fixed drag and drop geometry for text
-- Initialized drag variables to prevent compiler warnings
+* Fri Nov 28 2025 Giovanni <giovannirafanan609@gmail.com> - 0.0.55.beta.5
+- optimized overall code for utmost effiency
