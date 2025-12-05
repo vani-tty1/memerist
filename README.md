@@ -15,10 +15,10 @@
 ---
 
 ## Features
-
+- **Use or Import your own Templates** 
 - **Image Import** - Load any image to use as your meme template
-- **Classic Meme Text** - Add customizable top and bottom text
-- **PNG Export** - Save your creations in high quality
+- **Classic Meme Text** - You can drag the text anywhere in the photo
+- **PNG Export** 
 - **Native GNOME Design** - Built with Libadwaita
 - **Let it Happen**
 
@@ -35,6 +35,17 @@
 
 
 ## Installation
+
+### Fedora Copr
+Starting this commit I will no longer upload ``.rpm`` packages here on github,
+you may use the copr repo instead:
+
+
+```bash
+sudo dnf copr enable vaniiiiii/memerist 
+sudo dnf install memerist
+```
+
 
 ### Pre-built Packages
 
@@ -95,11 +106,10 @@ sudo meson install -C build
 ##  Usage
 
 1. Launch GNOME Meme Generator from your application menu
-2. Click the import button to select an image
-3. Enter your top and bottom text
-4. Adjust text styling as desired
-5. Export your meme as PNG
-6. Let it Happen
+2. Click the folder button to browse images using your file browser
+3. Enter your top and bottom text, you can drag the text anywhere
+4. Export your meme as PNG
+5. Let it Happen
 
 ## Contributing
 
