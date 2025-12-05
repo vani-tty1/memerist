@@ -22,6 +22,7 @@
 #include "myapp-window.h"
 #include <cairo.h>
 #include <math.h>
+#include <glib/gstdio.h>
 
 typedef enum {
     DRAG_TYPE_NONE,
@@ -51,6 +52,7 @@ struct _MyappWindow
     GtkButton      *clear_button;
     GtkButton      *add_image_button;
     GtkButton      *import_template_button;
+    GtkButton      *delete_template_button;
     GtkFlowBox     *template_gallery;
 
     GdkPixbuf      *template_image;
@@ -72,13 +74,13 @@ struct _MyappWindow
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
 
-
 static void on_text_changed (MyappWindow *self);
 static void on_load_image_clicked (MyappWindow *self);
 static void on_clear_clicked (MyappWindow *self);
 static void on_add_image_clicked (MyappWindow *self);
 static void on_export_clicked (MyappWindow *self);
 static void on_import_template_clicked (MyappWindow *self);
+static void on_delete_template_clicked (MyappWindow *self);
 static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *self);
 static void render_meme (MyappWindow *self);
 static void draw_text_with_outline (cairo_t *cr, const char *text, double x, double y, double max_width);
@@ -118,6 +120,7 @@ myapp_window_class_init (MyappWindowClass *klass)
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
+    gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
 }
 
@@ -152,6 +155,8 @@ myapp_window_init (MyappWindow *self)
                               G_CALLBACK (on_export_clicked), self);
     g_signal_connect_swapped (self->import_template_button, "clicked",
                               G_CALLBACK (on_import_template_clicked), self);
+    g_signal_connect_swapped (self->delete_template_button, "clicked",
+                              G_CALLBACK (on_delete_template_clicked), self);
     g_signal_connect (self->template_gallery, "child-activated",
                       G_CALLBACK (on_template_selected), self);
 
@@ -168,12 +173,17 @@ myapp_window_init (MyappWindow *self)
     populate_template_gallery (self);
 }
 
-
-
 static char *
 get_user_template_dir (void)
 {
     return g_build_filename (g_get_user_data_dir (), "Memerist", "templates", NULL);
+}
+
+static gboolean
+is_user_template (const char *path)
+{
+    g_autofree char *user_dir = get_user_template_dir ();
+    return g_str_has_prefix (path, user_dir);
 }
 
 static void
@@ -219,13 +229,11 @@ populate_template_gallery (MyappWindow *self)
 {
     char *user_dir;
 
-
 #ifdef TEMPLATE_DIR
     scan_directory_for_templates (self, TEMPLATE_DIR);
 #else
     scan_directory_for_templates (self, "/usr/share/Memerist/templates");
 #endif
-
 
     user_dir = get_user_template_dir ();
     g_mkdir_with_parents (user_dir, 0755);
@@ -239,15 +247,20 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
     GtkWidget *image;
     const char *template_path;
     GError *error = NULL;
+    gboolean is_user_owned = FALSE;
 
-    if (!child)
+    if (!child) {
+        gtk_widget_set_sensitive (GTK_WIDGET (self->delete_template_button), FALSE);
         return;
+    }
 
     image = gtk_flow_box_child_get_child (child);
     template_path = g_object_get_data (G_OBJECT (image), "template-path");
 
-    if (!template_path)
-        return;
+    if (!template_path) return;
+
+    is_user_owned = is_user_template (template_path);
+    gtk_widget_set_sensitive (GTK_WIDGET (self->delete_template_button), is_user_owned);
 
     g_clear_object (&self->template_image);
     g_clear_object (&self->user_image);
@@ -336,7 +349,49 @@ on_import_template_clicked (MyappWindow *self)
     g_object_unref (filter);
 }
 
+static void
+on_delete_confirm_response (GObject *source, GAsyncResult *result, gpointer user_data)
+{
+    GtkAlertDialog *dialog = GTK_ALERT_DIALOG (source);
+    MyappWindow *self = MYAPP_WINDOW (user_data);
+    GError *error = NULL;
+    int response;
 
+    response = gtk_alert_dialog_choose_finish (dialog, result, &error);
+
+    if (response == 1) { /* Index 1 is "Delete" */
+        GList *selected = gtk_flow_box_get_selected_children (self->template_gallery);
+        if (selected) {
+            GtkFlowBoxChild *child = selected->data;
+            GtkWidget *image = gtk_flow_box_child_get_child (child);
+            const char *path = g_object_get_data (G_OBJECT (image), "template-path");
+
+            if (g_unlink (path) == 0) {
+                gtk_flow_box_remove (self->template_gallery, GTK_WIDGET (child));
+                on_clear_clicked (self);
+                g_print ("Deleted template: %s\n", path);
+            } else {
+                g_warning ("Failed to delete file: %s", path);
+            }
+            g_list_free (selected);
+        }
+    }
+    g_clear_error (&error);
+}
+
+static void
+on_delete_template_clicked (MyappWindow *self)
+{
+    GtkAlertDialog *dialog;
+
+    dialog = gtk_alert_dialog_new ("Delete this template?");
+    gtk_alert_dialog_set_detail (dialog, "This action cannot be undone.");
+    gtk_alert_dialog_set_buttons (dialog, (const char *[]) {"Cancel", "Delete", NULL});
+    gtk_alert_dialog_set_cancel_button (dialog, 0);
+    gtk_alert_dialog_set_default_button (dialog, 1);
+
+    gtk_alert_dialog_choose (dialog, GTK_WINDOW (self), NULL, on_delete_confirm_response, self);
+}
 
 static void
 on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self)
@@ -629,6 +684,7 @@ on_clear_clicked (MyappWindow *self)
     self->bottom_text_x = 0.5;
 
     gtk_flow_box_unselect_all (self->template_gallery);
+    gtk_widget_set_sensitive (GTK_WIDGET (self->delete_template_button), FALSE);
 }
 
 static void

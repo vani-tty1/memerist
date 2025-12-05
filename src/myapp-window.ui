@@ -101,7 +101,8 @@
               <object class="GtkPaned">
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">true</property>
-                <property name="position">800</property> <property name="wide-handle">true</property>
+                <property name="position">800</property>
+                <property name="wide-handle">true</property>
 
                 <property name="start-child">
                   <object class="GtkScrolledWindow">
@@ -143,7 +144,8 @@
                 <property name="end-child">
                   <object class="GtkBox">
                     <property name="orientation">vertical</property>
-                    <property name="width-request">260</property> <style>
+                    <property name="width-request">260</property>
+                    <style>
                       <class name="background"/>
                     </style>
 
@@ -215,6 +217,16 @@
                                       <object class="GtkButton" id="import_template_button">
                                         <property name="icon-name">list-add-symbolic</property>
                                         <property name="tooltip-text">Import new template</property>
+                                        <style>
+                                          <class name="flat"/>
+                                        </style>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="delete_template_button">
+                                        <property name="icon-name">user-trash-symbolic</property>
+                                        <property name="tooltip-text">Delete selected template</property>
+                                        <property name="sensitive">false</property>
                                         <style>
                                           <class name="flat"/>
                                         </style>
