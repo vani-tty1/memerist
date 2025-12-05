@@ -1,22 +1,4 @@
-/* myapp-window.c
- *
- * Copyright 2025 Giovanni
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
+/* myapp-window.c */
 
 #include "config.h"
 #include "myapp-window.h"
@@ -234,7 +216,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
 
     render_meme (self);
 }
-//drag start to 354
+
 static void
 on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self)
 {
@@ -396,15 +378,10 @@ on_load_image_response (GObject *source, GAsyncResult *result, gpointer user_dat
         return;
     }
 
-<<<<<<< HEAD
-	self->top_text_y = 0.1;
-	self->bottom_text_x = 0.9;
-=======
     self->top_text_y = 0.1;
     self->top_text_x = 0.5;
     self->bottom_text_y = 0.9;
     self->bottom_text_x = 0.5;
->>>>>>> f3be1fe (overall code optimization)
 
     gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
