@@ -1,4 +1,4 @@
-/* main.c
+/* myapp-window.c
  *
  * Copyright 2025 Giovanni
  *
@@ -17,6 +17,7 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
 #include "config.h"
 #include "myapp-window.h"
 #include <cairo.h>
@@ -49,6 +50,7 @@ struct _MyappWindow
     GtkButton      *load_image_button;
     GtkButton      *clear_button;
     GtkButton      *add_image_button;
+    GtkButton      *import_template_button;
     GtkFlowBox     *template_gallery;
 
     GdkPixbuf      *template_image;
@@ -70,11 +72,13 @@ struct _MyappWindow
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
 
+
 static void on_text_changed (MyappWindow *self);
 static void on_load_image_clicked (MyappWindow *self);
 static void on_clear_clicked (MyappWindow *self);
 static void on_add_image_clicked (MyappWindow *self);
 static void on_export_clicked (MyappWindow *self);
+static void on_import_template_clicked (MyappWindow *self);
 static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *self);
 static void render_meme (MyappWindow *self);
 static void draw_text_with_outline (cairo_t *cr, const char *text, double x, double y, double max_width);
@@ -113,6 +117,7 @@ myapp_window_class_init (MyappWindowClass *klass)
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
+    gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
 }
 
@@ -145,6 +150,8 @@ myapp_window_init (MyappWindow *self)
                               G_CALLBACK (on_add_image_clicked), self);
     g_signal_connect_swapped (self->export_button, "clicked",
                               G_CALLBACK (on_export_clicked), self);
+    g_signal_connect_swapped (self->import_template_button, "clicked",
+                              G_CALLBACK (on_import_template_clicked), self);
     g_signal_connect (self->template_gallery, "child-activated",
                       G_CALLBACK (on_template_selected), self);
 
@@ -161,43 +168,69 @@ myapp_window_init (MyappWindow *self)
     populate_template_gallery (self);
 }
 
+
+
+static char *
+get_user_template_dir (void)
+{
+    return g_build_filename (g_get_user_data_dir (), "Memerist", "templates", NULL);
+}
+
+static void
+add_file_to_gallery (MyappWindow *self, const char *full_path)
+{
+    GtkWidget *picture;
+
+    picture = gtk_picture_new_for_filename (full_path);
+    gtk_picture_set_can_shrink (GTK_PICTURE (picture), TRUE);
+    gtk_picture_set_content_fit (GTK_PICTURE (picture), GTK_CONTENT_FIT_CONTAIN);
+    gtk_widget_set_size_request (picture, 120, 120);
+
+    g_object_set_data_full (G_OBJECT (picture), "template-path",
+                            g_strdup (full_path), g_free);
+
+    gtk_flow_box_append (self->template_gallery, picture);
+}
+
+static void
+scan_directory_for_templates (MyappWindow *self, const char *dir_path)
+{
+    GDir *dir;
+    const char *filename;
+
+    dir = g_dir_open (dir_path, 0, NULL);
+    if (!dir) return;
+
+    while ((filename = g_dir_read_name (dir)) != NULL) {
+        if (g_str_has_suffix (filename, ".png") ||
+            g_str_has_suffix (filename, ".jpg") ||
+            g_str_has_suffix (filename, ".jpeg")) {
+
+            char *full_path = g_build_filename (dir_path, filename, NULL);
+            add_file_to_gallery (self, full_path);
+            g_free (full_path);
+        }
+    }
+    g_dir_close (dir);
+}
+
 static void
 populate_template_gallery (MyappWindow *self)
 {
-    const char *template_dir = "/usr/share/Memerist/templates";
-    GDir *dir;
-    GError *error = NULL;
-    const char *filename;
+    char *user_dir;
 
-    dir = g_dir_open (template_dir, 0, &error);
-    if (error != NULL) {
-        g_warning ("Failed to open templates directory: %s", error->message);
-        g_error_free (error);
-        return;
-    }
 
-    while ((filename = g_dir_read_name (dir)) != NULL) {
-        char *full_path;
-        GtkWidget *picture;
+#ifdef TEMPLATE_DIR
+    scan_directory_for_templates (self, TEMPLATE_DIR);
+#else
+    scan_directory_for_templates (self, "/usr/share/Memerist/templates");
+#endif
 
-        if (!g_str_has_suffix (filename, ".png") &&
-            !g_str_has_suffix (filename, ".jpg") &&
-            !g_str_has_suffix (filename, ".jpeg"))
-            continue;
 
-        full_path = g_build_filename (template_dir, filename, NULL);
-        picture = gtk_picture_new_for_filename (full_path);
-
-        gtk_picture_set_can_shrink (GTK_PICTURE (picture), TRUE);
-        gtk_picture_set_content_fit (GTK_PICTURE (picture), GTK_CONTENT_FIT_CONTAIN);
-        gtk_widget_set_size_request (picture, 120, 120);
-
-        g_object_set_data_full (G_OBJECT (picture), "template-path",
-                                full_path, g_free);
-
-        gtk_flow_box_append (self->template_gallery, picture);
-    }
-    g_dir_close (dir);
+    user_dir = get_user_template_dir ();
+    g_mkdir_with_parents (user_dir, 0755);
+    scan_directory_for_templates (self, user_dir);
+    g_free (user_dir);
 }
 
 static void
@@ -235,14 +268,83 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
 }
 
 static void
+on_import_template_response (GObject *source, GAsyncResult *result, gpointer user_data)
+{
+    GtkFileDialog *dialog = GTK_FILE_DIALOG (source);
+    MyappWindow *self = MYAPP_WINDOW (user_data);
+    GFile *source_file;
+    GFile *dest_file;
+    GError *error = NULL;
+    char *filename;
+    char *user_dir_path;
+    char *dest_path;
+
+    source_file = gtk_file_dialog_open_finish (dialog, result, &error);
+    if (error) {
+        if (!g_error_matches (error, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED))
+            g_warning ("Failed to open file: %s", error->message);
+        g_error_free (error);
+        return;
+    }
+
+    filename = g_file_get_basename (source_file);
+    user_dir_path = get_user_template_dir ();
+
+    g_mkdir_with_parents (user_dir_path, 0755);
+
+    dest_path = g_build_filename (user_dir_path, filename, NULL);
+    dest_file = g_file_new_for_path (dest_path);
+
+    if (g_file_copy (source_file, dest_file, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
+        add_file_to_gallery (self, dest_path);
+        g_print ("Imported template: %s\n", dest_path);
+    } else {
+        g_warning ("Failed to import template: %s", error->message);
+        g_error_free (error);
+    }
+
+    g_free (filename);
+    g_free (user_dir_path);
+    g_free (dest_path);
+    g_object_unref (source_file);
+    g_object_unref (dest_file);
+}
+
+static void
+on_import_template_clicked (MyappWindow *self)
+{
+    GtkFileDialog *dialog;
+    GtkFileFilter *filter;
+    GListStore *filters;
+
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_set_title (dialog, "Import Template");
+
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name (filter, "Images");
+    gtk_file_filter_add_mime_type (filter, "image/png");
+    gtk_file_filter_add_mime_type (filter, "image/jpeg");
+    gtk_file_filter_add_mime_type (filter, "image/webp");
+
+    filters = g_list_store_new (GTK_TYPE_FILE_FILTER);
+    g_list_store_append (filters, filter);
+    gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (filters));
+
+    gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_import_template_response, self);
+
+    g_object_unref (filters);
+    g_object_unref (filter);
+}
+
+
+
+static void
 on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self)
 {
     int img_height;
     int img_width;
     double relative_y;
     double relative_x;
-    double top_text_abs_y;
-    double bottom_text_abs_y;
     double threshold;
 
     if (self->template_image == NULL)
@@ -256,9 +358,6 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self)
 
     relative_y = y / img_height;
     relative_x = x / img_width;
-
-    top_text_abs_y = self->top_text_y;
-    bottom_text_abs_y = self->bottom_text_y;
 
     threshold = 0.15;
 
@@ -287,11 +386,11 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self)
         }
     }
 
-    if (fabs (relative_y - top_text_abs_y) < threshold) {
+    if (fabs (relative_y - self->top_text_y) < threshold) {
         self->drag_type = DRAG_TYPE_TOP_TEXT;
         self->drag_start_x = x;
         self->drag_start_y = y;
-    } else if (fabs (relative_y - bottom_text_abs_y) < threshold) {
+    } else if (fabs (relative_y - self->bottom_text_y) < threshold) {
         self->drag_type = DRAG_TYPE_BOTTOM_TEXT;
         self->drag_start_x = x;
         self->drag_start_y = y;
