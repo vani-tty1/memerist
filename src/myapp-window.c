@@ -28,7 +28,7 @@
 
 /* Almighty God, forgive me for all of my wicked sins, I forsake my escape.
  * I give up even Trisha, I belong here in hell and accept my just damnation,
- * But grant me the power to keep your enemy here with me in Hell.
+ * But grant me the power to keep your enemy here with me.
  */
 
 
