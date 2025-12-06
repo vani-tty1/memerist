@@ -30,12 +30,11 @@
 ## Screenshots
 
 <p align="center">
- <img width="800" alt="meme example 1" src="https://github.com/user-attachments/assets/f596dad4-ae73-433d-a24f-ea1b3011157b" />
-
+ <img width="800" alt="meme example 1" src="https://github.com/user-attachments/assets/310bd827-d776-49f7-bcef-73748233125a" />
 </p>
 
 <p align="center">
- <img width="800" alt="Meme example 2" src="https://github.com/user-attachments/assets/e9c29056-96d4-422b-99d5-108a6671cefc" />
+ <img width="800" alt="meme example 2" src="https://github.com/user-attachments/assets/cce1977f-894b-4fa0-a4da-67af3a7b3e81" />
 </p>
 
 
