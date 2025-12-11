@@ -180,7 +180,7 @@
                             <property name="title">Text Layers</property>
                             <child>
                               <object class="AdwEntryRow" id="top_text_entry">
-                                <property name="title">Top Caption</property>
+                                <property name="title">Top Text</property>
                                 <child>
                                   <object class="GtkSpinButton" id="top_text_size">
                                     <property name="valign">center</property>
@@ -199,7 +199,7 @@
                             </child>
                             <child>
                               <object class="AdwEntryRow" id="bottom_text_entry">
-                                <property name="title">Bottom Caption</property>
+                                <property name="title">Bottom Text</property>
                                 <child>
                                   <object class="GtkSpinButton" id="bottom_text_size">
                                     <property name="valign">center</property>
