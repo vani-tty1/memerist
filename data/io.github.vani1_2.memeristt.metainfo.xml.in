@@ -31,11 +31,16 @@
     <color type="primary" scheme_preference="light">#3584e4</color>
     <color type="primary" scheme_preference="dark">#1c71d8</color>
   </branding>
-  <screenshots>
-    <screenshot type="default">
-      <caption>Main window with meme preview</caption>
-    </screenshot>
-  </screenshots>
+<screenshots>
+  <screenshot type="default">
+    <caption>Main window</caption>
+    <image>https://raw.githubusercontent.com/Vani1-2/gnome-meme-editor/testing/assets/screenshot1.png</image>
+  </screenshot>
+  <screenshot>
+    <caption>About menu</caption>
+    <image>https://raw.githubusercontent.com/Vani1-2/gnome-meme-editor/testing/assets/screenshot2.png</image>
+  </screenshot>
+</screenshots>
   <releases>
     <release version="0.0.2" date="2025-01-15">
       <description translate="no">
