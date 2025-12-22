@@ -37,4 +37,4 @@ distrobox enter ubuntu -- bash -c '
   dpkg-deb --build deb-build/memerist-amd64
 '
 
-distobox-stop ubuntu
+distrobox-stop ubuntu
