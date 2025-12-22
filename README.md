@@ -45,13 +45,19 @@
 ## Installation
 
 ### Fedora Copr
-Packages from [Releases](https://github.com/Vani1-2/gnome-meme-editor/releases) are old and outdated,
-Install latest build using Copr:
+Install latest build using Copr( Supports amd64 & aarch64 ):
     
 ```bash
 sudo dnf copr enable vaniiiiii/memerist 
 sudo dnf install memerist
 ```
+### Debian/Ubuntu
+Download the latest `.deb` file using this command( only available as amd64 )
+```bash
+curl -L -O https://raw.githubusercontent.com/Vani1-2/gnome-meme-editor/main/deb-build/memerist-amd64.deb
+```
+
+
 
 
 ### Building from Source
