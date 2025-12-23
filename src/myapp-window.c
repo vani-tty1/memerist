@@ -40,7 +40,7 @@ typedef enum {
   DRAG_TYPE_IMAGE_RESIZE
 } DragType;
 
-/* blend modes, lmao what the fuck am I doing with my life */
+// blend modes, lmao what the fuck am I doing with my life
 typedef enum {
   BLEND_NORMAL,
   BLEND_MULTIPLY,
@@ -484,6 +484,8 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
   render_meme (self);
 }
 
+
+
 static void
 on_import_template_response (GObject *s, GAsyncResult *r, gpointer d)
 {
@@ -511,6 +513,7 @@ on_import_template_response (GObject *s, GAsyncResult *r, gpointer d)
   g_object_unref (source_file); g_object_unref (dest_file);
 }
 
+
 static void
 on_import_template_clicked (MyappWindow *self)
 {
@@ -525,6 +528,10 @@ on_import_template_clicked (MyappWindow *self)
   gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_import_template_response, self);
   g_object_unref (filters); g_object_unref (filter);
 }
+
+
+
+
 
 static void
 on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d)
@@ -547,6 +554,9 @@ on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d)
   }
   g_clear_error (&error);
 }
+
+
+
 
 static void
 on_delete_template_clicked (MyappWindow *self)
@@ -1004,7 +1014,8 @@ apply_deep_fry (GdkPixbuf *src)
 
 
 
-
+// ngl this is too long, I'm too lazy to refactor this
+// pls send help
 static void
 render_meme (MyappWindow *self)
 {
@@ -1206,6 +1217,8 @@ static void on_export_response (GObject *s, GAsyncResult *r, gpointer d) {
     g_object_unref (file);
   }
 }
+
+
 static void on_export_clicked (MyappWindow *self) {
   GtkFileDialog *dialog;
   if (!self->final_meme) return;
