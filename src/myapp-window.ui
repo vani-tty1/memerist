@@ -22,6 +22,7 @@
 
         <child type="top">
           <object class="AdwHeaderBar">
+
             <child type="start">
               <object class="GtkBox">
                 <property name="spacing">6</property>
@@ -61,6 +62,14 @@
             </child>
 
             <child type="end">
+              <object class="GtkToggleButton" id="sidebar_toggle">
+                <property name="icon-name">sidebar-show-right-symbolic</property>
+                <property name="tooltip-text">Toggle Sidebar</property>
+                <property name="active" bind-source="split_view" bind-property="show-sidebar" bind-flags="bidirectional|sync-create"/>
+              </object>
+            </child>
+
+            <child type="end">
               <object class="GtkButton" id="export_button">
                 <property name="label" translatable="yes">Export</property>
                 <property name="sensitive">false</property>
@@ -77,6 +86,8 @@
             <property name="sidebar-position">end</property>
             <property name="max-sidebar-width">350</property>
             <property name="min-sidebar-width">300</property>
+            <property name="collapsed">false</property>
+            <property name="show-sidebar">true</property>
 
             <property name="content">
               <object class="GtkScrolledWindow">
