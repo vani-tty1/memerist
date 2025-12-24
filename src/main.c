@@ -25,9 +25,7 @@
 #include "myapp-application.h"
 
 int
-main (int   argc,
-      char *argv[])
-{
+main (int   argc,char *argv[]){
 	g_autoptr(MyappApplication) app = NULL;
 	int ret;
 

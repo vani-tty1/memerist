@@ -1,2 +1,5 @@
 _build
 .flatpak-builder
+deb-build/
+PKGBUILD
+memerist.spec
