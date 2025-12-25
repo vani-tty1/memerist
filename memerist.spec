@@ -31,5 +31,5 @@ Create memes with custom text overlays using a native GNOME interface.
 
 
 %changelog
-* Sun Dec 07 2025 Vani1-2 <giovannirafanan609@gmail.com> - 0.1.1-3
+* Sun Dec 07 2025 Vani1-2 <giovannirafanan609@gmail.com> - 0.1.3-1
 - app icon tweaks
