@@ -33,13 +33,6 @@
 
 ## Screenshots
 
-<p align="center">
- <img width="800" alt="meme example 1" src="assets/screenshot1.png" />
-</p>
-
-<p align="center">
- <img width="800" alt="meme example 2" src="assets/screenshot2.png"/>
-</p>
 
 <p align="center">
  <img width="800" alt="meme example 2" src="assets/screenshot3.png"/>

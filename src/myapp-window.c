@@ -1,4 +1,4 @@
-/* myapp-window.h
+/* myapp-window.c
  *
  * Copyright 2025 Giovanni
  *
@@ -48,8 +48,18 @@ typedef enum {
   BLEND_OVERLAY
 } BlendMode;
 
+typedef enum {
+  LAYER_TYPE_IMAGE,
+  LAYER_TYPE_TEXT
+} LayerType;
+
+
+
 typedef struct {
+  LayerType type;
   GdkPixbuf *pixbuf;
+  char *text;
+  double font_size;
   double x;
   double y;
   double width;
@@ -65,8 +75,11 @@ struct _MyappWindow
   AdwApplicationWindow parent_instance;
   GtkStack        *content_stack;
   GtkImage        *meme_preview;
-  AdwEntryRow     *top_text_entry;
-  AdwEntryRow     *bottom_text_entry;
+  GtkImage        *add_text_button;
+  AdwEntryRow     *layer_text_entry;
+  AdwActionRow    *layer_font_size_row;
+  GtkSpinButton   *layer_font_size;
+
   GtkButton       *export_button;
   GtkButton       *load_image_button;
   GtkButton       *clear_button;
@@ -74,8 +87,6 @@ struct _MyappWindow
   GtkButton       *import_template_button;
   GtkButton       *delete_template_button;
   GtkToggleButton *deep_fry_button;
-  GtkSpinButton   *top_text_size;
-  GtkSpinButton   *bottom_text_size;
   GtkFlowBox      *template_gallery;
 
   // UI Controls
@@ -90,11 +101,6 @@ struct _MyappWindow
 
   GList           *layers;
   ImageLayer      *selected_layer;
-
-  double          top_text_y;
-  double          top_text_x;
-  double          bottom_text_y;
-  double          bottom_text_x;
 
   DragType        drag_type;
   GtkGestureDrag *drag_gesture;
@@ -166,8 +172,8 @@ static void
 free_image_layer (gpointer data) {
   ImageLayer *layer = (ImageLayer *)data;
   if (layer) {
-    if (layer->pixbuf)
-      g_object_unref (layer->pixbuf);
+    if (layer->pixbuf) g_object_unref (layer->pixbuf);
+    if (layer->text) g_free (layer->text);
     g_free (layer);
   }
 }
@@ -198,8 +204,12 @@ myapp_window_class_init (MyappWindowClass *klass) {
 
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, meme_preview);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, content_stack);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, top_text_entry);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, bottom_text_entry);
+
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_entry);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
+
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
@@ -207,8 +217,6 @@ myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, deep_fry_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, top_text_size);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, bottom_text_size);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, cinematic_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_opacity_scale);
@@ -243,8 +251,6 @@ on_drop_file (GtkDropTarget *target, const GValue *value, double x, double y, My
     }
 
     if (self->template_image) {
-      self->top_text_y = 0.1; self->top_text_x = 0.5;
-      self->bottom_text_y = 0.9; self->bottom_text_x = 0.5;
       gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
       gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
       gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
@@ -259,28 +265,58 @@ on_drop_file (GtkDropTarget *target, const GValue *value, double x, double y, My
 }
 
 static void
+on_layer_text_changed (MyappWindow *self) {
+  if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
+      g_free (self->selected_layer->text);
+      self->selected_layer->text = g_strdup (gtk_editable_get_text (GTK_EDITABLE (self->layer_text_entry)));
+      self->selected_layer->font_size = gtk_spin_button_get_value (self->layer_font_size);
+      render_meme (self);
+  }
+}
+
+static void
+on_add_text_clicked (MyappWindow *self) {
+  ImageLayer *new_layer = g_new0 (ImageLayer, 1);
+
+  new_layer->type = LAYER_TYPE_TEXT;
+  new_layer->text = g_strdup ("Text");
+  new_layer->font_size = 60.0;
+
+  new_layer->x = 0.5;
+  new_layer->y = 0.5;
+  new_layer->scale = 1.0;
+  new_layer->opacity = 1.0;
+  new_layer->rotation = 0.0;
+  new_layer->blend_mode = BLEND_NORMAL;
+
+  self->layers = g_list_append (self->layers, new_layer);
+  self->selected_layer = new_layer;
+  sync_ui_with_layer(self);
+  render_meme (self);
+}
+
+
+
+static void
 myapp_window_init (MyappWindow *self) {
   GtkEventController *motion;
   GtkDropTarget *target;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->top_text_y = 0.1;
-  self->top_text_x = 0.5;
-  self->bottom_text_y = 0.9;
-  self->bottom_text_x = 0.5;
   self->drag_type = DRAG_TYPE_NONE;
   self->layers = NULL;
   self->selected_layer = NULL;
 
-  g_signal_connect_swapped (self->top_text_entry, "changed", G_CALLBACK (on_text_changed), self);
-  g_signal_connect_swapped (self->bottom_text_entry, "changed", G_CALLBACK (on_text_changed), self);
-  g_signal_connect_swapped (self->top_text_size, "value-changed", G_CALLBACK (on_text_changed), self);
-  g_signal_connect_swapped (self->bottom_text_size, "value-changed", G_CALLBACK (on_text_changed), self);
+  g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
+  g_signal_connect_swapped (self->layer_text_entry, "changed", G_CALLBACK (on_layer_text_changed), self);
+  g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
+
   g_signal_connect_swapped (self->load_image_button, "clicked", G_CALLBACK (on_load_image_clicked), self);
   g_signal_connect_swapped (self->clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
   g_signal_connect_swapped (self->add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
   g_signal_connect_swapped (self->export_button, "clicked", G_CALLBACK (on_export_clicked), self);
+
   g_signal_connect_swapped (self->import_template_button, "clicked", G_CALLBACK (on_import_template_clicked), self);
   g_signal_connect_swapped (self->delete_template_button, "clicked", G_CALLBACK (on_delete_template_clicked), self);
   g_signal_connect (self->deep_fry_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
@@ -313,23 +349,37 @@ myapp_window_init (MyappWindow *self) {
 static void
 sync_ui_with_layer(MyappWindow *self) {
     gboolean sensitive = (self->selected_layer != NULL);
+    gboolean is_text = (sensitive && self->selected_layer->type == LAYER_TYPE_TEXT);
+
+
+    g_signal_handlers_block_by_func(self->layer_opacity_scale, on_layer_control_changed, self);
+    g_signal_handlers_block_by_func(self->layer_rotation_scale, on_layer_control_changed, self);
+    g_signal_handlers_block_by_func(self->layer_text_entry, on_layer_text_changed, self);
+    g_signal_handlers_block_by_func(self->layer_font_size, on_layer_text_changed, self);
 
     if (sensitive) {
-        g_signal_handlers_block_by_func(self->layer_opacity_scale, on_layer_control_changed, self);
-        g_signal_handlers_block_by_func(self->layer_rotation_scale, on_layer_control_changed, self);
-
         gtk_range_set_value(GTK_RANGE(self->layer_opacity_scale), self->selected_layer->opacity);
         gtk_range_set_value(GTK_RANGE(self->layer_rotation_scale), self->selected_layer->rotation);
         adw_combo_row_set_selected(self->blend_mode_row, self->selected_layer->blend_mode);
 
-        g_signal_handlers_unblock_by_func(self->layer_opacity_scale, on_layer_control_changed, self);
-        g_signal_handlers_unblock_by_func(self->layer_rotation_scale, on_layer_control_changed, self);
+        if (is_text) {
+             gtk_editable_set_text(GTK_EDITABLE(self->layer_text_entry), self->selected_layer->text);
+             gtk_spin_button_set_value(self->layer_font_size, self->selected_layer->font_size);
+        }
     }
+
+    gtk_widget_set_visible(GTK_WIDGET(self->layer_text_entry), is_text);
+    gtk_widget_set_visible(GTK_WIDGET(self->layer_font_size_row), is_text);
 
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_opacity_scale), sensitive);
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_rotation_scale), sensitive);
     gtk_widget_set_sensitive(GTK_WIDGET(self->blend_mode_row), sensitive);
     gtk_widget_set_sensitive(GTK_WIDGET(self->delete_layer_button), sensitive);
+
+    g_signal_handlers_unblock_by_func(self->layer_opacity_scale, on_layer_control_changed, self);
+    g_signal_handlers_unblock_by_func(self->layer_rotation_scale, on_layer_control_changed, self);
+    g_signal_handlers_unblock_by_func(self->layer_text_entry, on_layer_text_changed, self);
+    g_signal_handlers_unblock_by_func(self->layer_font_size, on_layer_text_changed, self);
 }
 
 
@@ -461,6 +511,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
 
   gtk_stack_set_visible_child_name (self->content_stack, "content");
 
+  gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
@@ -624,9 +675,6 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
   double img_w, img_h;
   double ww, wh, w_ratio, h_ratio, screen_scale;
   GList *l;
-  double top_fs, bottom_fs;
-  double top_threshold, bottom_threshold;
-  double dist_top, dist_bottom;
   ImageLayer *layer;
   double half_w_scaled, half_h_scaled;
   double left, right, top, bottom;
@@ -695,28 +743,6 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
       sync_ui_with_layer(self);
   }
 
-  top_fs = gtk_spin_button_get_value (self->top_text_size);
-  bottom_fs = gtk_spin_button_get_value (self->bottom_text_size);
-  top_threshold = MAX(0.1, (top_fs / img_h) * 0.6);
-  bottom_threshold = MAX(0.1, (bottom_fs / img_h) * 0.6);
-  dist_top = fabs(rel_y - self->top_text_y);
-  dist_bottom = fabs(rel_y - self->bottom_text_y);
-
-  if (dist_top < top_threshold) {
-    self->drag_type = DRAG_TYPE_TOP_TEXT;
-    self->drag_obj_start_x = self->top_text_x;
-    self->drag_obj_start_y = self->top_text_y;
-    self->selected_layer = NULL;
-  } else if (dist_bottom < bottom_threshold) {
-    self->drag_type = DRAG_TYPE_BOTTOM_TEXT;
-    self->drag_obj_start_x = self->bottom_text_x;
-    self->drag_obj_start_y = self->bottom_text_y;
-    self->selected_layer = NULL;
-  } else {
-    self->drag_type = DRAG_TYPE_NONE;
-    self->selected_layer = NULL;
-  }
-
   self->drag_start_x = rel_x;
   self->drag_start_y = rel_y;
   render_meme(self);
@@ -770,14 +796,6 @@ on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, Myapp
       ratio = cur_dist / start_dist;
       self->selected_layer->scale = CLAMP (self->drag_obj_start_scale * ratio, 0.1, 5.0);
     }
-  }
-  else if (self->drag_type == DRAG_TYPE_TOP_TEXT) {
-    self->top_text_x = CLAMP (self->drag_obj_start_x + delta_x, 0.0, 1.0);
-    self->top_text_y = CLAMP (self->drag_obj_start_y + delta_y, 0.05, 0.95);
-  }
-  else if (self->drag_type == DRAG_TYPE_BOTTOM_TEXT) {
-    self->bottom_text_x = CLAMP (self->drag_obj_start_x + delta_x, 0.0, 1.0);
-    self->bottom_text_y = CLAMP (self->drag_obj_start_y + delta_y, 0.05, 0.95);
   }
 
   render_meme (self);
@@ -840,8 +858,6 @@ static void on_add_image_clicked (MyappWindow *self) {
 
 static void on_clear_clicked (MyappWindow *self) {
   gtk_stack_set_visible_child_name (self->content_stack, "empty");
-  gtk_editable_set_text (GTK_EDITABLE (self->top_text_entry), "");
-  gtk_editable_set_text (GTK_EDITABLE (self->bottom_text_entry), "");
   g_clear_object (&self->template_image);
   g_clear_object (&self->final_meme);
 
@@ -854,6 +870,8 @@ static void on_clear_clicked (MyappWindow *self) {
 
   gtk_image_clear (self->meme_preview);
   gtk_image_set_from_icon_name (self->meme_preview, "image-x-generic-symbolic");
+
+  gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), FALSE);
   gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), FALSE);
@@ -863,20 +881,6 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_toggle_button_set_active (self->cinematic_button, FALSE);
   gtk_flow_box_unselect_all (self->template_gallery);
 }
-
-static void
-draw_text_with_outline (cairo_t *cr, const char *text, double x, double y, double font_size) {
-  cairo_text_extents_t extents;
-  cairo_select_font_face (cr, "Impact", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, font_size);
-  cairo_text_extents (cr, text, &extents);
-  x = x - extents.width / 2 - extents.x_bearing;
-  y = y - extents.height / 2 - extents.y_bearing;
-  cairo_set_source_rgb (cr, 0, 0, 0); cairo_set_line_width (cr, font_size * 0.1);
-  cairo_move_to (cr, x, y); cairo_text_path (cr, text); cairo_stroke (cr);
-  cairo_set_source_rgb (cr, 1, 1, 1); cairo_move_to (cr, x, y); cairo_show_text (cr, text);
-}
-
 
 static GdkPixbuf *
 apply_saturation_contrast (GdkPixbuf *src, double sat, double contrast) {
@@ -987,22 +991,19 @@ apply_deep_fry (GdkPixbuf *src) {
 
 
 
-// ngl this is too long, I'm too lazy to refactor this
-// pls send help
+// ok I replaced this thing entirely making loop to through layers
+// and deciding whether to draw text or images
 static void
 render_meme (MyappWindow *self) {
-  const char *top_text, *bottom_text;
   int width, height;
   cairo_surface_t *surface;
   cairo_t *cr;
-  cairo_pattern_t *pat;
   GdkTexture *texture;
   GdkPixbuf *composite_pixbuf;
   GList *l;
   ImageLayer *layer;
-  double scaled_w, scaled_h, draw_x, draw_y;
+  double draw_x, draw_y;
   double hw, hh;
-  char *upper_text;
   GdkPixbuf *cinematic;
   GdkPixbuf *fried;
 
@@ -1014,120 +1015,116 @@ render_meme (MyappWindow *self) {
   surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, width, height);
   cr = cairo_create (surface);
 
+
   cairo_save (cr);
   gdk_cairo_set_source_pixbuf (cr, self->template_image, 0.0, 0.0);
   cairo_paint (cr);
   cairo_restore (cr);
 
+
   for (l = self->layers; l != NULL; l = l->next) {
     layer = (ImageLayer *)l->data;
-
-    if (!layer->pixbuf) continue;
-
-    scaled_w = layer->width * layer->scale;
-    scaled_h = layer->height * layer->scale;
 
     draw_x = layer->x * width;
     draw_y = layer->y * height;
 
     cairo_save (cr);
 
+
     cairo_translate (cr, draw_x, draw_y);
     cairo_rotate (cr, layer->rotation);
+    cairo_scale (cr, layer->scale, layer->scale);
+
 
     if (layer->blend_mode == BLEND_MULTIPLY) cairo_set_operator(cr, CAIRO_OPERATOR_MULTIPLY);
     else if (layer->blend_mode == BLEND_SCREEN) cairo_set_operator(cr, CAIRO_OPERATOR_SCREEN);
     else if (layer->blend_mode == BLEND_OVERLAY) cairo_set_operator(cr, CAIRO_OPERATOR_OVERLAY);
     else cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 
-    cairo_scale (cr, layer->scale, layer->scale);
-    gdk_cairo_set_source_pixbuf (cr, layer->pixbuf, -layer->width/2.0, -layer->height/2.0);
 
-    if (layer->opacity < 1.0) cairo_paint_with_alpha (cr, layer->opacity);
-    else cairo_paint (cr);
+    if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
+       gdk_cairo_set_source_pixbuf (cr, layer->pixbuf, -layer->width/2.0, -layer->height/2.0);
+       if (layer->opacity < 1.0) cairo_paint_with_alpha (cr, layer->opacity);
+       else cairo_paint (cr);
+    }
+
+    else if (layer->type == LAYER_TYPE_TEXT && layer->text) {
+       cairo_text_extents_t extents;
+       double off_x, off_y;
+
+       cairo_select_font_face (cr, "Impact", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+       cairo_set_font_size (cr, layer->font_size);
+       cairo_text_extents (cr, layer->text, &extents);
+
+
+       layer->width = extents.width + 10;
+       layer->height = extents.height + 10;
+
+
+       off_x = -(extents.width/2.0 + extents.x_bearing);
+       off_y = -(extents.height/2.0 + extents.y_bearing);
+
+       cairo_move_to (cr, off_x, off_y);
+       cairo_text_path (cr, layer->text);
+
+       cairo_set_source_rgba (cr, 0, 0, 0, layer->opacity);
+       cairo_set_line_width (cr, layer->font_size * 0.08);
+       cairo_stroke_preserve (cr);
+
+       cairo_set_source_rgba (cr, 1, 1, 1, layer->opacity);
+       cairo_fill (cr);
+    }
 
     cairo_restore (cr);
 
-    if (layer == self->selected_layer) {
-      cairo_save(cr);
 
+    if (layer == self->selected_layer) {
+      double box_w, box_h;
+
+      cairo_save(cr);
       cairo_translate (cr, draw_x, draw_y);
       cairo_rotate (cr, layer->rotation);
 
-      hw = scaled_w / 2.0;
-      hh = scaled_h / 2.0;
+
+      box_w = layer->width * layer->scale;
+      box_h = layer->height * layer->scale;
+
+      hw = box_w / 2.0;
+      hh = box_h / 2.0;
 
       cairo_set_source_rgba (cr, 0.4, 0.2, 0.8, 0.8);
       cairo_set_line_width (cr, 2.0);
-      cairo_rectangle (cr, -hw, -hh, scaled_w, scaled_h);
+      cairo_rectangle (cr, -hw, -hh, box_w, box_h);
       cairo_stroke (cr);
-
-      cairo_set_source_rgb (cr, 1, 1, 1);
-      cairo_new_path(cr);
-      cairo_arc (cr, -hw, -hh, 6, 0, 2*M_PI); cairo_close_path(cr);
-      cairo_arc (cr, hw, -hh, 6, 0, 2*M_PI); cairo_close_path(cr);
-      cairo_arc (cr, -hw, hh, 6, 0, 2*M_PI); cairo_close_path(cr);
-      cairo_arc (cr, hw, hh, 6, 0, 2*M_PI); cairo_close_path(cr);
-      cairo_fill_preserve(cr);
-      cairo_stroke(cr);
       cairo_restore(cr);
     }
   }
 
-  cairo_save (cr);
-  pat = cairo_pattern_create_radial (width/2.0, height/2.0, width*0.3, width/2.0, height/2.0, width*0.8);
-  cairo_pattern_add_color_stop_rgba (pat, 0, 0, 0, 0, 0.0);
-  cairo_pattern_add_color_stop_rgba (pat, 1, 0, 0, 0, 0.5);
-  cairo_set_source (cr, pat);
-  cairo_paint (cr);
-  cairo_pattern_destroy (pat);
-  cairo_restore (cr);
-
-  top_text = gtk_editable_get_text (GTK_EDITABLE (self->top_text_entry));
-  bottom_text = gtk_editable_get_text (GTK_EDITABLE (self->bottom_text_entry));
-
-  if (top_text && strlen (top_text) > 0) {
-    upper_text = g_utf8_strup (top_text, -1);
-    draw_text_with_outline (cr, upper_text, width * self->top_text_x, height * self->top_text_y, gtk_spin_button_get_value (self->top_text_size));
-    g_free (upper_text);
-  }
-  if (bottom_text && strlen (bottom_text) > 0) {
-    upper_text = g_utf8_strup (bottom_text, -1);
-    draw_text_with_outline (cr, upper_text, width * self->bottom_text_x, height * self->bottom_text_y, gtk_spin_button_get_value (self->bottom_text_size));
-    g_free (upper_text);
-  }
 
   cairo_surface_flush (surface);
   cairo_destroy (cr);
-
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS
   composite_pixbuf = gdk_pixbuf_get_from_surface (surface, 0, 0, width, height);
   G_GNUC_END_IGNORE_DEPRECATIONS
-
   cairo_surface_destroy (surface);
 
   if (composite_pixbuf == NULL) return;
 
+  //apply cool effects, lmao
   if (gtk_toggle_button_get_active(self->cinematic_button)) {
      cinematic = apply_saturation_contrast(composite_pixbuf, 1.15, 1.05);
-     if (cinematic != NULL) {
-        g_object_unref(composite_pixbuf);
-        composite_pixbuf = cinematic;
-     }
+     if (cinematic) { g_object_unref(composite_pixbuf); composite_pixbuf = cinematic; }
   }
 
   if (gtk_toggle_button_get_active (self->deep_fry_button)) {
     fried = apply_deep_fry (composite_pixbuf);
-    if (fried != NULL) {
-      g_object_unref (composite_pixbuf);
-      composite_pixbuf = fried;
-    }
+    if (fried) { g_object_unref (composite_pixbuf); composite_pixbuf = fried; }
   }
 
   g_clear_object (&self->final_meme);
   self->final_meme = composite_pixbuf;
 
-  if (self->final_meme != NULL) {
+  if (self->final_meme) {
     G_GNUC_BEGIN_IGNORE_DEPRECATIONS
     texture = gdk_texture_new_for_pixbuf (self->final_meme);
     G_GNUC_END_IGNORE_DEPRECATIONS
@@ -1156,8 +1153,8 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
   if (self->layers) { g_list_free_full (self->layers, free_image_layer); self->layers = NULL; self->selected_layer = NULL; }
   if (self->template_image) {
     gtk_stack_set_visible_child_name (self->content_stack, "content");
-    self->top_text_y = 0.1; self->top_text_x = 0.5;
-    self->bottom_text_y = 0.9; self->bottom_text_x = 0.5;
+
+    gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
     gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
@@ -1167,6 +1164,8 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
   }
   g_free (path); g_object_unref (file);
 }
+
+
 //image click function
 static void on_load_image_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
