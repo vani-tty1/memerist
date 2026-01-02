@@ -1,28 +1,42 @@
 desktop_file = i18n.merge_file(
-        input: 'io.github.vani1_2.memerist.desktop.in',
-       output: 'io.github.vani1_2.memerist.desktop',
-         type: 'desktop',
-       po_dir: '../po',
-      install: true,
-  install_dir: get_option('datadir') / 'applications'
+  input: 'io.github.vani1_2.memerist.desktop.in',
+  output: 'io.github.vani1_2.memerist.desktop',
+  type: 'desktop',
+  po_dir: '../po',
+  install: true,
+  install_dir: get_option('datadir') / 'applications',
 )
+appstream_file = i18n.merge_file(
+  input: 'io.github.vani1_2.memerist.metainfo.xml.in',
+  output: 'io.github.vani1_2.memerist.metainfo.xml',
+  po_dir: '../po',
+  install: true,
+  install_dir: get_option('datadir') / 'metainfo',
+)
+
+appstreamcli = find_program('appstreamcli', required: false)
+if appstreamcli.found()
+  test(
+    'Validate appstream file',
+    appstreamcli,
+    args: ['validate', '--no-net', '--explain', appstream_file],
+  )
+endif
 
 desktop_utils = find_program('desktop-file-validate', required: false)
 if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
-appstreamcli = find_program('appstreamcli', required: false, disabler: true)
-test('Validate appstream file', appstreamcli,
-     args: ['validate', '--no-net', '--explain'])
-
-install_data('io.github.vani1_2.memerist.gschema.xml',
-  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
+install_data(
+  'io.github.vani1_2.memerist.gschema.xml',
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )
 
 compile_schemas = find_program('glib-compile-schemas', required: false, disabler: true)
-test('Validate schema file',
-     compile_schemas,
-     args: ['--strict', '--dry-run', meson.current_source_dir()])
+test(
+  'Validate schema file',
+  compile_schemas,
+  args: ['--strict', '--dry-run', meson.current_source_dir()],
+)
 subdir('icons')
-
