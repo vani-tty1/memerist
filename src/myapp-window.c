@@ -18,17 +18,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-/* Almighty God, forgive me for all of my wicked sins, I forsake my escape.
- * I give up even Trisha, I belong here in hell and accept my just damnation,
- * But grant me the power to keep your enemy here with me.
- */
 
-#include "config.h"
 #include "myapp-window.h"
 #include <cairo.h>
 #include <math.h>
 #include <stdlib.h>
 #include <glib/gstdio.h>
+#include <gdk/gdkkeysyms.h>
 
 #define CLAMP_U8(val) ((val) < 0 ? 0 : ((val) > 255 ? 255 : (val)))
 
@@ -49,8 +45,6 @@ typedef enum {
   LAYER_TYPE_IMAGE,
   LAYER_TYPE_TEXT
 } LayerType;
-
-
 
 typedef struct {
   LayerType type;
@@ -99,6 +93,10 @@ struct _MyappWindow
   GList           *layers;
   ImageLayer      *selected_layer;
 
+  // Undo/Redo History
+  GList           *undo_stack;
+  GList           *redo_stack;
+
   DragType        drag_type;
   GtkGestureDrag *drag_gesture;
 
@@ -110,7 +108,6 @@ struct _MyappWindow
 };
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
-
 
 static void on_text_changed (MyappWindow *self);
 static void on_load_image_clicked (MyappWindow *self);
@@ -130,6 +127,90 @@ static void on_deep_fry_toggled (GtkToggleButton *btn, MyappWindow *self);
 static void on_layer_control_changed (MyappWindow *self);
 static void on_delete_layer_clicked (MyappWindow *self);
 static void sync_ui_with_layer(MyappWindow *self);
+
+
+
+static ImageLayer *
+copy_image_layer (const ImageLayer *src) {
+  ImageLayer *dst = g_new0 (ImageLayer, 1);
+  *dst = *src;
+  if (src->pixbuf) g_object_ref (src->pixbuf);
+  if (src->text) dst->text = g_strdup (src->text);
+  return dst;
+}
+
+static GList *
+copy_layer_list (GList *src) {
+  GList *dst = NULL;
+  GList *l;
+  for (l = src; l != NULL; l = l->next) {
+    dst = g_list_append (dst, copy_image_layer ((ImageLayer *)l->data));
+  }
+  return dst;
+}
+
+static void
+free_image_layer (gpointer data) {
+  ImageLayer *layer = (ImageLayer *)data;
+  if (layer) {
+    if (layer->pixbuf) g_object_unref (layer->pixbuf);
+    if (layer->text) g_free (layer->text);
+    g_free (layer);
+  }
+}
+
+static void
+free_history_stack (GList **stack) {
+  GList *l;
+  for (l = *stack; l != NULL; l = l->next) {
+    g_list_free_full ((GList *)l->data, (GDestroyNotify)free_image_layer);
+  }
+  g_list_free (*stack);
+  *stack = NULL;
+}
+
+static void
+push_undo (MyappWindow *self) {
+  free_history_stack (&self->redo_stack);
+
+  if (g_list_length (self->undo_stack) >= 20) {
+      GList *last = g_list_last (self->undo_stack);
+      g_list_free_full ((GList *)last->data, (GDestroyNotify)free_image_layer);
+      self->undo_stack = g_list_delete_link (self->undo_stack, last);
+  }
+
+  self->undo_stack = g_list_prepend (self->undo_stack, copy_layer_list (self->layers));
+}
+
+static void
+perform_undo (MyappWindow *self) {
+  if (!self->undo_stack) return;
+
+  self->redo_stack = g_list_prepend (self->redo_stack, self->layers);
+
+  self->layers = (GList *)self->undo_stack->data;
+  self->undo_stack = g_list_delete_link (self->undo_stack, self->undo_stack);
+
+  self->selected_layer = NULL;
+  sync_ui_with_layer (self);
+  render_meme (self);
+}
+
+static void
+perform_redo (MyappWindow *self) {
+  if (!self->redo_stack) return;
+
+  self->undo_stack = g_list_prepend (self->undo_stack, self->layers);
+
+  self->layers = (GList *)self->redo_stack->data;
+  self->redo_stack = g_list_delete_link (self->redo_stack, self->redo_stack);
+
+  self->selected_layer = NULL;
+  sync_ui_with_layer (self);
+  render_meme (self);
+}
+
+
 
 static void
 get_image_coordinates (MyappWindow *self, double widget_x, double widget_y, double *img_x, double *img_y) {
@@ -166,16 +247,6 @@ get_image_coordinates (MyappWindow *self, double widget_x, double widget_y, doub
 }
 
 static void
-free_image_layer (gpointer data) {
-  ImageLayer *layer = (ImageLayer *)data;
-  if (layer) {
-    if (layer->pixbuf) g_object_unref (layer->pixbuf);
-    if (layer->text) g_free (layer->text);
-    g_free (layer);
-  }
-}
-
-static void
 myapp_window_finalize (GObject *object) {
   MyappWindow *self = MYAPP_WINDOW (object);
 
@@ -186,6 +257,9 @@ myapp_window_finalize (GObject *object) {
   if (self->layers) {
     g_list_free_full (self->layers, free_image_layer);
   }
+
+  free_history_stack (&self->undo_stack);
+  free_history_stack (&self->redo_stack);
 
   G_OBJECT_CLASS (myapp_window_parent_class)->finalize (object);
 }
@@ -222,7 +296,6 @@ myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_layer_button);
 }
 
-//file drag and drop
 static gboolean
 on_drop_file (GtkDropTarget *target, const GValue *value, double x, double y, MyappWindow *self) {
   GSList *list;
@@ -246,6 +319,9 @@ on_drop_file (GtkDropTarget *target, const GValue *value, double x, double y, My
       self->layers = NULL;
       self->selected_layer = NULL;
     }
+
+    free_history_stack (&self->undo_stack);
+    free_history_stack (&self->redo_stack);
 
     if (self->template_image) {
       gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
@@ -273,8 +349,11 @@ on_layer_text_changed (MyappWindow *self) {
 
 static void
 on_add_text_clicked (MyappWindow *self) {
-  ImageLayer *new_layer = g_new0 (ImageLayer, 1);
+  ImageLayer *new_layer;
 
+  push_undo (self);
+
+  new_layer = g_new0 (ImageLayer, 1);
   new_layer->type = LAYER_TYPE_TEXT;
   new_layer->text = g_strdup ("Text");
   new_layer->font_size = 60.0;
@@ -292,18 +371,32 @@ on_add_text_clicked (MyappWindow *self) {
   render_meme (self);
 }
 
-
+static gboolean
+on_key_pressed (GtkEventControllerKey *controller, guint keyval, guint keycode, GdkModifierType state, MyappWindow *self) {
+  if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_z || keyval == GDK_KEY_Z)) {
+    perform_undo (self);
+    return TRUE;
+  }
+  if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_y || keyval == GDK_KEY_Y)) {
+    perform_redo (self);
+    return TRUE;
+  }
+  return FALSE;
+}
 
 static void
 myapp_window_init (MyappWindow *self) {
   GtkEventController *motion;
   GtkDropTarget *target;
+  GtkEventController *key_controller;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->drag_type = DRAG_TYPE_NONE;
   self->layers = NULL;
   self->selected_layer = NULL;
+  self->undo_stack = NULL;
+  self->redo_stack = NULL;
 
   g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
   g_signal_connect_swapped (self->layer_text_entry, "changed", G_CALLBACK (on_layer_text_changed), self);
@@ -339,9 +432,13 @@ myapp_window_init (MyappWindow *self) {
   g_signal_connect (target, "drop", G_CALLBACK (on_drop_file), self);
   gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (target));
 
-  populate_template_gallery (self);
-}
+  key_controller = gtk_event_controller_key_new ();
+  g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_key_pressed), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), key_controller);
 
+  populate_template_gallery (self);
+
+}
 
 static void
 sync_ui_with_layer(MyappWindow *self) {
@@ -379,7 +476,6 @@ sync_ui_with_layer(MyappWindow *self) {
     g_signal_handlers_unblock_by_func(self->layer_font_size, on_layer_text_changed, self);
 }
 
-
 static void
 on_layer_control_changed (MyappWindow *self) {
   if (self->selected_layer) {
@@ -393,6 +489,7 @@ on_layer_control_changed (MyappWindow *self) {
 static void
 on_delete_layer_clicked (MyappWindow *self) {
   if (self->selected_layer) {
+    push_undo (self);
     self->layers = g_list_remove(self->layers, self->selected_layer);
     free_image_layer(self->selected_layer);
     self->selected_layer = NULL;
@@ -416,7 +513,6 @@ static void
 add_file_to_gallery (MyappWindow *self, const char *full_path) {
   GtkWidget *picture;
 
-
   if (g_str_has_prefix (full_path, "resource://")) {
     picture = gtk_picture_new_for_resource (full_path + 11);
   } else {
@@ -429,8 +525,6 @@ add_file_to_gallery (MyappWindow *self, const char *full_path) {
   g_object_set_data_full (G_OBJECT (picture), "template-path", g_strdup (full_path), g_free);
   gtk_flow_box_append (self->template_gallery, picture);
 }
-
-
 
 static void
 scan_directory_for_templates (MyappWindow *self, const char *dir_path) {
@@ -446,7 +540,6 @@ scan_directory_for_templates (MyappWindow *self, const char *dir_path) {
   }
   g_dir_close (dir);
 }
-
 
 static void
 scan_resources_for_templates (MyappWindow *self) {
@@ -465,8 +558,6 @@ scan_resources_for_templates (MyappWindow *self) {
   }
 }
 
-
-
 static void
 populate_template_gallery (MyappWindow *self) {
   char *user_dir;
@@ -476,7 +567,6 @@ populate_template_gallery (MyappWindow *self) {
   scan_directory_for_templates (self, user_dir);
   g_free (user_dir);
 }
-
 
 static void
 on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *self) {
@@ -498,6 +588,9 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
     self->selected_layer = NULL;
   }
 
+  free_history_stack (&self->undo_stack);
+  free_history_stack (&self->redo_stack);
+
   if (g_str_has_prefix (template_path, "resource://")) {
       self->template_image = gdk_pixbuf_new_from_resource (template_path + 11, &error);
   } else {
@@ -515,7 +608,6 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
   gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
   render_meme (self);
 }
-
 
 static void
 on_import_template_response (GObject *s, GAsyncResult *r, gpointer d) {
@@ -543,7 +635,6 @@ on_import_template_response (GObject *s, GAsyncResult *r, gpointer d) {
   g_object_unref (source_file); g_object_unref (dest_file);
 }
 
-
 static void
 on_import_template_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
@@ -557,7 +648,6 @@ on_import_template_clicked (MyappWindow *self) {
   gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_import_template_response, self);
   g_object_unref (filters); g_object_unref (filter);
 }
-
 
 static void
 on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d) {
@@ -579,7 +669,6 @@ on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d) {
   }
   g_clear_error (&error);
 }
-
 
 static void
 on_delete_template_clicked (MyappWindow *self) {
@@ -704,6 +793,7 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
         (fabs(rel_y - top) < corner_y || fabs(rel_y - bottom) < corner_y);
 
       if (near_corner) {
+        push_undo (self);
         self->drag_type = DRAG_TYPE_IMAGE_RESIZE;
         self->selected_layer = layer;
         self->drag_obj_start_scale = layer->scale;
@@ -716,6 +806,7 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
     }
 
     if (rel_x >= left && rel_x <= right && rel_y >= top && rel_y <= bottom) {
+      push_undo (self);
       self->drag_type = DRAG_TYPE_IMAGE_MOVE;
       self->selected_layer = layer;
       self->drag_obj_start_x = layer->x;
@@ -814,6 +905,7 @@ on_add_image_response (GObject *source, GAsyncResult *result, gpointer user_data
   new_layer->pixbuf = gdk_pixbuf_new_from_file (path, &error);
 
   if (!error) {
+    push_undo (self);
     new_layer->width = gdk_pixbuf_get_width (new_layer->pixbuf);
     new_layer->height = gdk_pixbuf_get_height (new_layer->pixbuf);
     new_layer->x = 0.5;
@@ -855,6 +947,10 @@ static void on_clear_clicked (MyappWindow *self) {
     g_list_free_full (self->layers, free_image_layer);
     self->layers = NULL;
   }
+
+  free_history_stack (&self->undo_stack);
+  free_history_stack (&self->redo_stack);
+
   self->selected_layer = NULL;
   sync_ui_with_layer(self);
 
@@ -960,7 +1056,6 @@ apply_deep_fry (GdkPixbuf *src) {
   g_object_unref (shrunk);
   return final;
 }
-
 
 // Stop and think, You are about to enter a place called the void.
 // The rendering logic is so fragile, any code change here can destroy a whole function
@@ -1128,6 +1223,10 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
   g_clear_object (&self->template_image);
   self->template_image = gdk_pixbuf_new_from_file (path, NULL);
   if (self->layers) { g_list_free_full (self->layers, free_image_layer); self->layers = NULL; self->selected_layer = NULL; }
+
+  free_history_stack (&self->undo_stack);
+  free_history_stack (&self->redo_stack);
+
   if (self->template_image) {
     gtk_stack_set_visible_child_name (self->content_stack, "content");
 

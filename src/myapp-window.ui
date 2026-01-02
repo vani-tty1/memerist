@@ -35,6 +35,16 @@
               </object>
             </child>
 
+            <child type="start">
+              <object class="GtkButton" id="export_button">
+                <property name="label" translatable="yes">Export</property>
+                <property name="sensitive">false</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+
             <child type="end">
               <object class="GtkMenuButton">
                 <property name="primary">True</property>
@@ -51,15 +61,6 @@
               </object>
             </child>
 
-            <child type="end">
-              <object class="GtkButton" id="export_button">
-                <property name="label" translatable="yes">Export</property>
-                <property name="sensitive">false</property>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-            </child>
           </object>
         </child>
 
@@ -84,7 +85,8 @@
                             <property name="halign">center</property>
                             <property name="valign">center</property>
                             <property name="margin-top">24</property>
-                            <property name="margin-bottom">80</property> <property name="margin-start">24</property>
+                            <property name="margin-bottom">80</property>
+                            <property name="margin-start">24</property>
                             <property name="margin-end">24</property>
 
                             <child>
@@ -129,14 +131,16 @@
 
                 <child type="overlay">
                   <object class="GtkBox">
-                    <property name="halign">center</property>
-                    <property name="valign">end</property>
-                    <property name="margin-bottom">24</property>
+                    <property name="halign">start</property>
+                    <property name="valign">center</property>
+                    <property name="orientation">vertical</property>
+                    <property name="margin-start">12</property>
                     <property name="spacing">6</property>
                     <style>
                       <class name="osd"/>
                       <class name="toolbar"/>
                     </style>
+
                     <child>
                        <object class="GtkButton" id="add_image_button">
                         <property name="icon-name">insert-image-symbolic</property>
@@ -144,6 +148,7 @@
                         <property name="sensitive">false</property>
                       </object>
                     </child>
+
                     <child>
                        <object class="GtkButton" id="add_text_button">
                         <property name="icon-name">format-text-bold-symbolic</property>
@@ -151,12 +156,54 @@
                         <property name="sensitive">false</property>
                       </object>
                     </child>
+
+                    <child>
+                      <object class="GtkMenuButton">
+                        <property name="icon-name">applications-graphics-symbolic</property>
+                        <property name="tooltip-text">Global Effects</property>
+                        <property name="direction">right</property>
+                        <property name="popover">
+                          <object class="GtkPopover">
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">6</property>
+                                <property name="margin-top">1</property>
+                                <property name="margin-bottom">1</property>
+                                <property name="margin-start">1</property>
+                                <property name="margin-end">1</property>
+
+                                <child>
+                                  <object class="GtkToggleButton" id="cinematic_button">
+                                    <property name="label">Cinematic</property>
+                                    <property name="icon-name">camera-video-symbolic</property>
+                                    <property name="sensitive">false</property>
+                                  </object>
+                                </child>
+
+                                <child>
+                                  <object class="GtkToggleButton" id="deep_fry_button">
+                                    <property name="label">Deep Fry</property>
+                                    <property name="icon-name">weather-severe-alert-symbolic</property>
+                                    <property name="sensitive">false</property>
+                                    <style><class name="destructive-action"/></style>
+                                  </object>
+                                </child>
+
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+
                     <child>
                       <object class="GtkSeparator">
-                         <property name="orientation">vertical</property>
+                         <property name="orientation">horizontal</property>
                          <style><class name="spacer"/></style>
                       </object>
                     </child>
+
                     <child>
                        <object class="GtkButton" id="clear_button">
                           <property name="icon-name">edit-delete-symbolic</property>
@@ -185,19 +232,19 @@
                     </child>
 
                     <child>
-                        <object class="AdwActionRow" id="layer_font_size_row">
+                      <object class="AdwActionRow" id="layer_font_size_row">
                            <property name="title">Font Size</property>
                            <property name="visible">false</property>
                            <child>
-                              <object class="GtkSpinButton" id="layer_font_size">
+                               <object class="GtkSpinButton" id="layer_font_size">
                                  <property name="valign">center</property>
                                  <property name="adjustment">
-                                     <object class="GtkAdjustment">
+                                   <object class="GtkAdjustment">
                                        <property name="lower">10</property>
                                        <property name="upper">300</property>
                                        <property name="value">60</property>
                                        <property name="step-increment">5</property>
-                                     </object>
+                                   </object>
                                  </property>
                               </object>
                            </child>
@@ -241,7 +288,7 @@
                             <property name="width-request">100</property>
                             <property name="draw-value">false</property>
                             <property name="adjustment">
-                              <object class="GtkAdjustment">
+                               <object class="GtkAdjustment">
                                 <property name="lower">0.0</property>
                                 <property name="upper">6.28</property>
                                 <property name="value">0.0</property>
@@ -268,42 +315,12 @@
                 </child>
 
                 <child>
-                    <object class="AdwPreferencesGroup">
-                        <property name="title">Global Effects</property>
-                        <child>
-                            <object class="AdwActionRow">
-                                <property name="title">Cinematic Filter</property>
-                                <child type="suffix">
-                                    <object class="GtkToggleButton" id="cinematic_button">
-                                        <property name="valign">center</property>
-                                        <property name="icon-name">camera-video-symbolic</property>
-                                        <property name="sensitive">false</property>
-                                    </object>
-                                </child>
-                            </object>
-                        </child>
-                        <child>
-                            <object class="AdwActionRow">
-                                <property name="title">Deep Fry</property>
-                                <child type="suffix">
-                                    <object class="GtkToggleButton" id="deep_fry_button">
-                                        <property name="valign">center</property>
-                                        <property name="icon-name">weather-severe-alert-symbolic</property>
-                                        <property name="sensitive">false</property>
-                                        <style><class name="destructive-action"/></style>
-                                    </object>
-                                </child>
-                            </object>
-                        </child>
-                    </object>
-                </child>
-
-                <child>
                    <object class="AdwPreferencesGroup">
                       <property name="title">Templates</property>
                       <child>
                          <object class="AdwExpanderRow">
                             <property name="title">Gallery</property>
+                            <property name="expanded">true</property>
                             <child type="suffix">
                                <object class="GtkButton" id="import_template_button">
                                   <property name="icon-name">list-add-symbolic</property>
@@ -318,20 +335,20 @@
                                 </object>
                             </child>
                             <child>
-                               <object class="GtkBox">
+                                <object class="GtkBox">
                                   <property name="height-request">200</property>
                                   <child>
-                                     <object class="GtkScrolledWindow">
+                                      <object class="GtkScrolledWindow">
                                         <property name="hexpand">true</property>
                                         <child>
-                                          <object class="GtkFlowBox" id="template_gallery">
+                                           <object class="GtkFlowBox" id="template_gallery">
                                               <property name="selection-mode">single</property>
                                               <property name="max-children-per-line">2</property>
                                            </object>
                                         </child>
                                      </object>
                                   </child>
-                               </object>
+                                </object>
                             </child>
                          </object>
                       </child>
