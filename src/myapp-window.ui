@@ -76,7 +76,7 @@
           <object class="AdwOverlaySplitView" id="split_view">
             <property name="sidebar-position">end</property>
             <property name="max-sidebar-width">320</property>
-            <property name="min-sidebar-width">260</property>
+            <property name="min-sidebar-width">270</property>
             <property name="collapsed">false</property>
             <property name="show-sidebar">true</property>
 
@@ -107,7 +107,7 @@
                                       <object class="AdwStatusPage">
                                         <property name="icon-name">image-x-generic-symbolic</property>
                                         <property name="title">No Image Loaded</property>
-                                        <property name="description">Open an image to start editing</property>
+                                        <property name="description">Drag or Open an image to start editing </property>
                                       </object>
                                     </property>
                                   </object>
