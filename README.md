@@ -1,4 +1,4 @@
-# GNOME Meme Editor
+# Memerist
 
 <p align="center">
   <img src="data/icons/hicolor/scalable/apps/io.github.vani1_2.memerist.svg" alt="GNOME Meme Editor Logo" width="128"/>
@@ -28,7 +28,8 @@
 - **Image Import** - Load any image to use as your meme template
 - **Classic Meme Text** - You can drag the text anywhere in the photo
 - **PNG Export** 
-- **Native GNOME Design** - Built with Libadwaita
+- **Layers** - Import any images as another layer to the base image
+- **Native GNOME Design**
 - **Let it Happen**
 
 ## Screenshots
@@ -61,7 +62,6 @@ Add the dedicated repository to your sources:
 
 
 
-
 ### Arch Linux and derivatives
 You arch users know this, its very simple.
 ```bash
@@ -85,16 +85,12 @@ sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
 sudo apt install libgtk-4-dev libadwaita-1-dev meson ninja-build
 ```
 
-**Arch Linux:**
-
-PKGBUILD is already available
-
 #### Build Instructions
 
 ```bash
 # Clone the repository
 git clone https://github.com/Vani1-2/memerist.git
-cd gnome-meme-editor
+cd memerist
 
 # Configure the build
 meson setup build
@@ -116,7 +112,7 @@ sudo meson install -C build
 
 1. Launch Memerist from your application menu
 2. Click the folder button to browse images using your file browser
-3. Enter your top and bottom text, you can drag the text anywhere
+3. Enter your text, you can drag the text anywhere in the photo viewport
 4. Export your meme as PNG
 5. Let it Happen
 
