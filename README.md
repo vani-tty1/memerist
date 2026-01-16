@@ -93,7 +93,7 @@ PKGBUILD is already available
 
 ```bash
 # Clone the repository
-git clone https://github.com/Vani1-2/gnome-meme-editor.git
+git clone https://github.com/Vani1-2/memerist.git
 cd gnome-meme-editor
 
 # Configure the build
@@ -132,9 +132,5 @@ This project is open source. Please check the LICENSE file for details.
 
 Built with GTK 4 and Libadwaita for the GNOME desktop environment.
 
----
 
-<p align="center">
-  Made with a lot of Redbull
-</p>
 
