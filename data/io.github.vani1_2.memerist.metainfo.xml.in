@@ -44,10 +44,11 @@
   </screenshot>
 </screenshots>
   <releases>
-    <release version="0.2.3" date="2026-1-9">
+    <release version="0.2.4" date="2026-1-19">
       <description translate="no">
         <ul>
-          <li>minor performance improvement</li>
+          <li>fixed translation generation</li>
+          <li>new app icon</li>
         </ul>
       </description>
     </release>
