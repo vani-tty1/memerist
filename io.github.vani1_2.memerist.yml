@@ -16,4 +16,4 @@ modules:
       - type: git
         url: https://github.com/Vani1-2/memerist.git
         tag: v0.2.5
-        commit: 
+        commit: ccedac296161e4b62b68b42b15b3d42b1a85b61c
