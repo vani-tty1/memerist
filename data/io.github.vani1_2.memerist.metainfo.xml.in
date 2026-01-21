@@ -59,8 +59,8 @@
     <release version="0.2.5" date="2026-01-21">
       <description translate="no">
         <ul>
-          <li>fixed translation generation</li>
-          <li>new app icon</li>
+        <li>Fixed an issue where translations would not load</li>
+        <li>Fixed text rendering by adding a fallback for the Impact font</li>
         </ul>
       </description>
     </release>
