@@ -1007,7 +1007,6 @@ on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
   h_ratio = wh / img_h;
   screen_scale = (w_ratio < h_ratio) ? w_ratio : h_ratio;
 
-  // UPDATED: CROP DRAG LOGIC
   if (gtk_toggle_button_get_active(self->crop_mode_button) && self->template_image) {
       self->active_crop_handle = get_crop_handle_at_position(self, rel_x, rel_y);
 
