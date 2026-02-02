@@ -862,12 +862,10 @@ on_delete_template_clicked (MyappWindow *self) {
   gtk_alert_dialog_choose (dialog, GTK_WINDOW (self), NULL, on_delete_confirm_response, self);
 }
 
-// NEW: Helper to identify which handle is hovered
-static ResizeHandle
-get_crop_handle_at_position (MyappWindow *self, double x, double y) {
-    double handle_radius = 0.05; // 5% tolerance area
+
+static ResizeHandle get_crop_handle_at_position (MyappWindow *self, double x, double y) {
+    double handle_radius = 0.05; 
     
-    // Check corners first (priority)
     if (fabs(x - self->crop_x) < handle_radius && fabs(y - self->crop_y) < handle_radius)
         return HANDLE_TOP_LEFT;
     if (fabs(x - (self->crop_x + self->crop_w)) < handle_radius && fabs(y - self->crop_y) < handle_radius)
@@ -877,7 +875,6 @@ get_crop_handle_at_position (MyappWindow *self, double x, double y) {
     if (fabs(x - (self->crop_x + self->crop_w)) < handle_radius && fabs(y - (self->crop_y + self->crop_h)) < handle_radius)
         return HANDLE_BOTTOM_RIGHT;
 
-    // Check edges
     if (fabs(y - self->crop_y) < handle_radius && x > self->crop_x && x < self->crop_x + self->crop_w)
         return HANDLE_TOP;
     if (fabs(y - (self->crop_y + self->crop_h)) < handle_radius && x > self->crop_x && x < self->crop_x + self->crop_w)
@@ -887,7 +884,6 @@ get_crop_handle_at_position (MyappWindow *self, double x, double y) {
     if (fabs(x - (self->crop_x + self->crop_w)) < handle_radius && y > self->crop_y && y < self->crop_y + self->crop_h)
         return HANDLE_RIGHT;
 
-    // Check inside
     if (x > self->crop_x && x < self->crop_x + self->crop_w &&
         y > self->crop_y && y < self->crop_y + self->crop_h)
         return HANDLE_CENTER;
@@ -943,7 +939,7 @@ on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MyappWi
         default:                  cursor_name = NULL; break;
     }
     gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), cursor_name);
-    return; // Don't check layers if cropping
+    return; 
   }
 
   for (l = g_list_last(self->layers); l != NULL; l = l->prev) {
