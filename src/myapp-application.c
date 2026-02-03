@@ -64,7 +64,7 @@ myapp_application_about_action (GSimpleAction *action,
                                 GVariant      *parameter,
                                 gpointer       user_data)
 {
-  static const char *developers[] = {"Vani1-2", NULL};
+  static const char *developers[] = {"vani-tty1", NULL};
   MyappApplication *self = user_data;
   GtkWindow *window = NULL;
 
@@ -75,10 +75,10 @@ myapp_application_about_action (GSimpleAction *action,
   adw_show_about_dialog (GTK_WIDGET (window),
                          "application-name", "Meme Editor",
                          "application-icon", "io.github.vani1_2.memerist",
-                         "developer-name", "Vani1-2",
+                         "developer-name", "vani-tty1",
                          "version", PACKAGE_VERSION,
                          "developers", developers,
-                         "copyright", "© 2025 Giovanni",
+                         "copyright", "©2026 vani-tty1",
                          NULL);
 }
 
