@@ -512,6 +512,8 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
           gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->deep_fry_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->cinematic_button), TRUE);
+          gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
+                    
           render_meme(self);
       }
       g_free (path); g_object_unref (file);
@@ -584,9 +586,10 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_image_clear (self->meme_preview);
   gtk_toggle_button_set_active (self->deep_fry_button, FALSE);
   gtk_toggle_button_set_active (self->cinematic_button, FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), FALSE);
 }
 
-// --- Boilerplate (Init/Finalize) ---
+
 static void myapp_window_finalize (GObject *object) {
   MyappWindow *self = MYAPP_WINDOW (object);
   g_clear_object (&self->template_image);
@@ -727,7 +730,6 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
 
   gtk_widget_set_sensitive (GTK_WIDGET (self->delete_template_button), is_user_template (template_path));
   
-  // Logic to load image
   g_clear_object (&self->template_image);
   if (self->layers) { meme_layer_list_free (self->layers); self->layers = NULL; }
   free_history_stack (&self->undo_stack); free_history_stack (&self->redo_stack);
@@ -746,6 +748,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
       gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
       gtk_widget_set_sensitive (GTK_WIDGET (self->deep_fry_button), TRUE);
       gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
       render_meme (self);
   }
 }
