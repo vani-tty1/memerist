@@ -32,3 +32,4 @@ Create memes with custom text overlays using a native GNOME interface.
 %changelog
 * Wed Jan 21 2026 Vani1-2 <giovannirafanan609@gmail.com> - 0.3.1-1
 - code refactoring and decluttering
+- contrast filter now works on templates

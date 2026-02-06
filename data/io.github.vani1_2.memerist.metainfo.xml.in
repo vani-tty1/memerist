@@ -11,17 +11,15 @@
     </p>
     <p>Features:</p>
     <ul>
-      <li>Add top and bottom text to any image</li>
-      <li>Classic meme styling with Impact font</li>
+      <li>Text and Image layers</li>
       <li>Real-time preview as you type</li>
       <li>Export memes as PNG images</li>
-      <li>Dark mode support</li>
       <li>Let it Happen</li>
 
     </ul>
   </description>
   <developer id="io.github.vani1_2.memerist">
-    <name>Vani1-2</name>
+    <name>vani-tty1</name>
   </developer>
   
   <url type="homepage">https://github.com/vani-tty1/memerist</url>
@@ -61,6 +59,7 @@
         <ul>
         <li>Code refactoring and decluttering</li>
         <li>sourcode cleanup</li>
+        <li>Fixed an issue where contrast filter does not work on templates</li>
         </ul>
       </description>
     </release>
