@@ -54,12 +54,13 @@
 </screenshots>
 
   <releases>
-    <release version="0.3.1" date="2026-02-06">
+    <release version="0.3.1" date="2026-02-07">
       <description translate="no">
         <ul>
         <li>Code refactoring and decluttering</li>
         <li>sourcode cleanup</li>
         <li>Fixed an issue where contrast filter does not work on templates</li>
+        <li>Fixed keyboard shortcuts not showing in header menu</li>
         </ul>
       </description>
     </release>
