@@ -94,19 +94,24 @@ myapp_application_quit_action (GSimpleAction *action,
   g_application_quit (G_APPLICATION (self));
 }
 
+
 static void
 myapp_application_shortcuts_action (GSimpleAction *action,
                                     GVariant      *parameter,
                                     gpointer       user_data)
 {
   MyappApplication *self = user_data;
-  GtkWindow *window;
+  GtkWindow *parent = gtk_application_get_active_window (GTK_APPLICATION (self));
+  GtkBuilder *builder;
+  GtkWindow *shortcuts_window;
+  builder = gtk_builder_new_from_resource ("/io/github/vani1_2/memerist/shortcuts-dialog.ui");
+  shortcuts_window = GTK_WINDOW (gtk_builder_get_object (builder, "shortcuts_dialog"));
+  if (parent) {
+      gtk_window_set_transient_for (shortcuts_window, parent);
+      gtk_window_present (shortcuts_window);
+  }
 
-  window = gtk_application_get_active_window (GTK_APPLICATION (self));
-
-
-  if (window)
-    gtk_widget_action_set_enabled (GTK_WIDGET (window), "win.show-help-overlay", TRUE);
+  g_object_unref (builder);
 }
 
 static void

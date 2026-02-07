@@ -475,11 +475,21 @@
   </template>
 
   <menu id="primary_menu">
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">_About Meme Editor</attribute>
-        <attribute name="action">app.about</attribute>
-      </item>
-    </section>
-  </menu>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+          <attribute name="action">app.shortcuts</attribute>
+        </item>
+        <item>
+          <attribute name="label" translatable="yes">_About Meme Editor</attribute>
+          <attribute name="action">app.about</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name="label" translatable="yes">_Quit</attribute>
+          <attribute name="action">app.quit</attribute>
+        </item>
+      </section>
+    </menu>
 </interface>
