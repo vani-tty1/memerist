@@ -93,10 +93,13 @@ git clone https://github.com/vani-tty1/memerist.git
 cd memerist
 
 # Configure the build
-meson setup build
+make setup
 
 # Compile
-meson compile -C build
+make build
+
+# Reconfigure build folder
+make reconfigure
 
 # Install (optional)
 sudo meson install -C build
@@ -105,7 +108,7 @@ sudo meson install -C build
 #### Running Without Installing
 
 ```bash
-./build/src/memerist
+make run
 ```
 
 ##  Usage
