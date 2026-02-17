@@ -15,7 +15,7 @@
   <template class="MyappWindow" parent="AdwApplicationWindow">
     <property name="title" translatable="yes">Meme Editor</property>
     <property name="default-width">1130</property>
-    <property name="default-height">680</property>
+    <property name="default-height">720</property>
     <property name="content">
 
       <object class="AdwToolbarView">
@@ -163,19 +163,19 @@
                     </child>
 
                     <child>
+                        <object class="GtkButton" id="add_text_button">
+                        <property name="icon-name">format-text-bold-symbolic</property>
+                        <property name="tooltip-text">Add Text Layer</property>
+                        <property name="sensitive">false</property>
+                      </object>
+                    </child>
+                    
+                    <child>
                       <object class="GtkButton" id="delete_layer_button">
                         <property name="icon-name">user-trash-symbolic</property>
                         <property name="tooltip-text">Delete Selected Layer</property>
                         <property name="sensitive">false</property>
                         <style><class name="destructive-action"/></style>
-                      </object>
-                    </child>
-
-                    <child>
-                        <object class="GtkButton" id="add_text_button">
-                        <property name="icon-name">format-text-bold-symbolic</property>
-                        <property name="tooltip-text">Add Text Layer</property>
-                        <property name="sensitive">false</property>
                       </object>
                     </child>
 
@@ -221,8 +221,8 @@
 
                     <child>
                       <object class="GtkSeparator">
-                          <property name="orientation">horizontal</property>
-                          <style><class name="spacer"/></style>
+                          <property name="visible">True</property>
+                          <property name="orientation">vertical</property>
                       </object>
                     </child>
 
