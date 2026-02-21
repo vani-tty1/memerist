@@ -27,7 +27,23 @@
                 <property name="title">Meme Editor</property>
               </object>
             </property>
-
+            
+            <child type="start">
+                <object class="GtkButton" id="load_project_button">
+                    <property name="icon-name">folder-new-symbolic</property>
+                    <property name="tooltip-text">Load Project</property>
+                </object>
+            </child>
+            
+            <child type="start">
+                <object class="GtkButton" id="save_project_button">
+                    <property name="icon-name">document-save-symbolic</property>
+                    <property name="tooltip-text">Save Project</property>
+                    <property name="sensitive">false</property>
+                </object>
+            </child>
+            
+            
             <child type="start">
               <object class="GtkButton" id="load_image_button">
                 <property name="icon-name">document-open-symbolic</property>
