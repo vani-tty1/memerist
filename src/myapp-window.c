@@ -84,7 +84,9 @@ struct _MyappWindow {
   double drag_obj_start_x;
   double drag_obj_start_y;
   double drag_obj_start_scale; 
-  double drag_obj_start_h;     
+  double drag_obj_start_h;
+  GtkButton *save_project_button;
+  GtkButton *load_project_button;
 
   ResizeHandle active_crop_handle;
 
@@ -100,6 +102,192 @@ static void sync_ui_with_layer(MyappWindow *self);
 static void render_meme (MyappWindow *self);
 static void populate_template_gallery (MyappWindow *self);
 static void on_clear_clicked (MyappWindow *self);
+
+
+static gchar *pixbuf_to_base64 (GdkPixbuf *pixbuf) {
+    if (!pixbuf) return NULL;
+    gchar *buffer = NULL;
+    gsize buffer_size = 0;
+    if (gdk_pixbuf_save_to_buffer (pixbuf, &buffer, &buffer_size, "png", NULL, NULL)) {
+        gchar *base64 = g_base64_encode ((const guchar *)buffer, buffer_size);
+        g_free (buffer);
+        return base64;
+    }
+    return NULL;
+}
+
+static GdkPixbuf *base64_to_pixbuf (const gchar *base64) {
+    if (!base64) return NULL;
+    gsize out_len = 0;
+    guchar *decoded = g_base64_decode (base64, &out_len);
+    if (!decoded) return NULL;
+    GInputStream *stream = g_memory_input_stream_new_from_data (decoded, out_len, g_free);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+    g_object_unref (stream);
+    return pixbuf;
+}
+
+static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
+    GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
+    MyappWindow *self = MYAPP_WINDOW (d);
+    GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
+    
+    if (file) {
+        GKeyFile *keyfile = g_key_file_new ();
+
+        // Save global properties
+        if (self->template_image) {
+            gchar *b64 = pixbuf_to_base64 (self->template_image);
+            g_key_file_set_string (keyfile, "Project", "template", b64);
+            g_free (b64);
+        }
+        g_key_file_set_boolean (keyfile, "Project", "deep_fry", gtk_toggle_button_get_active (self->deep_fry_button));
+        g_key_file_set_boolean (keyfile, "Project", "cinematic", gtk_toggle_button_get_active (self->cinematic_button));
+        
+        // Save layers
+        int i = 0;
+        for (GList *l = self->layers; l != NULL; l = l->next, i++) {
+            ImageLayer *layer = (ImageLayer *)l->data;
+            gchar group[32];
+            g_snprintf (group, sizeof(group), "Layer%d", i);
+
+            g_key_file_set_integer (keyfile, group, "type", layer->type);
+            g_key_file_set_double (keyfile, group, "x", layer->x);
+            g_key_file_set_double (keyfile, group, "y", layer->y);
+            g_key_file_set_double (keyfile, group, "scale", layer->scale);
+            g_key_file_set_double (keyfile, group, "rotation", layer->rotation);
+            g_key_file_set_double (keyfile, group, "opacity", layer->opacity);
+            g_key_file_set_integer (keyfile, group, "blend_mode", layer->blend_mode);
+
+            if (layer->type == LAYER_TYPE_TEXT && layer->text) {
+                g_key_file_set_string (keyfile, group, "text", layer->text);
+                g_key_file_set_double (keyfile, group, "font_size", layer->font_size);
+            } else if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
+                gchar *b64 = pixbuf_to_base64 (layer->pixbuf);
+                g_key_file_set_string (keyfile, group, "pixbuf", b64);
+                g_free (b64);
+            }
+        }
+        g_key_file_set_integer (keyfile, "Project", "layer_count", i);
+
+        g_key_file_save_to_file (keyfile, g_file_get_path (file), NULL);
+        g_key_file_free (keyfile);
+        g_object_unref (file);
+    }
+}
+
+static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
+    GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
+    MyappWindow *self = MYAPP_WINDOW (d);
+    GFile *file = gtk_file_dialog_open_finish (dialog, r, NULL);
+    
+    if (file) {
+        GKeyFile *keyfile = g_key_file_new ();
+        if (g_key_file_load_from_file (keyfile, g_file_get_path (file), G_KEY_FILE_NONE, NULL)) {
+            on_clear_clicked (self); // Wipe current state
+
+            gchar *b64_template = g_key_file_get_string (keyfile, "Project", "template", NULL);
+            if (b64_template) {
+                self->template_image = base64_to_pixbuf (b64_template);
+                g_free (b64_template);
+            }
+
+            gtk_toggle_button_set_active (self->deep_fry_button, g_key_file_get_boolean (keyfile, "Project", "deep_fry", NULL));
+            gtk_toggle_button_set_active (self->cinematic_button, g_key_file_get_boolean (keyfile, "Project", "cinematic", NULL));
+
+            int count = g_key_file_get_integer (keyfile, "Project", "layer_count", NULL);
+            for (int i = 0; i < count; i++) {
+                gchar group[32];
+                g_snprintf (group, sizeof(group), "Layer%d", i);
+
+                ImageLayer *layer = g_new0 (ImageLayer, 1);
+                layer->type = g_key_file_get_integer (keyfile, group, "type", NULL);
+                layer->x = g_key_file_get_double (keyfile, group, "x", NULL);
+                layer->y = g_key_file_get_double (keyfile, group, "y", NULL);
+                layer->scale = g_key_file_get_double (keyfile, group, "scale", NULL);
+                layer->rotation = g_key_file_get_double (keyfile, group, "rotation", NULL);
+                layer->opacity = g_key_file_get_double (keyfile, group, "opacity", NULL);
+                layer->blend_mode = g_key_file_get_integer (keyfile, group, "blend_mode", NULL);
+
+                if (layer->type == LAYER_TYPE_TEXT) {
+                    layer->text = g_key_file_get_string (keyfile, group, "text", NULL);
+                    layer->font_size = g_key_file_get_double (keyfile, group, "font_size", NULL);
+                } else if (layer->type == LAYER_TYPE_IMAGE) {
+                    gchar *b64 = g_key_file_get_string (keyfile, group, "pixbuf", NULL);
+                    if (b64) {
+                        layer->pixbuf = base64_to_pixbuf (b64);
+                        layer->width = gdk_pixbuf_get_width (layer->pixbuf);
+                        layer->height = gdk_pixbuf_get_height (layer->pixbuf);
+                        g_free (b64);
+                    }
+                }
+                self->layers = g_list_append (self->layers, layer);
+            }
+
+            if (self->template_image) {
+                gtk_stack_set_visible_child_name (self->content_stack, "content");
+                gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
+                gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
+                gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
+                gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
+                gtk_widget_set_sensitive (GTK_WIDGET (self->crop_mode_button), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
+                render_meme (self);
+            }
+        }
+        g_key_file_free (keyfile);
+        g_object_unref (file);
+    }
+}
+
+static void on_save_project_clicked (MyappWindow *self) {
+    GtkFileDialog *dialog = gtk_file_dialog_new ();
+    GtkFileFilter *filter = gtk_file_filter_new ();
+    
+    gtk_file_filter_set_name (filter, "Memerist Project");
+    gtk_file_filter_add_pattern (filter, "*.meme");
+    
+    GListStore *filters = g_list_store_new (GTK_TYPE_FILE_FILTER);
+    g_list_store_append (filters, filter);
+    gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (filters));
+    
+    gtk_file_dialog_set_initial_name (dialog, "project.meme");
+    gtk_file_dialog_save (dialog, GTK_WINDOW (self), NULL, on_save_project_response, self);
+    
+    g_object_unref (filter);
+    g_object_unref (filters);
+}
+
+static void on_load_project_clicked (MyappWindow *self) {
+    GtkFileDialog *dialog = gtk_file_dialog_new ();
+    GtkFileFilter *filter = gtk_file_filter_new ();
+    
+    gtk_file_filter_set_name (filter, "Memerist Project");
+    gtk_file_filter_add_pattern (filter, "*.meme");
+    
+    GListStore *filters = g_list_store_new (GTK_TYPE_FILE_FILTER);
+    g_list_store_append (filters, filter);
+    gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (filters));
+    
+    gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_load_project_response, self);
+    
+    g_object_unref (filter);
+    g_object_unref (filters);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 static void free_history_stack (GList **stack) {
@@ -512,6 +700,7 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
           gtk_widget_set_sensitive(GTK_WIDGET(self->deep_fry_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->cinematic_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
+          gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
                     
           render_meme(self);
       }
@@ -586,6 +775,7 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_toggle_button_set_active (self->deep_fry_button, FALSE);
   gtk_toggle_button_set_active (self->cinematic_button, FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), FALSE);
 }
 
 
@@ -639,6 +829,8 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_43_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_169_button);
   gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, save_project_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_project_button);
 }
 
 
@@ -748,6 +940,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
       gtk_widget_set_sensitive (GTK_WIDGET (self->deep_fry_button), TRUE);
       gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
       render_meme (self);
   }
 }
@@ -849,6 +1042,8 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect_swapped (self->clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
   g_signal_connect_swapped (self->add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
   g_signal_connect_swapped (self->export_button, "clicked", G_CALLBACK (on_export_clicked), self);
+  g_signal_connect_swapped (self->save_project_button, "clicked", G_CALLBACK (on_save_project_clicked), self);
+  g_signal_connect_swapped (self->load_project_button, "clicked", G_CALLBACK (on_load_project_clicked), self);
   
 
   g_signal_connect_swapped (self->import_template_button, "clicked", G_CALLBACK (on_import_template_clicked), self);
