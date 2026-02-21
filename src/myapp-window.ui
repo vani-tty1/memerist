@@ -42,16 +42,7 @@
                     <property name="sensitive">false</property>
                 </object>
             </child>
-            
-            
-            <child type="start">
-              <object class="GtkButton" id="load_image_button">
-                <property name="icon-name">document-open-symbolic</property>
-                <property name="tooltip-text">Open Base Image</property>
-              </object>
-            </child>
-
-            
+                        
 
             <child type="end">
               <object class="GtkMenuButton">
@@ -161,6 +152,13 @@
                       <class name="osd"/>
                       <class name="toolbar"/>
                     </style>
+                    
+                    <child type="start">
+                      <object class="GtkButton" id="load_image_button">
+                        <property name="icon-name">document-open-symbolic</property>
+                        <property name="tooltip-text">Open Base Image</property>
+                      </object>
+                    </child>
 
                     <child>
                       <object class="GtkButton" id="add_image_button">
