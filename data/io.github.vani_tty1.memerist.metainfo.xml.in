@@ -54,10 +54,11 @@
 </screenshots>
 
   <releases>
-    <release version="0.3.2" date="2026-02-07">
+    <release version="0.3.3" date="2026-02-21">
       <description translate="no">
         <ul>
-        <li>changed application ID</li>
+        <li>projects can now be saved and loaded in a .meme format</li>
+        <li>button layout optimization</li>
         </ul>
       </description>
     </release>
