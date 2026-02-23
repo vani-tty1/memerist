@@ -361,7 +361,7 @@
                             </child>
                             <child>
                                 <object class="GtkBox">
-                                  <property name="height-request">200</property>
+                                  <property name="height-request">300</property>
                                   <child>
                                       <object class="GtkScrolledWindow">
                                         <property name="hexpand">true</property>
