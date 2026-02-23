@@ -10,7 +10,7 @@ build:
 	meson compile -C build
 
 run:
-	./build/src/memerist
+	meson compile -C build && ./build/src/memerist
 
 clean:
 	rm -rf build
