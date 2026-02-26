@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#include "config.h"
+#include "about.h"
 #include <glib/gi18n.h>
 #include "myapp-application.h"
 #include "myapp-window.h"
@@ -64,23 +64,14 @@ myapp_application_about_action (GSimpleAction *action,
                                 GVariant      *parameter,
                                 gpointer       user_data)
 {
-  static const char *developers[] = {"vani-tty1", NULL};
   MyappApplication *self = user_data;
-  GtkWindow *window = NULL;
+  GtkWindow *window = gtk_application_get_active_window (GTK_APPLICATION (self));
 
-  g_assert (MYAPP_IS_APPLICATION (self));
-
-  window = gtk_application_get_active_window (GTK_APPLICATION (self));
-
-  adw_show_about_dialog (GTK_WIDGET (window),
-                         "application-name", "Meme Editor",
-                         "application-icon", "io.github.vani_tty1.memerist",
-                         "developer-name", "vani-tty1",
-                         "version", PACKAGE_VERSION,
-                         "developers", developers,
-                         "copyright", "©2026 vani-tty1",
-                         NULL);
+  show_about_dialog (window);
 }
+
+
+
 
 static void
 myapp_application_quit_action (GSimpleAction *action,
