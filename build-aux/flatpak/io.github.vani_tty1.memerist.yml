@@ -1,6 +1,6 @@
 app-id: io.github.vani_tty1.memerist
 runtime: org.gnome.Platform
-runtime-version: '49'
+runtime-version: 'master'
 sdk: org.gnome.Sdk
 command: memerist
 finish-args:
@@ -15,5 +15,3 @@ modules:
     sources:
       - type: git
         url: https://github.com/vani-tty1/memerist.git
-        tag: v0.3.1
-        commit: 99b7106c83bf720fba0b078bf7a9c8cf9450638b
