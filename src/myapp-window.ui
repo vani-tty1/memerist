@@ -493,16 +493,35 @@
     </property>
   </template>
 
-  <menu id="primary_menu">
-      <section>
+    <menu id="primary_menu">
+        <section>
         <item>
-          <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-          <attribute name="action">app.shortcuts</attribute>
+            <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+            <attribute name="action">app.shortcuts</attribute>
         </item>
         <item>
-          <attribute name="label" translatable="yes">_About Meme Editor</attribute>
-          <attribute name="action">app.about</attribute>
+            <attribute name="label" translatable="yes">_About Meme Editor</attribute>
+            <attribute name="action">app.about</attribute>
         </item>
-      </section>
+        </section>
+        
+        <submenu>
+          <attribute name="label" translatable="yes">Theme</attribute>
+          <item>
+            <attribute name="label">System Default</attribute>
+            <attribute name="action">app.color-scheme</attribute>
+            <attribute name="target">default</attribute>
+          </item>
+          <item>
+            <attribute name="label">Light</attribute>
+            <attribute name="action">app.color-scheme</attribute>
+            <attribute name="target">light</attribute>
+          </item>
+          <item>
+            <attribute name="label">Dark</attribute>
+            <attribute name="action">app.color-scheme</attribute>
+            <attribute name="target">dark</attribute>
+          </item>
+        </submenu>
     </menu>
 </interface>
