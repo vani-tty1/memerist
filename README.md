@@ -65,7 +65,7 @@ Add the dedicated repository to your sources:
 ### Arch Linux and derivatives
 You arch users know this, its very simple.
 ```bash
-curl -SL https://raw.githubusercontent.com/vani-tty1/memerist/main/scripts/install-archlinux.sh | bash
+curl -SL https://raw.githubusercontent.com/vani-tty1/memerist/main/build-aux/scripts/install-archlinux.sh | bash
 ```
 
 
