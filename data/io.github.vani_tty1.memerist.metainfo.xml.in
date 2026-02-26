@@ -60,6 +60,18 @@
 
   <releases>
   
+  
+    
+    <release version="0.3.4" date="2026-02-26">
+      <description translate="no">
+        <ul>
+        <li>fixed some memory leaks upon opening dialogs</li>
+        <li>added more info in the about section</li>
+        <li>brought back the theme switcher</li>
+        </ul>
+      </description>
+    </release>
+    
     <release version="0.3.3" date="2026-02-21">
       <description translate="no">
         <ul>
