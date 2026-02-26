@@ -59,6 +59,7 @@
 </screenshots>
 
   <releases>
+  
     <release version="0.3.3" date="2026-02-21">
       <description translate="no">
         <ul>
@@ -67,5 +68,179 @@
         </ul>
       </description>
     </release>
+    
+    <release version="0.3.2" date="2026-02-07">
+          <description translate="no">
+            <ul>
+            <li>changed application ID</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.3.1" date="2026-02-06">
+          <description translate="no">
+            <ul>
+            <li>Code refactoring and decluttering</li>
+            <li>sourcode cleanup</li>
+            <li>Fixed an issue where contrast filter does not work on templates</li>
+            <li>Fixed keyboard shortcuts not showing in header menu</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.3.0" date="2026-02-05">
+          <description translate="no">
+            <ul>
+            <li>New and improved crop feature</li>
+            <li>Fixed an issue where the selection highlight gets also get exported</li>
+            <li>Fixed app crashing when clicking apply changes in crop mode</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.5" date="2026-01-21">
+          <description translate="no">
+            <ul>
+            <li>Fixed an issue where translations would not load</li>
+            <li>Fixed text rendering by adding a fallback for the Impact font</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.4" date="2026-01-19">
+          <description translate="no">
+            <ul>
+              <li>fixed translation generation</li>
+              <li>new app icon</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.3" date="2026-01-09">
+          <description translate="no">
+            <ul>
+              <li>skip heavy filters while dragging to improvw performance</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.2" date="2026-01-08">
+          <description translate="no">
+            <ul>
+              <li> moved the delete layer button on the floating sidebar </li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.1" date="2026-01-06">
+          <description translate="no">
+            <ul>
+              <li>updated template selection</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.2.0" date="2026-01-06">
+          <description translate="no">
+            <ul>
+            <li>new copy to clipboard</li>
+            <li>new crop mode</li>
+            <li>new image rotation</li>
+            <li>new image flipping</li>
+            <li>new aspect ratio</li>
+            <li>fixed XML nesting error</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.1.5" date="2026-01-02">
+          <description translate="no">
+            <ul>
+              <li>Major UI redesign and functions optimization</li>
+            </ul>
+          </description>
+    </release>
+    
+    <release version="0.1.4" date="2025-12-29">
+          <description translate="no">
+            <ul>
+              <li>removed unused install directories</li>
+            </ul>
+          </description>
+    </release>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   </releases>
 </component>
