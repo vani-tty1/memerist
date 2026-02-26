@@ -26,7 +26,9 @@
 #include "adwaita.h"
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
+#include <stdio.h>
 
+#include "glib.h"
 #include "meme-core.h"
 #include "meme-renderer.h"
 
@@ -183,6 +185,7 @@ static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
     
     if (file) {
         GKeyFile *keyfile = g_key_file_new ();
+        GError *error = NULL;
         if (g_key_file_load_from_file (keyfile, g_file_get_path (file), G_KEY_FILE_NONE, NULL)) {
             on_clear_clicked (self); // Wipe current state
 
@@ -234,6 +237,9 @@ static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
                 gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
                 render_meme (self);
             }
+        } else {
+            g_printerr ("Error loading project: %s\n", error->message);
+            g_clear_error (&error);
         }
         g_key_file_free (keyfile);
         g_object_unref (file);
@@ -256,6 +262,7 @@ static void on_save_project_clicked (MyappWindow *self) {
     
     g_object_unref (filter);
     g_object_unref (filters);
+    g_object_unref (dialog);
 }
 
 static void on_load_project_clicked (MyappWindow *self) {
@@ -273,21 +280,8 @@ static void on_load_project_clicked (MyappWindow *self) {
     
     g_object_unref (filter);
     g_object_unref (filters);
+    g_object_unref (dialog);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static void free_history_stack (GList **stack) {
@@ -711,6 +705,7 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
 static void on_load_image_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
   gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_load_image_response, self);
+  g_object_unref (dialog);
 }
 
 static void on_add_image_response (GObject *s, GAsyncResult *r, gpointer d) {
@@ -737,6 +732,7 @@ static void on_add_image_response (GObject *s, GAsyncResult *r, gpointer d) {
 static void on_add_image_clicked (MyappWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new ();
     gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_add_image_response, self);
+    g_object_unref (dialog);
 }
 
 static void on_export_response (GObject *s, GAsyncResult *r, gpointer d) {
@@ -761,6 +757,7 @@ static void on_export_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
   gtk_file_dialog_set_initial_name (dialog, "meme.png");
   gtk_file_dialog_save (dialog, GTK_WINDOW (self), NULL, on_export_response, self);
+  g_object_unref (dialog);
 }
 
 static void on_clear_clicked (MyappWindow *self) {
@@ -974,6 +971,7 @@ on_import_template_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
   gtk_file_dialog_set_title (dialog, "Import Template");
   gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_import_template_response, self);
+  g_object_unref (dialog);
 }
 
 static void
