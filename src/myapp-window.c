@@ -29,6 +29,8 @@
 #include <stdio.h>
 
 #include "glib.h"
+#include "glibconfig.h"
+#include "gtk/gtk.h"
 #include "meme-core.h"
 #include "meme-renderer.h"
 
@@ -53,7 +55,7 @@ struct _MyappWindow {
   GtkButton       *delete_template_button;
   GtkToggleButton *deep_fry_button;
   GtkFlowBox      *template_gallery;
-
+  GtkMenuButton   *global_filters_button;
   GtkToggleButton *cinematic_button;
   GtkScale        *layer_opacity_scale;
   GtkScale        *layer_rotation_scale;
@@ -235,6 +237,7 @@ static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
                 gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
                 gtk_widget_set_sensitive (GTK_WIDGET (self->crop_mode_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
                 render_meme (self);
             }
         } else {
@@ -695,7 +698,7 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
           gtk_widget_set_sensitive(GTK_WIDGET(self->cinematic_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
-                    
+          gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
           render_meme(self);
       }
       g_free (path); g_object_unref (file);
@@ -771,6 +774,11 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_image_clear (self->meme_preview);
   gtk_toggle_button_set_active (self->deep_fry_button, FALSE);
   gtk_toggle_button_set_active (self->cinematic_button, FALSE);
+  gtk_toggle_button_set_active (self->crop_mode_button, FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->export_button), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->add_text_button), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), FALSE);
 }
@@ -810,6 +818,7 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, global_filters_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, deep_fry_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, cinematic_button);
@@ -938,6 +947,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
       gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
       render_meme (self);
   }
 }
