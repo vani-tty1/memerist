@@ -80,10 +80,16 @@
   
   
     
-    <release version="0.3.5" date="2026-00-00">
+    <release version="0.4.0" date="2026-00-00">
       <description translate="no">
+      <p>New Feature:</p>
         <ul>
-        <li></li>
+        <li>New Fonts changer(uses system installed fonts).</li>
+        </ul>
+      <p>Bug Fixes and Improvements:</p>
+        <ul>
+        <li>Fixed an issue where you get stuck on crop mode when clicking clear all.</li>
+        <li>Make all buttons related to editing inactive when no photo is loaded.</li>
         </ul>
       </description>
     </release>
