@@ -42,6 +42,7 @@ typedef struct {
   GdkPixbuf *pixbuf;
   char *text;
   double font_size;
+  char *font_family;
   double x;
   double y;
   double width;
