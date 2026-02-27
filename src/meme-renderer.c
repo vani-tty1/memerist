@@ -1,6 +1,7 @@
 #include "meme-renderer.h"
 #include <cairo.h>
 #include <math.h>
+#include <pango/pangocairo.h>
 
 void meme_get_image_coordinates (GtkWidget *widget, GdkPixbuf *img, double wx, double wy, double *ix, double *iy) {
   double ww, wh, iw, ih, scale, draw_w, draw_h, off_x, off_y;
@@ -151,23 +152,39 @@ GdkPixbuf * meme_render_composite (GdkPixbuf *bg, GList *layers, gboolean cinema
        else cairo_paint (cr);
     }
     else if (layer->type == LAYER_TYPE_TEXT && layer->text) {
-       cairo_text_extents_t ext;
-       cairo_select_font_face (cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-       cairo_set_font_size (cr, layer->font_size);
-       cairo_text_extents (cr, layer->text, &ext);
-
-       layer->width = ext.width + 10;
-       layer->height = ext.height + 10;
-
-       cairo_move_to (cr, -(ext.width/2.0 + ext.x_bearing), -(ext.height/2.0 + ext.y_bearing));
-       cairo_text_path (cr, layer->text);
-
-       cairo_set_source_rgba (cr, 0, 0, 0, layer->opacity);
-       cairo_set_line_width (cr, layer->font_size * 0.08);
-       cairo_stroke_preserve (cr);
-
-       cairo_set_source_rgba (cr, 1, 1, 1, layer->opacity);
-       cairo_fill (cr);
+        // everything under this automatically converts any font 
+        // into a path so we can still use our stroke and fill
+        PangoLayout *layout = pango_cairo_create_layout (cr);
+        pango_layout_set_text (layout, layer->text, -1);
+    
+        PangoFontDescription *desc;
+        if (layer->font_family) {
+            desc = pango_font_description_from_string (layer->font_family);
+        } else {
+            desc = pango_font_description_from_string ("Sans Bold");
+        }
+        
+        pango_font_description_set_absolute_size (desc, layer->font_size * PANGO_SCALE);
+        pango_layout_set_font_description (layout, desc);
+        pango_font_description_free (desc);
+    
+        int tw, th;
+        pango_layout_get_pixel_size (layout, &tw, &th);
+    
+        layer->width = tw + 10;
+        layer->height = th + 10;
+    
+        cairo_move_to (cr, -tw / 2.0, -th / 2.0);
+        pango_cairo_layout_path (cr, layout);
+    
+        cairo_set_source_rgba (cr, 0, 0, 0, layer->opacity);
+        cairo_set_line_width (cr, layer->font_size * 0.08);
+        cairo_stroke_preserve (cr);
+    
+        cairo_set_source_rgba (cr, 1, 1, 1, layer->opacity);
+        cairo_fill (cr);
+    
+        g_object_unref (layout);
     }
     cairo_restore (cr);
   }
