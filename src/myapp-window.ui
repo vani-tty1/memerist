@@ -267,6 +267,21 @@
                         <property name="visible">false</property>
                       </object>
                     </child>
+                    
+                    <child>
+                      <object class="AdwActionRow" id="font_choose_row">
+                        <property name="title">Font</property>
+                        <property name="visible">false</property>
+                        <child type="suffix">
+                          <object class="GtkFontDialogButton" id="font_choose_btn">
+                            <property name="valign">center</property>
+                            <property name="dialog">
+                              <object class="GtkFontDialog"/>
+                            </property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
 
                     <child>
                       <object class="AdwActionRow" id="layer_font_size_row">
@@ -292,6 +307,7 @@
                       <object class="AdwComboRow" id="blend_mode_row">
                         <property name="title">Blend Mode</property>
                         <property name="model">blend_mode_model</property>
+                        <property name="sensitive">false</property>
                       </object>
                     </child>
 
@@ -301,6 +317,7 @@
                         <child>
                           <object class="GtkScale" id="layer_opacity_scale">
                             <property name="hexpand">true</property>
+                            <property name="sensitive">false</property>
                             <property name="width-request">100</property>
                             <property name="draw-value">true</property>
                             <property name="adjustment">
@@ -322,6 +339,7 @@
                         <child>
                           <object class="GtkScale" id="layer_rotation_scale">
                             <property name="hexpand">true</property>
+                            <property name="sensitive">false</property>
                             <property name="width-request">100</property>
                             <property name="draw-value">false</property>
                             <property name="adjustment">
