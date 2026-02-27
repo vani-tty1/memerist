@@ -2,8 +2,7 @@
 #include "gtk/gtk.h"
 #include "about.h"
 
-void
-show_about_dialog (GtkWindow *parent) {
+void show_about_dialog (GtkWindow *parent) {
   static const char *developers[] = {"vani-tty1", NULL};
   static const char *designers[] = {"vani-tty1", NULL};
   g_autofree char *os_release_content = NULL;
