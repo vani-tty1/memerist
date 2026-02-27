@@ -194,9 +194,10 @@
                     </child>
 
                     <child>
-                      <object class="GtkMenuButton">
+                      <object class="GtkMenuButton" id="global_filters_button">
                         <property name="icon-name">applications-graphics-symbolic</property>
                         <property name="tooltip-text">Global Filters</property>
+                        <property name="sensitive">false</property>
                         <property name="direction">right</property>
                         <property name="popover">
                           <object class="GtkPopover">
