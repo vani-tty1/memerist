@@ -64,15 +64,15 @@
 <screenshots>
   <screenshot type="default">
     <caption>Main window</caption>
-    <image>https://raw.githubusercontent.com/vani-tty1/memerist/main/assets/screenshot1.png</image>
+    <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png</image>
   </screenshot>
   <screenshot>
-    <caption>Sample Meme</caption>
-    <image>https://raw.githubusercontent.com/vani-tty1/memerist/main/assets/screenshot2.png</image>
+    <caption>Import from Meme Gallery</caption>
+    <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot2.png</image>
   </screenshot>
   <screenshot>
-  <caption>About info</caption>
-  <image>https://raw.githubusercontent.com/vani-tty1/memerist/main/assets/screenshot3.png</image>
+  <caption>Crop</caption>
+  <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png</image>
   </screenshot>
 </screenshots>
 
@@ -206,79 +206,6 @@
             </ul>
           </description>
     </release>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
   </releases>
 </component>
