@@ -494,17 +494,6 @@
   </template>
 
     <menu id="primary_menu">
-        <section>
-        <item>
-            <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-            <attribute name="action">app.shortcuts</attribute>
-        </item>
-        <item>
-            <attribute name="label" translatable="yes">_About Meme Editor</attribute>
-            <attribute name="action">app.about</attribute>
-        </item>
-        </section>
-        
         <submenu>
           <attribute name="label" translatable="yes">Theme</attribute>
           <item>
@@ -523,5 +512,17 @@
             <attribute name="target">dark</attribute>
           </item>
         </submenu>
+
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+            <attribute name="action">app.shortcuts</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_About Meme Editor</attribute>
+            <attribute name="action">app.about</attribute>
+          </item>
+        </section>
+
     </menu>
 </interface>
