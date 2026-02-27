@@ -5,6 +5,7 @@ ImageLayer * meme_layer_copy (const ImageLayer *src) {
   *dst = *src;
   if (src->pixbuf) g_object_ref (src->pixbuf);
   if (src->text) dst->text = g_strdup (src->text);
+  if (src->font_family) dst->font_family = g_strdup(src->font_family);
   return dst;
 }
 
@@ -13,6 +14,7 @@ void meme_layer_free (gpointer data) {
   if (layer) {
     if (layer->pixbuf) g_object_unref (layer->pixbuf);
     if (layer->text) g_free (layer->text);
+    if (layer->font_family) g_free(layer->font_family);
     g_free (layer);
   }
 }
