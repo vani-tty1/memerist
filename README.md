@@ -35,13 +35,13 @@
 ## Screenshots
 
 <p align="center">
- <img width="800" alt="meme example 2" src="assets/screenshot1.png"/>
+ <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png"/>
 </p>
 <p align="center">
- <img width="800" alt="meme example 2" src="assets/screenshot2.png"/>
+ <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot2.png"/>
 </p>
 <p align="center">
- <img width="800" alt="meme example 2" src="assets/screenshot3.png"/>
+ <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png"/>
 </p>
 
 
