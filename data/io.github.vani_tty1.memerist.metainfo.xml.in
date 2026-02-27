@@ -25,11 +25,29 @@
   <url type="homepage">https://github.com/vani-tty1/memerist</url>
   <url type="bugtracker">https://github.com/vani-tty1/memerist/issues</url>
   <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
+  
   <supports>
     <control>pointing</control>
     <control>keyboard</control>
     <control>touch</control>
   </supports>
+  
+  <requires>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <display_length compare="ge">400</display_length>
+  </requires>
+  
+  <categories>
+    <category>Graphics</category>
+  </categories>
+  
+  <keywords>
+    <keyword>GTK</keyword>
+    <keyword>VectorGraphics</keyword>
+  </keywords>
+  
+  
   
   <translation type="gettext">memerist</translation>
   <launchable type="desktop-id">io.github.vani_tty1.memerist.desktop</launchable>
