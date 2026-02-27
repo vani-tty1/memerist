@@ -43,6 +43,8 @@ struct _MyappWindow {
   GtkStack        *content_stack;
   GtkImage        *meme_preview;
   GtkImage        *add_text_button;
+  AdwActionRow        *font_choose_row;
+  GtkFontDialogButton *font_choose_btn;
   AdwEntryRow     *layer_text_entry;
   AdwActionRow    *layer_font_size_row;
   GtkSpinButton   *layer_font_size;
@@ -474,6 +476,18 @@ static void on_apply_crop_clicked (MyappWindow *self) {
   gtk_toggle_button_set_active(self->crop_mode_button, FALSE);
 }
 
+static void on_font_changed (GObject *object, GParamSpec *pspec, MyappWindow *self) {
+  if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
+      PangoFontDescription *desc = gtk_font_dialog_button_get_font_desc (self->font_choose_btn);
+      if (desc) {
+          g_free (self->selected_layer->font_family);
+          self->selected_layer->font_family = pango_font_description_to_string (desc);
+          render_meme (self);
+      }
+  }
+}
+
+
 static void sync_ui_with_layer(MyappWindow *self) {
     gboolean sensitive = (self->selected_layer != NULL);
     gboolean is_text = (sensitive && self->selected_layer->type == LAYER_TYPE_TEXT);
@@ -503,6 +517,18 @@ static void sync_ui_with_layer(MyappWindow *self) {
     g_signal_handlers_unblock_by_func(self->layer_rotation_scale, on_text_changed, self);
     g_signal_handlers_unblock_by_func(self->layer_text_entry, on_layer_text_changed, self);
     g_signal_handlers_unblock_by_func(self->layer_font_size, on_layer_text_changed, self);
+    
+    gtk_widget_set_visible (GTK_WIDGET (self->font_choose_row), is_text);
+    
+    // experimental, will disable if deemed unworthy
+    if (is_text && self->selected_layer->font_family) {
+        g_signal_handlers_block_by_func (self->font_choose_btn, on_font_changed, self);
+        PangoFontDescription *desc = pango_font_description_from_string (self->selected_layer->font_family);
+        gtk_font_dialog_button_set_font_desc (self->font_choose_btn, desc);
+        pango_font_description_free (desc);
+        g_signal_handlers_unblock_by_func (self->font_choose_btn, on_font_changed, self);
+    }
+    
 }
 
 static void on_layer_control_changed (MyappWindow *self) {
@@ -809,6 +835,8 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, content_stack);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, split_view);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_row);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_btn);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_entry);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
@@ -1043,6 +1071,7 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect (self->crop_mode_button, "toggled", G_CALLBACK (on_crop_mode_toggled), self);
   
   g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
+  g_signal_connect (self->font_choose_btn, "notify::font-desc", G_CALLBACK (on_font_changed), self);
   g_signal_connect_swapped (self->layer_text_entry, "changed", G_CALLBACK (on_layer_text_changed), self);
   g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
   
