@@ -48,6 +48,7 @@ struct _MyappWindow {
   AdwEntryRow     *layer_text_entry;
   AdwActionRow    *layer_font_size_row;
   GtkSpinButton   *layer_font_size;
+  GtkMenuButton   *main_menu_button;
 
   GtkButton       *export_button;
   GtkButton       *load_image_button;
@@ -865,6 +866,7 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, save_project_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_project_button);
+  gtk_widget_class_bind_template_child(widget_class, MyappWindow, main_menu_button);
 }
 
 
@@ -1100,7 +1102,9 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect (self->drag_gesture, "drag-begin", G_CALLBACK (on_drag_begin), self);
   g_signal_connect (self->drag_gesture, "drag-update", G_CALLBACK (on_drag_update), self);
   g_signal_connect (self->drag_gesture, "drag-end", G_CALLBACK (on_drag_end), self);
-
+  
+  populate_template_gallery (self);
+  
   GtkEventController *motion = gtk_event_controller_motion_new ();
   gtk_widget_add_controller (GTK_WIDGET (self->meme_preview), motion);
   g_signal_connect (motion, "motion", G_CALLBACK (on_mouse_move), self);
@@ -1109,5 +1113,12 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_key_pressed), self);
   gtk_widget_add_controller (GTK_WIDGET (self), key_controller);
   
-  populate_template_gallery (self);
+  GtkBuilder *builder = gtk_builder_new_from_resource("/io/github/vani_tty1/memerist/primary-menu.ui");
+  GMenuModel *menu = G_MENU_MODEL(gtk_builder_get_object(builder, "primary_menu"));
+  
+  gtk_menu_button_set_menu_model(self->main_menu_button, menu);
+  
+  g_object_unref(builder);
+  
+  
 }
