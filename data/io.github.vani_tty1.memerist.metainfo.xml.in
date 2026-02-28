@@ -7,12 +7,13 @@
   <summary>Create memes with text overlays</summary>
   <description>
     <p>
-      Behold the ultimate tool for creating memes on the go.
+      Simple Libadwaita app for editing memes.
     </p>
     <p>Features:</p>
     <ul>
       <li>Text and Image layers</li>
       <li>Real-time preview as you type</li>
+      <li>Add Filters</li>
       <li>Export memes as PNG images</li>
       <li>Let it Happen</li>
 
@@ -85,6 +86,7 @@
       <p>New Feature:</p>
         <ul>
         <li>New Fonts changer(uses system installed fonts).</li>
+        <li>New keyboard shortcuts for saving a project(Ctrl + S)</li>
         </ul>
       <p>Bug Fixes and Improvements:</p>
         <ul>
