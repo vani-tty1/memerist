@@ -45,11 +45,10 @@
                         
 
             <child type="end">
-              <object class="GtkMenuButton">
-                <property name="primary">True</property>
-                <property name="icon-name">open-menu-symbolic</property>
-                <property name="menu-model">primary_menu</property>
-              </object>
+            <object class="GtkMenuButton" id="main_menu_button">
+              <property name="primary">True</property>
+              <property name="icon-name">open-menu-symbolic</property>
+            </object>
             </child>
             
 
@@ -512,36 +511,5 @@
     </property>
   </template>
 
-    <menu id="primary_menu">
-        <submenu>
-          <attribute name="label" translatable="yes">Theme</attribute>
-          <item>
-            <attribute name="label">System Default</attribute>
-            <attribute name="action">app.color-scheme</attribute>
-            <attribute name="target">default</attribute>
-          </item>
-          <item>
-            <attribute name="label">Light</attribute>
-            <attribute name="action">app.color-scheme</attribute>
-            <attribute name="target">light</attribute>
-          </item>
-          <item>
-            <attribute name="label">Dark</attribute>
-            <attribute name="action">app.color-scheme</attribute>
-            <attribute name="target">dark</attribute>
-          </item>
-        </submenu>
-
-        <section>
-          <item>
-            <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
-            <attribute name="action">app.shortcuts</attribute>
-          </item>
-          <item>
-            <attribute name="label" translatable="yes">_About Meme Editor</attribute>
-            <attribute name="action">app.about</attribute>
-          </item>
-        </section>
-
-    </menu>
+    
 </interface>
