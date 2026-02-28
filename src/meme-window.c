@@ -816,7 +816,6 @@ static void myapp_window_finalize (GObject *object) {
   MyappWindow *self = MYAPP_WINDOW (object);
   g_clear_object (&self->template_image);
   g_clear_object (&self->final_meme);
-  g_clear_object (&self->drag_gesture);
   if (self->layers) meme_layer_list_free (self->layers);
   free_history_stack (&self->undo_stack);
   free_history_stack (&self->redo_stack);
