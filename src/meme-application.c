@@ -20,8 +20,8 @@
 
 #include "about.h"
 #include <glib/gi18n.h>
-#include "myapp-application.h"
-#include "myapp-window.h"
+#include "meme-application.h"
+#include "meme-window.h"
 
 struct _MyappApplication
 {

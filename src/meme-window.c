@@ -22,7 +22,7 @@
 
 
 
-#include "myapp-window.h"
+#include "meme-window.h"
 #include "adwaita.h"
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
@@ -828,7 +828,7 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
 
   object_class->finalize = myapp_window_finalize;
 
-  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/myapp-window.ui");
+  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_group);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, templates_group);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, transform_group);

@@ -1,8 +1,8 @@
 add_global_arguments('-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_4_10', language: 'c')
 myapp_sources = [
   'main.c',
-  'myapp-application.c',
-  'myapp-window.c',
+  'meme-application.c',
+  'meme-window.c',
   'meme-core.c',
   'meme-renderer.c',
   'about.c'

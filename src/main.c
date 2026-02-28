@@ -21,7 +21,7 @@
 #include "config.h"
 #include <glib/gi18n.h>
 #include "locale.h"
-#include "myapp-application.h"
+#include "meme-application.h"
 
 int
 main (int   argc,char *argv[]){
