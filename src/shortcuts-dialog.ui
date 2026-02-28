@@ -35,6 +35,12 @@
                 <property name="accelerator">&lt;ctrl&gt;y</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Save Project</property>
+                <property name="accelerator">&lt;ctrl&gt;s</property>
+              </object>
+            </child>
           </object>
         </child>
 

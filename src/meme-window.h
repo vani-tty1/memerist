@@ -29,3 +29,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (MyappWindow, myapp_window, MYAPP, WINDOW, AdwApplicationWindow)
 
 G_END_DECLS
+
+void myapp_window_perform_undo (MyappWindow *self);
+void myapp_window_perform_redo (MyappWindow *self);
+void myapp_window_save_project (MyappWindow *self);

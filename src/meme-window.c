@@ -27,6 +27,7 @@
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
 #include <stdio.h>
+#include "keyboard-shortcuts.h"
 
 #include "glib.h"
 #include "glibconfig.h"
@@ -252,7 +253,7 @@ static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
     }
 }
 
-static void on_save_project_clicked (MyappWindow *self) {
+void myapp_window_save_project (MyappWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new ();
     GtkFileFilter *filter = gtk_file_filter_new ();
     
@@ -309,7 +310,7 @@ static void push_undo (MyappWindow *self) {
   self->undo_stack = g_list_prepend (self->undo_stack, meme_layer_list_copy (self->layers));
 }
 
-static void perform_undo (MyappWindow *self) {
+void myapp_window_perform_undo(MyappWindow *self) {
   if (!self->undo_stack) return;
   self->redo_stack = g_list_prepend (self->redo_stack, self->layers);
   self->layers = (GList *)self->undo_stack->data;
@@ -319,7 +320,7 @@ static void perform_undo (MyappWindow *self) {
   render_meme (self);
 }
 
-static void perform_redo (MyappWindow *self) {
+void myapp_window_perform_redo (MyappWindow *self) {
   if (!self->redo_stack) return;
   self->undo_stack = g_list_prepend (self->undo_stack, self->layers);
   self->layers = (GList *)self->redo_stack->data;
@@ -1041,20 +1042,6 @@ on_delete_template_clicked (MyappWindow *self) {
   gtk_alert_dialog_choose (dialog, GTK_WINDOW (self), NULL, on_delete_confirm_response, self);
 }
 
-static gboolean on_key_pressed (GtkEventControllerKey *controller, guint keyval, guint keycode, GdkModifierType state, MyappWindow *self) {
-  // Ctrl + Z = Undo
-  if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_z || keyval == GDK_KEY_Z)) {
-    perform_undo (self);
-    return TRUE;
-  }
-  // Ctrl + Y = Redo
-  if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_y || keyval == GDK_KEY_Y)) {
-    perform_redo (self);
-    return TRUE;
-  }
-  return FALSE;
-}
-
 
 
 
@@ -1081,7 +1068,7 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect_swapped (self->clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
   g_signal_connect_swapped (self->add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
   g_signal_connect_swapped (self->export_button, "clicked", G_CALLBACK (on_export_clicked), self);
-  g_signal_connect_swapped (self->save_project_button, "clicked", G_CALLBACK (on_save_project_clicked), self);
+  g_signal_connect_swapped (self->save_project_button, "clicked", G_CALLBACK (myapp_window_save_project), self);
   g_signal_connect_swapped (self->load_project_button, "clicked", G_CALLBACK (on_load_project_clicked), self);
   
 
@@ -1110,7 +1097,7 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect (motion, "motion", G_CALLBACK (on_mouse_move), self);
   
   GtkEventController *key_controller = gtk_event_controller_key_new ();
-  g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_key_pressed), self);
+  g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_window_key_pressed), self);
   gtk_widget_add_controller (GTK_WIDGET (self), key_controller);
   
   GtkBuilder *builder = gtk_builder_new_from_resource("/io/github/vani_tty1/memerist/primary-menu.ui");

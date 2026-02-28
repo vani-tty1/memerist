@@ -5,7 +5,8 @@ myapp_sources = [
   'meme-window.c',
   'meme-core.c',
   'meme-renderer.c',
-  'about.c'
+  'about.c',
+  'keyboard-shortcuts.c'
 ]
 
 myapp_deps = [
