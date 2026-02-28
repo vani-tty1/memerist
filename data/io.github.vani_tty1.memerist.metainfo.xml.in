@@ -29,14 +29,10 @@
   
   <supports>
     <control>pointing</control>
-  </supports>
-  
-  <requires>
     <control>keyboard</control>
-    <control>pointing</control>
-    <display_length compare="ge">400</display_length>
-  </requires>
-  
+    <control>touch</control>
+  </supports>
+   
   <categories>
     <category>Graphics</category>
   </categories>
