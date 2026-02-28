@@ -239,6 +239,29 @@
                           <property name="orientation">vertical</property>
                       </object>
                     </child>
+                    
+                    <child>
+                    <object class="GtkButton" id="zoom_in">
+                      <property name="icon-name">zoom-in-symbolic</property>
+                      <property name="tooltip-text">Zoom In</property>
+                      <property name="sensitive">false</property>
+                    </object>
+                    </child>
+                    
+                    <child>
+                    <object class="GtkButton" id="zoom_out">
+                      <property name="icon-name">zoom-out-symbolic</property>
+                      <property name="tooltip-text">Zoom Out</property>
+                      <property name="sensitive">false</property>
+                    </object>
+                    </child>
+                    
+                    <child>
+                      <object class="GtkSeparator">
+                          <property name="visible">True</property>
+                          <property name="orientation">vertical</property>
+                      </object>
+                    </child>
 
                     <child>
                         <object class="GtkButton" id="clear_button">
