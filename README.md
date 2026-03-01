@@ -73,17 +73,13 @@ curl -SL https://raw.githubusercontent.com/vani-tty1/memerist/main/build-aux/scr
 
 #### Prerequisites
 
-Install the required development packages:
-
-**Fedora/RHEL:**
+**Install the required development packages:**
 ```bash
 sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
+# distributions often names these packages differently, use your package manager
+# to search for this packages or browse your distributions package repo.
 ```
 
-**Ubuntu/Debian:**
-```bash
-sudo apt install libgtk-4-dev libadwaita-1-dev meson ninja-build
-```
 
 #### Build Instructions
 
@@ -98,17 +94,14 @@ make setup
 # Compile
 make build
 
+# Build and Run
+make run
+
 # Reconfigure build folder
 make reconfigure
 
 # Install (optional)
 sudo meson install -C build
-```
-
-#### Running Without Installing
-
-```bash
-make run
 ```
 
 ##  Usage
