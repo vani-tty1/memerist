@@ -27,6 +27,7 @@
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
 #include <stdio.h>
+#include "glib-object.h"
 #include "keyboard-shortcuts.h"
 
 #include "glib.h"
@@ -42,7 +43,7 @@ struct _MyappWindow {
   AdwPreferencesGroup *transform_group;
   AdwOverlaySplitView *split_view;
   GtkStack        *content_stack;
-  GtkImage        *meme_preview;
+  GtkPicture        *meme_preview;
   GtkImage        *add_text_button;
   AdwActionRow        *font_choose_row;
   GtkFontDialogButton *font_choose_btn;
@@ -52,7 +53,10 @@ struct _MyappWindow {
   GtkMenuButton   *main_menu_button;
 
   GtkButton       *export_button;
+  GtkButton       *zoom_in;
+  GtkButton       *zoom_out;
   GtkButton       *load_image_button;
+  GtkButton       *pill_btn_open_image;
   GtkButton       *clear_button;
   GtkButton       *add_image_button;
   GtkButton       *import_template_button;
@@ -93,6 +97,7 @@ struct _MyappWindow {
   double drag_obj_start_y;
   double drag_obj_start_scale; 
   double drag_obj_start_h;
+  double          zoom_level;
   GtkButton *save_project_button;
   GtkButton *load_project_button;
 
@@ -110,6 +115,7 @@ static void sync_ui_with_layer(MyappWindow *self);
 static void render_meme (MyappWindow *self);
 static void populate_template_gallery (MyappWindow *self);
 static void on_clear_clicked (MyappWindow *self);
+static void apply_zoom(MyappWindow *self);
 
 
 static gchar *pixbuf_to_base64 (GdkPixbuf *pixbuf) {
@@ -351,7 +357,7 @@ static void render_meme (MyappWindow *self) {
         self->crop_x, self->crop_y, self->crop_w, self->crop_h
     );
 
-    gtk_image_set_from_paintable(self->meme_preview, GDK_PAINTABLE(tex));
+    gtk_picture_set_paintable(self->meme_preview, GDK_PAINTABLE(tex));
     g_object_unref(tex);
 }
 
@@ -727,6 +733,10 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
           gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
+          gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
+          gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
+          self->zoom_level = 1.0;
+          apply_zoom(self);
           render_meme(self);
       }
       g_free (path); g_object_unref (file);
@@ -799,7 +809,7 @@ static void on_clear_clicked (MyappWindow *self) {
   free_history_stack (&self->undo_stack); free_history_stack (&self->redo_stack);
   self->selected_layer = NULL;
   sync_ui_with_layer(self);
-  gtk_image_clear (self->meme_preview);
+  gtk_picture_set_paintable (self->meme_preview, NULL);
   gtk_toggle_button_set_active (self->deep_fry_button, FALSE);
   gtk_toggle_button_set_active (self->cinematic_button, FALSE);
   gtk_toggle_button_set_active (self->crop_mode_button, FALSE);
@@ -809,6 +819,10 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), FALSE);
+  self->zoom_level = 1.0;
+  gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
 }
 
 
@@ -822,52 +836,7 @@ static void myapp_window_finalize (GObject *object) {
   G_OBJECT_CLASS (myapp_window_parent_class)->finalize (object);
 }
 
-static void myapp_window_class_init (MyappWindowClass *klass) {
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = myapp_window_finalize;
-
-  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_group);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, templates_group);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, transform_group);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, meme_preview);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, content_stack);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, split_view);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_row);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_btn);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_entry);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, global_filters_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, deep_fry_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, cinematic_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_opacity_scale);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_rotation_scale);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, blend_mode_row);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_layer_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_mode_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_left_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_right_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_h_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_v_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_square_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_43_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_169_button);
-  gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, save_project_button);
-  gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_project_button);
-  gtk_widget_class_bind_template_child(widget_class, MyappWindow, main_menu_button);
-}
 
 
 
@@ -978,6 +947,10 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
       gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
+      self->zoom_level = 1.0;
+      apply_zoom(self);
       render_meme (self);
   }
 }
@@ -1042,6 +1015,74 @@ on_delete_template_clicked (MyappWindow *self) {
 }
 
 
+static void apply_zoom(MyappWindow *self) {
+    if (!self->template_image) return;
+    int w = gdk_pixbuf_get_width(self->template_image);
+    int h = gdk_pixbuf_get_height(self->template_image);
+    gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), w * self->zoom_level, h * self->zoom_level);
+}
+
+static void on_zoom_in_clicked(MyappWindow *self) {
+    self->zoom_level += 0.2; 
+    apply_zoom(self);
+}
+
+static void on_zoom_out_clicked(MyappWindow *self) {
+    self->zoom_level = MAX(0.2, self->zoom_level - 0.2); 
+    apply_zoom(self);
+}
+
+static void myapp_window_class_init (MyappWindowClass *klass) {
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->finalize = myapp_window_finalize;
+
+  gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_group);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, templates_group);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, transform_group);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, meme_preview);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, content_stack);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, split_view);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_row);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_btn);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_entry);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
+  gtk_widget_class_bind_template_child(widget_class, MyappWindow, pill_btn_open_image);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, global_filters_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, deep_fry_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, cinematic_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_opacity_scale);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_rotation_scale);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, blend_mode_row);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_layer_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_mode_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_left_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_right_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_h_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_v_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_square_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_43_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_169_button);
+  gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, save_project_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_project_button);
+  gtk_widget_class_bind_template_child(widget_class, MyappWindow, main_menu_button);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_in);
+  gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_out);
+}
+
+
 
 
 static void myapp_window_init (MyappWindow *self) {
@@ -1064,6 +1105,7 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
   
   g_signal_connect_swapped (self->load_image_button, "clicked", G_CALLBACK (on_load_image_clicked), self);
+  g_signal_connect_swapped (self->pill_btn_open_image, "clicked", G_CALLBACK(on_load_image_clicked), self);
   g_signal_connect_swapped (self->clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
   g_signal_connect_swapped (self->add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
   g_signal_connect_swapped (self->export_button, "clicked", G_CALLBACK (on_export_clicked), self);
@@ -1088,6 +1130,10 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect (self->drag_gesture, "drag-begin", G_CALLBACK (on_drag_begin), self);
   g_signal_connect (self->drag_gesture, "drag-update", G_CALLBACK (on_drag_update), self);
   g_signal_connect (self->drag_gesture, "drag-end", G_CALLBACK (on_drag_end), self);
+  
+  self->zoom_level = 1.0;
+  g_signal_connect_swapped (self->zoom_in, "clicked", G_CALLBACK (on_zoom_in_clicked), self);
+  g_signal_connect_swapped (self->zoom_out, "clicked", G_CALLBACK (on_zoom_out_clicked), self);
   
   populate_template_gallery (self);
   
