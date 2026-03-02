@@ -110,7 +110,17 @@
                                       <object class="AdwStatusPage">
                                         <property name="icon-name">image-x-generic-symbolic</property>
                                         <property name="title">No Image Loaded</property>
-                                        <property name="description">Drag or Open an image to start editing </property>
+                                        <property name="description">Open an image to start editing </property>
+                                        <child>
+                                        <object class="GtkButton" id="pill_btn_open_image">
+                                          <property name="label" translatable="yes">Open</property>
+                                          <property name="margin-bottom">12</property>
+                                          <style>
+                                            <class name="pill"/>
+                                            <class name="suggested-action"/>
+                                          </style>
+                                        </object>
+                                        </child>
                                       </object>
                                     </property>
                                   </object>
@@ -122,9 +132,9 @@
                                       <object class="GtkFrame">
                                         <style><class name="card"/></style>
                                         <child>
-                                          <object class="GtkImage" id="meme_preview">
-                                            <property name="icon-name">image-x-generic-symbolic</property>
-                                            <property name="pixel-size">740</property>
+                                          <object class="GtkPicture" id="meme_preview">
+                                            <property name="content-fit">fill</property>
+                                            <property name="can-shrink">True</property>
                                           </object>
                                         </child>
                                       </object>
@@ -212,7 +222,8 @@
                                 <child>
                                   <object class="GtkToggleButton" id="cinematic_button">
                                     <property name="label">Cinematic</property>
-                                    <property name="icon-name">camera-video-symbolic</property>
+                                    <property name="tooltip-text">High Contrast</property>
+                                    <property name="icon-name">daytime-sunrise-symbolic</property>
                                     <property name="sensitive">false</property>
                                   </object>
                                 </child>
@@ -220,7 +231,8 @@
                                 <child>
                                   <object class="GtkToggleButton" id="deep_fry_button">
                                     <property name="label">Deep Fry</property>
-                                    <property name="icon-name">weather-severe-alert-symbolic</property>
+                                    <property name="tooltip-text">Ensh*tify</property>
+                                    <property name="icon-name">emblem-important-symbolic</property>
                                     <property name="sensitive">false</property>
                                     <style><class name="destructive-action"/></style>
                                   </object>
