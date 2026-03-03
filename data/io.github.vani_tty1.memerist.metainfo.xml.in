@@ -72,6 +72,20 @@
 </screenshots>
 
   <releases>
+    
+    <release version="0.4.2" date="2026-03-03">
+     <description translate="no">
+     <p>New Feature:</p>
+       <ul>
+       <li>New Zoom In/Out fauture</li>
+       </ul>
+     <p>Bug Fixes and Improvements:</p>
+       <ul>
+       <li>Fixed duplicate g_object_unref causing crash alert on abrt</li>
+       <li>Adjust preview size</li>
+       </ul>
+     </description>
+    </release>
   
     <release version="0.4.1" date="2026-02-28">
       <description translate="no">
