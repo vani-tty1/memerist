@@ -1017,9 +1017,20 @@ on_delete_template_clicked (MyappWindow *self) {
 
 static void apply_zoom(MyappWindow *self) {
     if (!self->template_image) return;
-    int w = gdk_pixbuf_get_width(self->template_image);
-    int h = gdk_pixbuf_get_height(self->template_image);
-    gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), w * self->zoom_level, h * self->zoom_level);
+    int img_w = gdk_pixbuf_get_width(self->template_image);
+    int img_h = gdk_pixbuf_get_height(self->template_image);
+
+    // Get available area (window minus sidebar)
+    int win_w = gtk_widget_get_width(GTK_WIDGET(self)) - 320;
+    int win_h = gtk_widget_get_height(GTK_WIDGET(self)) - 60;
+    
+    
+    double fit_scale = MIN((double)win_w / img_w, (double)win_h / img_h) * 0.6;
+    double final_scale = fit_scale * self->zoom_level;
+
+    gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview),
+                                (int)(img_w * final_scale),
+                                (int)(img_h * final_scale));
 }
 
 static void on_zoom_in_clicked(MyappWindow *self) {
