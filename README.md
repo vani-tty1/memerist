@@ -20,8 +20,12 @@
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/)
 
+<br>
 
----
+
+
+---  
+
 
 ## Features
 - **Use or Import your own Templates** 
@@ -44,9 +48,20 @@
  <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png"/>
 </p>
 
+---
 
+<br>
+<br>
 
 ## Installation
+
+### Flathub
+Memerist is available on Flathub
+
+
+[![Download on Flathub](https://dl.flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/io.github.vani_tty1.memerist)
+
+<br>
 
 ### Fedora and other RPM based distros
 Install latest build using Copr( Supports amd64 & aarch64 ):
@@ -55,19 +70,8 @@ Install latest build using Copr( Supports amd64 & aarch64 ):
 sudo dnf copr enable vaniiiiii/memerist 
 sudo dnf install memerist
 ```
-### Debian/Ubuntu
 
-Add the dedicated repository to your sources:
-[**APT Repository**](https://vani-tty1.github.io/vani-pkgs)
-
-
-
-### Arch Linux and derivatives
-You arch users know this, its very simple.
-```bash
-curl -SL https://raw.githubusercontent.com/vani-tty1/memerist/main/build-aux/scripts/install-archlinux.sh | bash
-```
-
+---
 
 ## Building from Source
 
@@ -80,6 +84,7 @@ sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
 # to search for this packages or browse your distributions package repo.
 ```
 
+<br>
 
 #### Build Instructions
 
@@ -104,6 +109,8 @@ make reconfigure
 sudo meson install -C build
 ```
 
+---
+
 ##  Usage
 
 1. Launch Memerist from your application menu
@@ -111,6 +118,8 @@ sudo meson install -C build
 3. Enter your text, you can drag the text anywhere in the photo viewport
 4. Export your meme as PNG
 5. Let it Happen
+
+---
 
 ## Contributing
 
