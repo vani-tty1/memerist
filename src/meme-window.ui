@@ -137,9 +137,13 @@
                                         <style><class name="card"/></style>
                                         <property name="halign">center</property>
                                         <property name="valign">center</property>
+                                        <property name="width-request">400</property>
+                                        <property name="height-request">225</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="margin-bottom">10</property>
                                         <child>
                                           <object class="GtkPicture" id="meme_preview">
-                                            <property name="content-fit">fill</property>
+                                            <property name="content-fit">scale-down</property>
                                             <property name="can-shrink">True</property>
                                           </object>
                                         </child>
