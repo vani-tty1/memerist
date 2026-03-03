@@ -121,7 +121,7 @@
                                         <property name="vexpand">true</property>
                                         <child>
                                         <object class="GtkButton" id="pill_btn_open_image">
-                                          <property name="label" translatable="yes">Open</property>
+                                          <property name="label" translatable="yes">Select Image</property>
                                           <property name="margin-bottom">12</property>
                                           <style>
                                             <class name="pill"/>
