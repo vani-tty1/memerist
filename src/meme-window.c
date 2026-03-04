@@ -340,13 +340,14 @@ void myapp_window_perform_redo (MyappWindow *self) {
 static void render_meme (MyappWindow *self) {
     if (!self->template_image) return;
 
-    
+    gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
+
     if (self->final_meme) g_object_unref(self->final_meme);
     self->final_meme = meme_render_composite(
         self->template_image,
         self->layers,
-        gtk_toggle_button_get_active(self->cinematic_button),
-        gtk_toggle_button_get_active(self->deep_fry_button)
+        is_dragging ? FALSE : gtk_toggle_button_get_active(self->cinematic_button),
+        is_dragging ? FALSE : gtk_toggle_button_get_active(self->deep_fry_button)
     );
 
     GdkTexture *tex = meme_render_editor_overlay(
@@ -593,16 +594,26 @@ static void on_mouse_move (GtkEventControllerMotion *controller, double x, doubl
   gboolean found = FALSE;
   for (l = g_list_last(self->layers); l != NULL; l = l->prev) {
       ImageLayer *layer = (ImageLayer *)l->data;
-      double half_w = (layer->width * layer->scale) / (2.0 * img_w);
-      double half_h = (layer->height * layer->scale) / (2.0 * img_h);
-      if (ix >= layer->x - half_w && ix <= layer->x + half_w &&
-          iy >= layer->y - half_h && iy <= layer->y + half_h) {
+      double hw = (layer->width * layer->scale) / (2.0 * img_w);
+      double hh = (layer->height * layer->scale) / (2.0 * img_h);
+      double l_left = layer->x - hw, l_right = layer->x + hw;
+      double l_top = layer->y - hh, l_bot = layer->y + hh;  
+      double cx = 20.0 / img_w;
+  
+      if (layer == self->selected_layer) {
+          if (fabs(ix - l_left) < cx && fabs(iy - l_top) < cx) { gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), "nw-resize"); found = TRUE; break; }
+          if (fabs(ix - l_right) < cx && fabs(iy - l_top) < cx) { gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), "ne-resize"); found = TRUE; break; }
+          if (fabs(ix - l_left) < cx && fabs(iy - l_bot) < cx) { gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), "sw-resize"); found = TRUE; break; }
+          if (fabs(ix - l_right) < cx && fabs(iy - l_bot) < cx) { gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), "se-resize"); found = TRUE; break; }
+      }
+  
+      if (ix >= l_left && ix <= l_right && iy >= l_top && iy <= l_bot) {
           gtk_widget_set_cursor_from_name (GTK_WIDGET (self->meme_preview), "move");
           found = TRUE;
           break;
       }
   }
-  if (!found) gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL);
+    if (!found) gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL);
 }
 
 static void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
@@ -633,7 +644,7 @@ static void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWin
      double l_top = layer->y - hh, l_bot = layer->y + hh;
      
      
-     double cx = 20.0 / img_w;
+     double cx = 125.0 / img_w;
      gboolean corner = (fabs(ix - l_left) < cx || fabs(ix - l_right) < cx) && (fabs(iy - l_top) < cx || fabs(iy - l_bot) < cx);
 
      if (layer == self->selected_layer && corner) {
@@ -709,7 +720,11 @@ static void on_drag_update (GtkGestureDrag *gesture, double offset_x, double off
   render_meme(self);
 }
 
-static void on_drag_end (GtkGestureDrag *g, double x, double y, MyappWindow *self) { self->drag_type = DRAG_TYPE_NONE; }
+static void on_drag_end (GtkGestureDrag *g, double x, double y, MyappWindow *self) { 
+    self->drag_type = DRAG_TYPE_NONE; 
+    render_meme(self);
+}
+
 
 //File Handling
 static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
@@ -914,6 +929,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
   GtkWidget *image;
   const char *template_path;
   GError *error = NULL;
+  on_clear_clicked(self);
 
   if (!child) { 
       gtk_widget_set_sensitive (GTK_WIDGET (self->delete_template_button), FALSE); 
