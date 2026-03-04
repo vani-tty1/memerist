@@ -257,20 +257,30 @@ GdkTexture * meme_render_editor_overlay (GdkPixbuf *composite, GList *layers, Im
      cairo_arc(cr, abs_x + abs_w, abs_y + abs_h/2.0, hr, 0, 2*M_PI); cairo_fill(cr);
   }
   else if (selected) {
-     double sx = selected->x * w;
-     double sy = selected->y * h;
-     double bw = selected->width * selected->scale;
-     double bh = selected->height * selected->scale;
-
-     cairo_save(cr);
-     cairo_translate(cr, sx, sy);
-     cairo_rotate(cr, selected->rotation);
-     cairo_set_source_rgba(cr, 0.4, 0.2, 0.8, 0.8);
-     cairo_set_line_width(cr, 2.0);
-     cairo_rectangle(cr, -bw/2.0, -bh/2.0, bw, bh);
-     cairo_stroke(cr);
-     cairo_restore(cr);
-  }
+      double sx = selected->x * w;
+      double sy = selected->y * h;
+      double bw = selected->width * selected->scale;
+      double bh = selected->height * selected->scale;
+      //radius of circles on the visual handler
+      double hr = 6.0; 
+  
+      cairo_save(cr);
+      cairo_translate(cr, sx, sy);
+      cairo_rotate(cr, selected->rotation);
+      
+      cairo_set_source_rgba(cr, 0.4, 0.2, 0.8, 0.8);
+      cairo_set_line_width(cr, 2.0);
+      cairo_rectangle(cr, -bw/2.0, -bh/2.0, bw, bh);
+      cairo_stroke(cr);
+  
+      cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0); 
+      
+      cairo_arc(cr, -bw/2.0, -bh/2.0, hr, 0, 2*M_PI); cairo_fill(cr);
+      cairo_arc(cr, bw/2.0, -bh/2.0, hr, 0, 2*M_PI); cairo_fill(cr);
+      cairo_arc(cr, -bw/2.0, bh/2.0, hr, 0, 2*M_PI); cairo_fill(cr);
+      cairo_arc(cr, bw/2.0, bh/2.0, hr, 0, 2*M_PI); cairo_fill(cr);
+      cairo_restore(cr);
+}
 
   cairo_destroy(cr);
   GdkPixbuf *res = gdk_pixbuf_get_from_surface(surf, 0, 0, w, h);
