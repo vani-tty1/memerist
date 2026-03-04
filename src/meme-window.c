@@ -644,7 +644,7 @@ static void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWin
      double l_top = layer->y - hh, l_bot = layer->y + hh;
      
      
-     double cx = 125.0 / img_w;
+     double cx = 20.0 / img_w;
      gboolean corner = (fabs(ix - l_left) < cx || fabs(ix - l_right) < cx) && (fabs(iy - l_top) < cx || fabs(iy - l_bot) < cx);
 
      if (layer == self->selected_layer && corner) {
