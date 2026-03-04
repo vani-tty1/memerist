@@ -1,7 +1,11 @@
 #include "meme-renderer.h"
+#include "gdk-pixbuf/gdk-pixbuf.h"
+#include "glib.h"
+#include "meme-core.h"
 #include <cairo.h>
 #include <math.h>
 #include <pango/pangocairo.h>
+#include <stdio.h>
 
 void meme_get_image_coordinates (GtkWidget *widget, GdkPixbuf *img, double wx, double wy, double *ix, double *iy) {
   double ww, wh, iw, ih, scale, draw_w, draw_h, off_x, off_y;
@@ -50,39 +54,47 @@ meme_get_crop_handle_at_position (double x, double y, double cx, double cy, doub
 }
 
 GdkPixbuf * meme_apply_saturation_contrast (GdkPixbuf *src, double sat, double contrast) {
-  GdkPixbuf *copy;
-  int w, h, stride, n_channels, x, y;
-  guchar *pixels, *row_ptr, *p;
-  double r, g, b, gray, one_minus_sat = 1.0 - sat;
-
-  if (!src) return NULL;
-  copy = gdk_pixbuf_copy (src);
-  w = gdk_pixbuf_get_width (copy);
-  h = gdk_pixbuf_get_height (copy);
-  stride = gdk_pixbuf_get_rowstride (copy);
-  n_channels = gdk_pixbuf_get_n_channels (copy);
-  pixels = gdk_pixbuf_get_pixels (copy);
-
-  for (y = 0; y < h; y++) {
-    row_ptr = pixels + (y * stride);
-    for (x = 0; x < w; x++) {
-      p = row_ptr + (x * n_channels);
-      r = (double)p[0]; g = (double)p[1]; b = (double)p[2];
-
-      gray = 0.299 * r + 0.587 * g + 0.114 * b;
-      r = gray * one_minus_sat + r * sat;
-      g = gray * one_minus_sat + g * sat;
-      b = gray * one_minus_sat + b * sat;
-
-      r = (r - 128.0) * contrast + 128.0;
-      g = (g - 128.0) * contrast + 128.0;
-      b = (b - 128.0) * contrast + 128.0;
-
-      p[0] = CLAMP_U8((int)r); p[1] = CLAMP_U8((int)g); p[2] = CLAMP_U8((int)b);
+    GdkPixbuf *copy;
+    int w, h, stride, n_channels, x, y;
+    guchar *pixels, *row_ptr, *p;
+    
+    if(!src) return NULL;
+    copy = gdk_pixbuf_copy(src);
+    w = gdk_pixbuf_get_width(copy);
+    h = gdk_pixbuf_get_height(copy);
+    stride = gdk_pixbuf_get_rowstride(copy);
+    n_channels = gdk_pixbuf_get_n_channels(copy);
+    pixels = gdk_pixbuf_get_pixels(copy);
+    
+    guchar contrast_lut[256];
+    for (int i = 0; i < 256; i++){
+        double val = ((double)i - 128.0) * contrast + 128.0;
+        contrast_lut[i] = CLAMP_U8((int)val);
     }
-  }
-  return copy;
+    
+    int sat_fixed = (int)(sat * 1024.0);
+    int inv_sat_fixed = (int)((1.0 - sat) * 1024.0);
+    
+    for (y = 0; y < h; y++){
+        row_ptr = pixels + (y * stride);
+        for (x = 0; x < w; x++){
+            p = row_ptr + (x * n_channels);
+            
+            int r = p[0], g = p[1], b = p[2];
+            int gray = (r * 306 + g * 601 + b  * 117) >> 10;
+            
+            int rs = (gray * inv_sat_fixed + r * sat_fixed) >> 10;
+            int gs = (gray * inv_sat_fixed + g * sat_fixed) >> 10;
+            int bs = (gray * inv_sat_fixed + b * sat_fixed) >> 10;
+            
+            p[0] = contrast_lut[CLAMP_U8(rs)];
+            p[1] = contrast_lut[CLAMP_U8(gs)];
+            p[2] = contrast_lut[CLAMP_U8(bs)];
+        }
+    }
+    return copy;
 }
+
 
 GdkPixbuf * meme_apply_deep_fry (GdkPixbuf *src) {
   GdkPixbuf *fried = gdk_pixbuf_copy (src);
