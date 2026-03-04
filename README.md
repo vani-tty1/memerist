@@ -93,9 +93,6 @@ sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
 git clone https://github.com/vani-tty1/memerist.git
 cd memerist
 
-# Configure the build
-make setup
-
 # Compile
 make build
 
