@@ -80,6 +80,7 @@
         <li>Increased layer resize hitboxes.</li>
         <li>Added visual resize handles to selected layers.</li>
         <li>Improved drag performance by skipping rendering of heavy filters.</li>
+        <li>Replaced floating point calculation of apply_saturation_contrast to a lookup table</li>
      </ul>
      <p>Bug Fixes:</p>
       <ul>
