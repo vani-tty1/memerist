@@ -280,7 +280,7 @@ GdkTexture * meme_render_editor_overlay (GdkPixbuf *composite, GList *layers, Im
       cairo_translate(cr, sx, sy);
       cairo_rotate(cr, selected->rotation);
       
-      cairo_set_source_rgba(cr, 0.4, 0.2, 0.8, 0.8);
+      cairo_set_source_rgba(cr, 0.0, 0.0, 1.0, 1.0);
       cairo_set_line_width(cr, 2.0);
       cairo_rectangle(cr, -bw/2.0, -bh/2.0, bw, bh);
       cairo_stroke(cr);
