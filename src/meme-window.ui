@@ -37,7 +37,7 @@
             
             <child type="start">
                 <object class="GtkButton" id="save_project_button">
-                    <property name="icon-name">document-save-symbolic</property>
+                    <property name="icon-name">media-floppy-symbolic</property>
                     <property name="tooltip-text">Save Project</property>
                     <property name="sensitive">false</property>
                 </object>
@@ -104,7 +104,6 @@
 
                             <child>
                               <object class="GtkStack" id="content_stack">
-                                <property name="transition-type">crossfade</property>
                                 <property name="hexpand">true</property>
                                 <property name="vexpand">true</property>
                                 <property name="halign">center</property>
@@ -180,7 +179,7 @@
                     
                     <child type="start">
                       <object class="GtkButton" id="load_image_button">
-                        <property name="icon-name">document-open-symbolic</property>
+                        <property name="icon-name">image-x-generic-symbolic</property>
                         <property name="tooltip-text">Open Base Image</property>
                       </object>
                     </child>
@@ -418,14 +417,16 @@
                             <child type="suffix">
                                 <object class="GtkButton" id="import_template_button">
                                   <property name="icon-name">list-add-symbolic</property>
+                                  <property name="tooltip-text">Import Template</property>
                                   <style><class name="flat"/></style>
                                 </object>
                             </child>
                             <child type="suffix">
                                 <object class="GtkButton" id="delete_template_button">
                                   <property name="icon-name">user-trash-symbolic</property>
+                                  <property name="tooltip-text">Remove Imported Template</property>
                                   <property name="sensitive">false</property>
-                                  <style><class name="flat"/></style>
+                                  <style><class name="destructive-action"/></style>
                                 </object>
                             </child>
                             <child>
