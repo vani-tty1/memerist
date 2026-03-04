@@ -72,6 +72,22 @@
 </screenshots>
 
   <releases>
+  
+    <release version="0.4.3" date="2026-03-9">
+     <description translate="no">
+     <p>Enhancements:</p>
+      <ul>
+        <li>Increased layer resize hitboxes.</li>
+        <li>Added visual resize handles to selected layers.</li>
+        <li>Improved drag performance by skipping rendering of heavy filters.</li>
+     </ul>
+     <p>Bug Fixes:</p>
+      <ul>
+        <li>Fixed crash when changing templates with active layers.</li>
+        <li>Removed "No Image Loaded" appearing in between template transitions.</li>
+      </ul>
+     </description>
+    </release>
     
     <release version="0.4.2" date="2026-03-03">
      <description translate="no">
