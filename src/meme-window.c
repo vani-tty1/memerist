@@ -53,6 +53,7 @@ struct _MyappWindow {
   GtkMenuButton   *main_menu_button;
 
   GtkButton       *export_button;
+  GtkButton       *copy_clipboard_button;
   GtkButton       *zoom_in;
   GtkButton       *zoom_out;
   GtkButton       *load_image_button;
@@ -750,6 +751,7 @@ static void on_load_image_response (GObject *s, GAsyncResult *r, gpointer d) {
           gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
           gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
+          gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
           self->zoom_level = 1.0;
           apply_zoom(self);
           render_meme(self);
@@ -836,8 +838,31 @@ static void on_clear_clicked (MyappWindow *self) {
   gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), FALSE);
   gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), FALSE);
+  gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), FALSE);
   self->zoom_level = 1.0;
   gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
+}
+
+
+static void on_copy_clipboard_clicked (MyappWindow *self) {
+    if (!self->final_meme) return;
+
+    GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (self));
+    GdkPixbuf *save = self->final_meme;
+
+    if (gtk_toggle_button_get_active(self->crop_mode_button)) {
+        int iw = gdk_pixbuf_get_width(save); 
+        int ih = gdk_pixbuf_get_height(save);
+        save = gdk_pixbuf_new_subpixbuf(save, self->crop_x * iw, self->crop_y * ih, self->crop_w * iw, self->crop_h * ih);
+    } else {
+        g_object_ref(save);
+    }
+
+    GdkTexture *texture = gdk_texture_new_for_pixbuf (save);
+    gdk_clipboard_set_texture (clipboard, texture);
+
+    g_object_unref (texture);
+    g_object_unref (save);
 }
 
 
@@ -965,6 +990,7 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
       gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
       gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
+      gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
       self->zoom_level = 1.0;
       apply_zoom(self);
       render_meme (self);
@@ -1107,6 +1133,7 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child(widget_class, MyappWindow, main_menu_button);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_in);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_out);
+  gtk_widget_class_bind_template_child(widget_class, MyappWindow, copy_clipboard_button);
 }
 
 
@@ -1138,6 +1165,7 @@ static void myapp_window_init (MyappWindow *self) {
   g_signal_connect_swapped (self->export_button, "clicked", G_CALLBACK (on_export_clicked), self);
   g_signal_connect_swapped (self->save_project_button, "clicked", G_CALLBACK (myapp_window_save_project), self);
   g_signal_connect_swapped (self->load_project_button, "clicked", G_CALLBACK (on_load_project_clicked), self);
+  g_signal_connect_swapped(self->copy_clipboard_button, "clicked", G_CALLBACK(on_copy_clipboard_clicked), self);
   
 
   g_signal_connect_swapped (self->import_template_button, "clicked", G_CALLBACK (on_import_template_clicked), self);
