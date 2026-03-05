@@ -42,6 +42,7 @@ struct _MyappWindow {
   AdwPreferencesGroup *templates_group;
   AdwPreferencesGroup *transform_group;
   AdwOverlaySplitView *split_view;
+  AdwToastOverlay *copy_clip_feedback;
   GtkStack        *content_stack;
   GtkPicture        *meme_preview;
   GtkImage        *add_text_button;
@@ -863,6 +864,8 @@ static void on_copy_clipboard_clicked (MyappWindow *self) {
 
     g_object_unref (texture);
     g_object_unref (save);
+    AdwToast *pill_toast = adw_toast_new("Copied to Clipboard");
+    adw_toast_overlay_add_toast(self->copy_clip_feedback, pill_toast);
 }
 
 
@@ -1134,6 +1137,7 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_in);
   gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_out);
   gtk_widget_class_bind_template_child(widget_class, MyappWindow, copy_clipboard_button);
+  gtk_widget_class_bind_template_child(widget_class, MyappWindow, copy_clip_feedback);
 }
 
 

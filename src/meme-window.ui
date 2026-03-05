@@ -17,6 +17,8 @@
     <property name="default-width">1130</property>
     <property name="default-height">720</property>
     <property name="content">
+    <object class="AdwToastOverlay" id="copy_clip_feedback">
+    <property name="child">
 
       <object class="AdwToolbarView">
 
@@ -570,9 +572,7 @@
           </object>
         </property>
 
-      </object>
-    </property>
-  </template>
-
-    
+      </object></property>
+      </object></property>
+  </template> 
 </interface>
