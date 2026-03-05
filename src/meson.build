@@ -17,7 +17,7 @@ myapp_deps = [
 ]
 
 myapp_sources += gnome.compile_resources('myapp-resources',
-  'myapp.gresource.xml',
+  'memerist.gresource.xml',
   c_name: 'myapp'
 )
 
