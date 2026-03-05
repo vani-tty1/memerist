@@ -54,29 +54,6 @@
 
 ---
 
-<br>
-<br>
-
-## Installation
-
-### Flathub
-Memerist is available on Flathub
-
-
-
-
-<br>
-
-### Fedora and other RPM based distros
-Install latest build using Copr( Supports amd64 & aarch64 ):
-    
-```bash
-sudo dnf copr enable vaniiiiii/memerist 
-sudo dnf install memerist
-```
-
----
-
 ## Building from Source
 
 #### Prerequisites
