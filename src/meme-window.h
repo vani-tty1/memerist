@@ -33,3 +33,4 @@ G_END_DECLS
 void myapp_window_perform_undo (MyappWindow *self);
 void myapp_window_perform_redo (MyappWindow *self);
 void myapp_window_save_project (MyappWindow *self);
+void on_copy_clipboard_clicked (MyappWindow *self);

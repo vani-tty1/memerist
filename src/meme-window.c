@@ -845,7 +845,7 @@ static void on_clear_clicked (MyappWindow *self) {
 }
 
 
-static void on_copy_clipboard_clicked (MyappWindow *self) {
+void on_copy_clipboard_clicked (MyappWindow *self) {
     if (!self->final_meme) return;
 
     GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (self));
