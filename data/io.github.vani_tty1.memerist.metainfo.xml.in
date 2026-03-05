@@ -77,6 +77,7 @@
      <description translate="no">
      <p>Enhancements:</p>
       <ul>
+        <li>Can now copy to clipboard by clicking the button on the left side or Ctrl + Shift + C</li>
         <li>Increased layer resize hitboxes.</li>
         <li>Added visual resize handles to selected layers.</li>
         <li>Improved drag performance by skipping rendering of heavy filters.</li>
