@@ -20,6 +20,10 @@
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/)
 
+<a href='https://flathub.org/apps/details/io.github.vani_tty1.memerist'>
+    <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
+
 <br>
 
 
@@ -59,9 +63,7 @@
 Memerist is available on Flathub
 
 
-<a href='https://flathub.org/apps/io.github.vani_tty1.memerist'>
-    <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
-</a>
+
 
 <br>
 
