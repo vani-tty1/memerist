@@ -1,4 +1,5 @@
 #include "keyboard-shortcuts.h"
+#include "gdk/gdk.h"
 #include "meme-window.h"
 
 
@@ -21,6 +22,13 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
   // Ctrl + S = Save
   if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_s || keyval == GDK_KEY_S)) {
       myapp_window_save_project(self);
+      return TRUE;
+  }
+  
+  //Ctrl + Shift + C = copy to clipboard
+  if ((state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) && 
+      (keyval == GDK_KEY_s || keyval == GDK_KEY_C)) {
+      on_copy_clipboard_clicked(self);
       return TRUE;
   }
 
