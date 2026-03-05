@@ -59,7 +59,7 @@
 Memerist is available on Flathub
 
 
-<a href='https://flathub.org/apps/org.gimp.GIMP'>
+<a href='https://flathub.org/apps/io.github.vani_tty1.memerist'>
     <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
