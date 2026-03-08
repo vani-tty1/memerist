@@ -30,6 +30,7 @@ jobs:
     - name: Generate AppImage
       run: |
         export OUTPUT="memerist-x86_64.AppImage"
+        export DEPLOY_GTK_VERSION="4"
         ./linuxdeploy-x86_64.AppImage --appimage-extract
         ./squashfs-root/AppRun --appdir AppDir --plugin gtk --output appimage
 
