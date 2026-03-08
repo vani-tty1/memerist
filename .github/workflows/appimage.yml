@@ -1,0 +1,40 @@
+name: Build AppImage
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson ninja-build libgtk-4-dev build-essential gettext appstream
+
+    - name: Build and install to AppDir
+      run: |
+        meson setup build --prefix=/usr
+        DESTDIR=AppDir meson install -C build
+
+    - name: Download linuxdeploy and GTK plugin
+      run: |
+        wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+        wget https://github.com/linuxdeploy/linuxdeploy-plugin-gtk/releases/download/continuous/linuxdeploy-plugin-gtk.sh
+        chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-gtk.sh
+
+    - name: Generate AppImage
+      run: |
+        export OUTPUT="memerist-x86_64.AppImage"
+        ./linuxdeploy-x86_64.AppImage --appimage-extract
+        ./squashfs-root/AppRun --appdir AppDir --plugin gtk --output appimage
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: memerist-AppImage
+        path: memerist-x86_64.AppImage
