@@ -13,4 +13,4 @@ modules:
     buildsystem: meson
     sources:
       - type: dir
-        path: .
+        path: ..
