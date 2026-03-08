@@ -2,6 +2,8 @@
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include "glib.h"
 #include "meme-core.h"
+#include "pango/pango-layout.h"
+#include "pango/pango-types.h"
 #include <cairo.h>
 #include <math.h>
 #include <pango/pangocairo.h>
@@ -168,6 +170,11 @@ GdkPixbuf * meme_render_composite (GdkPixbuf *bg, GList *layers, gboolean cinema
         // into a path so we can still use our stroke and fill
         PangoLayout *layout = pango_cairo_create_layout (cr);
         pango_layout_set_text (layout, layer->text, -1);
+        
+        
+        double max_width = (w * 0.9) / layer->scale;
+        pango_layout_set_width(layout, max_width * PANGO_SCALE);
+        pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
     
         PangoFontDescription *desc;
         if (layer->font_family) {
