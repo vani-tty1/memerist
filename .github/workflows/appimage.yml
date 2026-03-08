@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-appimage:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -26,16 +26,19 @@ jobs:
         wget -c "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh"
         wget -c "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
         chmod +x linuxdeploy-x86_64.AppImage linuxdeploy-plugin-gtk.sh
-
+        
     - name: Generate AppImage
       run: |
-        export LDAI_OUTPUT="memerist-x86_64.AppImage"
         export DEPLOY_GTK_VERSION="4"
         ./linuxdeploy-x86_64.AppImage --appimage-extract
         ./squashfs-root/AppRun --appdir AppDir \
-          -d "${PWD}/AppDir/usr/share/applications/io.github.vani_tty1.memerist.desktop" \
-          -i "${PWD}/AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg" \
-          --plugin gtk --output appimage
+        -d "${PWD}/AppDir/usr/share/applications/io.github.vani_tty1.memerist.desktop" \
+        -i "${PWD}/AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg" \
+        --plugin gtk
+        sed -i '/GTK_THEME/d' AppDir/apprun-hooks/linuxdeploy-plugin-gtk.sh
+        sed -i '/APPIMAGE_GTK_THEME/d' AppDir/apprun-hooks/linuxdeploy-plugin-gtk.sh
+        export ARCH=x86_64
+        ./squashfs-root/plugins/linuxdeploy-plugin-appimage/usr/bin/appimagetool AppDir memerist-x86_64.AppImage
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
