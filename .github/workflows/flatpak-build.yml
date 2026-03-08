@@ -29,7 +29,7 @@ jobs:
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: Memerist.flatpak
-        manifest-path: build-aux/io.github.vani_tty1.memerist
+        manifest-path: build-aux/io.github.vani_tty1.memerist.yml
         cache-key: flatpak-builder-${{ github.sha }}
         arch: ${{ matrix.variant.arch }}
         verbose: true
