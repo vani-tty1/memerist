@@ -27,6 +27,7 @@
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
 #include <stdio.h>
+#include "gdk-pixbuf/gdk-pixbuf.h"
 #include "gio/gio.h"
 #include "glib-object.h"
 #include "keyboard-shortcuts.h"
@@ -193,56 +194,60 @@ static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
     }
 }
 
-static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
-    GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
-    MyappWindow *self = MYAPP_WINDOW (d);
-    GFile *file = gtk_file_dialog_open_finish (dialog, r, NULL);
+
+static void on_project_load_contents_finished(GObject *source_object, GAsyncResult *res, gpointer user_data){
+    GFile *file = G_FILE(source_object);
+    MyappWindow *self = MYAPP_WINDOW(user_data);
+    char *contents = NULL;
+    gsize length = 0;
+    GError *error = NULL;
     
-    if (file) {
-        GKeyFile *keyfile = g_key_file_new ();
-        GError *error = NULL;
-        if (g_key_file_load_from_file (keyfile, g_file_get_path (file), G_KEY_FILE_NONE, NULL)) {
-            on_clear_clicked (self); // Wipe current state
-
-            gchar *b64_template = g_key_file_get_string (keyfile, "Project", "template", NULL);
-            if (b64_template) {
-                self->template_image = base64_to_pixbuf (b64_template);
-                g_free (b64_template);
+    if(g_file_load_contents_finish(file, res, &contents, &length, NULL, &error)){
+        // genuinely who tf wrote this function names??
+        // why tf is everything starting with g?!
+        GKeyFile *keyfile = g_key_file_new();
+        
+        if(g_key_file_load_from_data(keyfile, contents, length, G_KEY_FILE_NONE, &error)){
+            on_clear_clicked(self);
+            
+            gchar *b64_template = g_key_file_get_string(keyfile, "Project", "template", NULL);
+            if(b64_template){
+                self->template_image = base64_to_pixbuf(b64_template);
+                g_free(b64_template);
             }
-
-            gtk_toggle_button_set_active (self->deep_fry_button, g_key_file_get_boolean (keyfile, "Project", "deep_fry", NULL));
-            gtk_toggle_button_set_active (self->cinematic_button, g_key_file_get_boolean (keyfile, "Project", "cinematic", NULL));
-
-            int count = g_key_file_get_integer (keyfile, "Project", "layer_count", NULL);
-            for (int i = 0; i < count; i++) {
+            
+            gtk_toggle_button_set_active(self->deep_fry_button, g_key_file_get_boolean(keyfile, "Project", "deep_fry", NULL));
+            gtk_toggle_button_set_active(self->cinematic_button, g_key_file_get_boolean(keyfile, "Project", "cinematic", NULL));
+            
+            int count = g_key_file_get_integer(keyfile, "Project", "layer_count", NULL);
+            for(int i = 0; i < count; i++){
                 gchar group[32];
-                g_snprintf (group, sizeof(group), "Layer%d", i);
-
-                ImageLayer *layer = g_new0 (ImageLayer, 1);
-                layer->type = g_key_file_get_integer (keyfile, group, "type", NULL);
-                layer->x = g_key_file_get_double (keyfile, group, "x", NULL);
-                layer->y = g_key_file_get_double (keyfile, group, "y", NULL);
-                layer->scale = g_key_file_get_double (keyfile, group, "scale", NULL);
-                layer->rotation = g_key_file_get_double (keyfile, group, "rotation", NULL);
-                layer->opacity = g_key_file_get_double (keyfile, group, "opacity", NULL);
-                layer->blend_mode = g_key_file_get_integer (keyfile, group, "blend_mode", NULL);
-
-                if (layer->type == LAYER_TYPE_TEXT) {
-                    layer->text = g_key_file_get_string (keyfile, group, "text", NULL);
-                    layer->font_size = g_key_file_get_double (keyfile, group, "font_size", NULL);
-                } else if (layer->type == LAYER_TYPE_IMAGE) {
-                    gchar *b64 = g_key_file_get_string (keyfile, group, "pixbuf", NULL);
-                    if (b64) {
-                        layer->pixbuf = base64_to_pixbuf (b64);
-                        layer->width = gdk_pixbuf_get_width (layer->pixbuf);
-                        layer->height = gdk_pixbuf_get_height (layer->pixbuf);
-                        g_free (b64);
+                g_snprintf(group, sizeof(group), "Layer%d", i);
+                ImageLayer *layer = g_new0(ImageLayer, 1);
+                layer->type = g_key_file_get_integer(keyfile, group, "type", NULL);
+                layer->x = g_key_file_get_double(keyfile, group, "x", NULL);
+                layer->y = g_key_file_get_double(keyfile, group, "y", NULL);
+                layer->scale = g_key_file_get_double(keyfile, group, "scale", NULL);
+                layer->rotation = g_key_file_get_double(keyfile, group, "rotation", NULL);
+                layer->opacity = g_key_file_get_double(keyfile, group, "opacity", NULL);
+                layer->blend_mode = g_key_file_get_double(keyfile, group, "blend_mode", NULL);
+                
+                if(layer->type == LAYER_TYPE_TEXT){
+                    layer->text = g_key_file_get_string(keyfile,group, "text", NULL);
+                    layer->font_size = g_key_file_get_double(keyfile, group, "font_size", NULL);
+                }else if(layer->type == LAYER_TYPE_IMAGE){
+                    gchar *b64 = g_key_file_get_string(keyfile, group, "pixbuf", NULL);
+                    if(b64){
+                        layer->pixbuf = base64_to_pixbuf(b64);
+                        layer->width = gdk_pixbuf_get_width(layer->pixbuf);
+                        layer->height = gdk_pixbuf_get_height(layer->pixbuf);
+                        g_free(b64);
                     }
                 }
-                self->layers = g_list_append (self->layers, layer);
+                self->layers = g_list_append(self->layers, layer);
             }
-
-            if (self->template_image) {
+            
+            if(self->template_image){
                 gtk_stack_set_visible_child_name (self->content_stack, "content");
                 gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
                 gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
@@ -251,16 +256,36 @@ static void on_load_project_response (GObject *s, GAsyncResult *r, gpointer d) {
                 gtk_widget_set_sensitive (GTK_WIDGET (self->crop_mode_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
                 render_meme (self);
             }
-        } else {
-            g_printerr ("Error loading project: %s\n", error->message);
-            g_clear_error (&error);
+        }else{
+            g_printerr("Error parsing object: %s\n", error->message);
+            g_clear_error(&error);
         }
-        g_key_file_free (keyfile);
-        g_object_unref (file);
+        g_key_file_free(keyfile);
+        g_free(contents);
+    }else {
+        g_printerr("Error loading project %s\n", error->message);
+        g_clear_error(&error);
+    }
+    g_object_unref(file);
+}
+
+static void on_load_project_response(GObject *s, GAsyncResult *r, gpointer d){
+    GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
+    MyappWindow *self = MYAPP_WINDOW(d);
+    GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
+    
+    if(file){
+        g_file_load_contents_async(file, NULL, on_project_load_contents_finished, self);
     }
 }
+
+
+
 
 void myapp_window_save_project (MyappWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new ();
@@ -796,20 +821,38 @@ static void on_add_image_clicked (MyappWindow *self) {
 }
 
 static void on_export_response (GObject *s, GAsyncResult *r, gpointer d) {
-  GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
-  MyappWindow *self = MYAPP_WINDOW (d);
-  GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
-  if (file && self->final_meme) {
-      GdkPixbuf *save = self->final_meme;
-      if (gtk_toggle_button_get_active(self->crop_mode_button)) {
-          int iw = gdk_pixbuf_get_width(save); int ih = gdk_pixbuf_get_height(save);
-          save = gdk_pixbuf_new_subpixbuf(save, self->crop_x*iw, self->crop_y*ih, self->crop_w*iw, self->crop_h*ih);
-      } else {
-          g_object_ref(save);
-      }
-      gdk_pixbuf_save (save, g_file_get_path (file), "png", NULL, NULL);
-      g_object_unref (save); g_object_unref (file);
-  }
+    GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
+    MyappWindow *self = MYAPP_WINDOW (d);
+    GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
+  
+    if (file && self->final_meme) {
+        GdkPixbuf *save = self->final_meme;
+        if (gtk_toggle_button_get_active(self->crop_mode_button)) {
+            int iw = gdk_pixbuf_get_width(save); 
+            int ih = gdk_pixbuf_get_height(save);
+            save = gdk_pixbuf_new_subpixbuf(save, self->crop_x*iw, self->crop_y*ih, self->crop_w*iw, self->crop_h*ih);
+        } else {
+            g_object_ref(save);
+        }
+      
+        GError *error = NULL;
+      
+        GFileOutputStream *stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
+      
+        if (stream) {
+            gdk_pixbuf_save_to_stream (save, G_OUTPUT_STREAM (stream), "png", NULL, &error, NULL);
+            g_output_stream_close (G_OUTPUT_STREAM (stream), NULL, NULL);
+            g_object_unref (stream);
+        }
+
+        if (error) {
+            g_printerr ("Error exporting meme: %s\n", error->message);
+            g_clear_error (&error);
+        }
+
+        g_object_unref (save); 
+        g_object_unref (file);
+    }
 }
 
 static void on_export_clicked (MyappWindow *self) {
