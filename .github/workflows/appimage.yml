@@ -19,7 +19,7 @@ jobs:
     - name: Build and install to AppDir
       run: |
         meson setup build --prefix=/usr
-        DESTDIR=AppDir meson install -C build
+        DESTDIR="${PWD}/AppDir" meson install -C build
 
     - name: Download linuxdeploy and GTK plugin
       run: |
@@ -33,8 +33,8 @@ jobs:
         export DEPLOY_GTK_VERSION="4"
         ./linuxdeploy-x86_64.AppImage --appimage-extract
         ./squashfs-root/AppRun --appdir AppDir \
-          -d AppDir/usr/share/applications/io.github.vani_tty1.memerist.desktop \
-          -i AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg \
+          -d "${PWD}/AppDir/usr/share/applications/io.github.vani_tty1.memerist.desktop" \
+          -i "${PWD}/AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg" \
           --plugin gtk --output appimage
 
     - name: Upload Artifact
