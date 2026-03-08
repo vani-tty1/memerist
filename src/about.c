@@ -9,6 +9,7 @@ void show_about_dialog (GtkWindow *parent) {
      "<p>Enhancements:</p>"
       "<ul>"
       "<li>Made the file operations asynchronous</li>"
+      "<li>Added line wrapping</li>"
       "</ul>"
      "<p>Bug Fixes</p>"
       "<ul>"
