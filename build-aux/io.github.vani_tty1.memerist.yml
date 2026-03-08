@@ -8,12 +8,9 @@ finish-args:
   - --socket=fallback-x11
   - --socket=wayland
   - --device=dri
-  - --filesystem=xdg-pictures
 modules:
   - name: memerist
     buildsystem: meson
     sources:
-      - type: git
-        url: https://github.com/vani-tty1/memerist.git
-        tag: v0.4.1
-        commit: fef219e7f8fca8fbd9f789a82f22142a92fd45ce
+      - type: dir
+        path: .
