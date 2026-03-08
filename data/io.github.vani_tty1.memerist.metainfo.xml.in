@@ -73,6 +73,20 @@
 
   <releases>
   
+    <release version="0.4.4" date="2026-03-09">
+     <description translate="no">
+     <p>Enhancements:</p>
+      <ul>
+      <li>Made the file operations asynchronous</li>
+      </ul>
+     <p>Bug Fixes</p>
+      <ul>
+      <li>Fixed unable to export due to sandboxing</li>
+      </ul> 
+     </description>
+    </release>
+    
+    
     <release version="0.4.3" date="2026-03-07">
      <description translate="no">
      <p>Enhancements:</p>

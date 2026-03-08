@@ -8,17 +8,12 @@ void show_about_dialog (GtkWindow *parent) {
   static const char *release_notes = 
      "<p>Enhancements:</p>"
       "<ul>"
-        "<li>Can now copy to clipboard by clicking the button on the left side or Ctrl + Shift + C</li>"
-        "<li>Increased layer resize hitboxes.</li>"
-        "<li>Added visual resize handles to selected layers.</li>"
-        "<li>Improved drag performance by skipping rendering of heavy filters.</li>"
-        "<li>Replaced floating point calculation of apply_saturation_contrast to a lookup table</li>"
-     "</ul>"
-     "<p>Bug Fixes:</p>"
+      "<li>Made the file operations asynchronous</li>"
+      "</ul>"
+     "<p>Bug Fixes</p>"
       "<ul>"
-        "<li>Fixed crash when changing templates with active layers.</li>"
-        "<li>Removed No Image Loaded appearing in between template transitions.</li>"
-      "</ul>";
+      "<li>Fixed unable to export due to sandboxing</li>"
+      "</ul> ";
   
   
   g_autofree char *os_release_content = NULL;
