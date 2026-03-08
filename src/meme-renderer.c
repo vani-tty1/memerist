@@ -171,7 +171,7 @@ GdkPixbuf * meme_render_composite (GdkPixbuf *bg, GList *layers, gboolean cinema
         PangoLayout *layout = pango_cairo_create_layout (cr);
         pango_layout_set_text (layout, layer->text, -1);
         
-        
+        // line wrapping, set to 90% of image width
         double max_width = (w * 0.9) / layer->scale;
         pango_layout_set_width(layout, max_width * PANGO_SCALE);
         pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);

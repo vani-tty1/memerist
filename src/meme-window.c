@@ -27,6 +27,7 @@
 #include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
 #include <stdio.h>
+#include "gio/gio.h"
 #include "glib-object.h"
 #include "keyboard-shortcuts.h"
 
@@ -1000,29 +1001,74 @@ on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *
   }
 }
 
-static void
-on_import_template_response (GObject *s, GAsyncResult *r, gpointer d) {
-  GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
-  MyappWindow *self = MYAPP_WINDOW (d);
-  GFile *source_file, *dest_file;
-  GError *error = NULL;
-  char *filename, *user_dir_path, *dest_path;
-
-  source_file = gtk_file_dialog_open_finish (dialog, r, &error);
-  if (error) { g_error_free (error); return; }
-
-  filename = g_file_get_basename (source_file);
-  user_dir_path = get_user_template_dir ();
-  g_mkdir_with_parents (user_dir_path, 0755);
-  dest_path = g_build_filename (user_dir_path, filename, NULL);
-  dest_file = g_file_new_for_path (dest_path);
-
-  if (g_file_copy (source_file, dest_file, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
-    add_file_to_gallery (self, dest_path);
-  }
-  g_free (filename); g_free (user_dir_path); g_free (dest_path);
-  g_object_unref (source_file); g_object_unref (dest_file);
+static void on_copy_import_finished(GObject *source_object, GAsyncResult *res, gpointer user_data){
+    GFile * source_file = G_FILE(source_object);
+    MyappWindow *self = MYAPP_WINDOW(g_object_get_data(G_OBJECT(source_file), "window-ptr"));
+    char *dest_path = g_object_get_data(G_OBJECT(source_file), "dest-path");
+    GError *error = NULL;
+    
+    if(g_file_copy_finish(source_file, res, &error)){
+        add_file_to_gallery(self, dest_path);
+    }else{
+        g_printerr("Error copying file: %s\n", error->message);
+        g_clear_error(&error);
+    }
+    g_object_unref(source_file);
 }
+
+static void on_import_template_response(GObject *s, GAsyncResult *r, gpointer d){
+    GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
+    MyappWindow *self = MYAPP_WINDOW(d);
+    GFile *source_file, *dest_file;
+    GError *error = NULL;
+    char *filename, *user_dir_path, *dest_path;
+    
+    
+    source_file = gtk_file_dialog_open_finish(dialog, r, &error);
+    if(error){g_printerr("%s\n", error->message); g_error_free(error); return; }
+    
+    filename = g_file_get_basename(source_file);
+    user_dir_path = get_user_template_dir();
+    g_mkdir_with_parents(user_dir_path, 0755);
+    dest_path = g_build_filename(user_dir_path, filename, NULL);
+    dest_file = g_file_new_for_path(dest_path);
+    
+    g_object_set_data_full(G_OBJECT(source_file), "dest-path", g_strdup(dest_path), g_free);
+    g_object_set_data(G_OBJECT(source_file), "window-ptr", self);
+    g_file_copy_async(source_file, dest_file, G_FILE_COPY_OVERWRITE,
+        G_PRIORITY_DEFAULT, NULL, NULL, NULL,
+        on_copy_import_finished, NULL);
+    g_free(filename); 
+    g_free(user_dir_path); 
+    g_free(dest_path);
+    g_object_unref(dest_file);
+}
+
+// static void on_import_template_response (GObject *s, GAsyncResult *r, gpointer d) {
+//   GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
+//   MyappWindow *self = MYAPP_WINDOW (d);
+//   GFile *source_file, *dest_file;
+//   GError *error = NULL;
+//   char *filename, *user_dir_path, *dest_path;
+
+//   source_file = gtk_file_dialog_open_finish (dialog, r, &error);
+//   if (error) { g_error_free (error); return; }
+
+//   filename = g_file_get_basename (source_file);
+//   user_dir_path = get_user_template_dir ();
+//   g_mkdir_with_parents (user_dir_path, 0755);
+//   dest_path = g_build_filename (user_dir_path, filename, NULL);
+//   dest_file = g_file_new_for_path (dest_path);
+
+//   if (g_file_copy (source_file, dest_file, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
+//     add_file_to_gallery (self, dest_path);
+//   }
+//   g_free (filename); g_free (user_dir_path); g_free (dest_path);
+//   g_object_unref (source_file); g_object_unref (dest_file);
+// }
+
+
+
 
 static void
 on_import_template_clicked (MyappWindow *self) {
