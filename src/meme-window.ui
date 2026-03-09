@@ -14,8 +14,14 @@
 
   <template class="MyappWindow" parent="AdwApplicationWindow">
     <property name="title" translatable="yes">Meme Editor</property>
-    <property name="default-width">1130</property>
-    <property name="default-height">720</property>
+    <property name="default-width">850</property>
+    <property name="default-height">600</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 700px</condition>
+        <setter object="split_view" property="collapsed">True</setter>
+      </object>
+    </child>
     <property name="content">
     <object class="AdwToastOverlay" id="copy_clip_feedback">
     <property name="child">
@@ -101,7 +107,7 @@
                             <property name="vexpand">true</property>  
                             <property name="margin-top">24</property>
                             <property name="margin-bottom">80</property>
-                            <property name="margin-start">100</property>
+                            <property name="margin-start">80</property>
                             <property name="margin-end">24</property>
 
                             <child>
