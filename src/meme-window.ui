@@ -14,7 +14,7 @@
 
   <template class="MyappWindow" parent="AdwApplicationWindow">
     <property name="title" translatable="yes">Meme Editor</property>
-    <property name="default-width">850</property>
+    <property name="default-width">1150</property>
     <property name="default-height">600</property>
     <child>
       <object class="AdwBreakpoint">

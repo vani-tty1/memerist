@@ -6,7 +6,7 @@ void show_about_dialog (GtkWindow *parent) {
   static const char *developers[] = {"vani-tty1", NULL};
   static const char *designers[] = {"vani-tty1", NULL};
     
-  GBytes *notes_bytes = g_resources_lookup_data("/io/github/vani_tty1/memerist/release-notes.html", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+  GBytes *notes_bytes = g_resources_lookup_data("/io/github/vani_tty1/memerist/release.html", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
   const char *release_notes = notes_bytes ? g_bytes_get_data(notes_bytes, NULL) : "";
   
   
