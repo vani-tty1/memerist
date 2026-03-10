@@ -1,4 +1,3 @@
-application_id = 'io.github.vani_tty1.memerist'
 
 scalable_dir = 'hicolor' / 'scalable' / 'apps'
 install_data(
