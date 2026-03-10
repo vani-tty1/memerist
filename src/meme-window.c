@@ -1087,32 +1087,6 @@ static void on_import_template_response(GObject *s, GAsyncResult *r, gpointer d)
     g_object_unref(dest_file);
 }
 
-// static void on_import_template_response (GObject *s, GAsyncResult *r, gpointer d) {
-//   GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
-//   MyappWindow *self = MYAPP_WINDOW (d);
-//   GFile *source_file, *dest_file;
-//   GError *error = NULL;
-//   char *filename, *user_dir_path, *dest_path;
-
-//   source_file = gtk_file_dialog_open_finish (dialog, r, &error);
-//   if (error) { g_error_free (error); return; }
-
-//   filename = g_file_get_basename (source_file);
-//   user_dir_path = get_user_template_dir ();
-//   g_mkdir_with_parents (user_dir_path, 0755);
-//   dest_path = g_build_filename (user_dir_path, filename, NULL);
-//   dest_file = g_file_new_for_path (dest_path);
-
-//   if (g_file_copy (source_file, dest_file, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
-//     add_file_to_gallery (self, dest_path);
-//   }
-//   g_free (filename); g_free (user_dir_path); g_free (dest_path);
-//   g_object_unref (source_file); g_object_unref (dest_file);
-// }
-
-
-
-
 static void
 on_import_template_clicked (MyappWindow *self) {
   GtkFileDialog *dialog = gtk_file_dialog_new ();
