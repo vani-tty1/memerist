@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="baseGradient" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0" style="stop-color:#62a0ea;stop-opacity:1"/>
-      <stop offset="1" style="stop-color:#3584e4;stop-opacity:1"/>
-    </linearGradient>
+<svg width="128.00002" height="127.99999" viewBox="0 0 33.866671 33.866665" version="1.1" id="svg1" xmlns="http://www.w3.org/2000/svg">
+  <defs id="defs1">
     <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
       <feOffset dx="0" dy="4" result="offsetblur"/>
@@ -20,25 +16,46 @@
       <stop offset="0" style="stop-color:#f9f06b;stop-opacity:1"/>
       <stop offset="1" style="stop-color:#e5a50a;stop-opacity:1"/>
     </linearGradient>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="62.813" cy="61.44" r="73.411" id="gradient-0" gradientTransform="matrix(0.996999, 0, 0, 1, -0.310199, -0.052926)">
+      <stop offset="0" style="stop-opacity: 1; stop-color: rgb(158, 195, 241);"/>
+      <stop offset="1" style="stop-opacity: 1; stop-color: rgb(55, 121, 202);"/>
+    </radialGradient>
+    <linearGradient id="linearGradient56" gradientUnits="userSpaceOnUse" x1="-148.80418" y1="278.21121" x2="-76.804184" y2="278.21121" href="#linearGradient1" gradientTransform="matrix(2.035446, 0, 0, 1.305846, 292.129074, -257.857697)"/>
+    <linearGradient id="linearGradient1">
+      <stop style="stop-color:#9a9996;stop-opacity:1;" offset="0" id="stop4"/>
+      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.064" id="stop8"/>
+      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.148" id="stop9"/>
+      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.863" id="stop7"/>
+      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.895" id="stop6"/>
+      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.949" id="stop10"/>
+      <stop style="stop-color:#dbdbdb;stop-opacity:1;" offset="1" id="stop5"/>
+    </linearGradient>
   </defs>
-  <g filter="url(#shadow)" style="">
-    <rect x="16" y="16" width="96" height="96" rx="8" ry="8" fill="url(#baseGradient)"/>
-    <path d="M 19.184 85.48 C 16.835 85.199 41.727 53.946 41.749 54.02 C 41.749 54.02 72.052 94.118 69.957 95.966 C 69.868 94.049 88.759 74.948 88.761 74.993 C 88.761 74.993 110.847 101.865 109.418 103.62 C 110.555 102.365 111.201 105.833 108.135 109.216 C 109.104 112.694 21.892 113.106 19.393 109.262 C 15.539 107.714 16.768 82.893 19.184 85.48 Z" fill="#1c71d8" opacity="0.5" style=""/>
-    <rect x="16" y="16" width="96" height="96" rx="8" ry="8" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
-    <path d="M 24 17 H 104 A 7 7 0 0 1 111 24 V 104 A 7 7 0 0 1 104 111 H 24 A 7 7 0 0 1 17 104 V 24 A 7 7 0 0 1 24 17 Z" fill="none" stroke="white" stroke-opacity="0.15" stroke-width="1"/>
+  <g id="layer1" transform="translate(-32.279167,-138.64166)"/>
+  <g filter="url(#shadow)" style="" transform="matrix(0.181034, 0, 0, 0.181034, 5.508938, 5.324891)">
+    <rect x="-10.625" y="12.447" width="146.306" height="124.286" rx="8" ry="8" style="fill-rule: evenodd; paint-order: stroke markers; fill: rgb(61, 56, 70);"/>
+    <rect rx="7.733" ry="7.733" y="74.102" x="-10.741" style="display: inline; fill: url(&quot;#linearGradient56&quot;); fill-opacity: 1; stroke-width: 0.818182;" width="146.552" height="62.681" id="rect41"/>
+    <rect x="-10.677" y="-8.176" width="146.381" height="135.183" rx="8" ry="8" style="fill: url(&quot;#gradient-0&quot;);"/>
     <g transform="matrix(2.382862, 0, 0, 2.28726, 64, 64)" style="">
-      <circle r="12" fill="url(#sunGradient)" style="stroke-width: 1.28476px;"/>
+      <circle r="12" style="stroke-width: 1.28476px;" fill="url(#sunGradient)"/>
       <path d="M -9 -2 H 9 V 1 A 3 3 0 0 1 6 4 H 1 V 1 H -1 V 4 H -6 A 3 3 0 0 1 -9 1 Z" fill="#241f31"/>
       <path d="M -9 -2 L -11 -3 V -1 L -9 0 Z" fill="#241f31"/>
       <path d="M 8.953 -2 L 10.953 -3 L 10.953 -1 L 8.953 0 L 8.953 -2 Z" fill="#241f31"/>
-      <path d="M -3.376 6.319 C -1.376 8.319 1.972 8.033 5.305 5.366" fill="none" stroke="#241f31" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M -3.376 6.319 C -1.376 8.319 1.972 8.033 5.305 5.366" stroke-width="1.5" stroke-linecap="round" stroke="#241f31" fill="none"/>
     </g>
   </g>
-  <g transform="translate(0, 0)" style="">
-    <rect x="12" y="12" width="104" height="104" rx="10" fill="none" stroke="#99c1f1" stroke-width="2" stroke-dasharray="8 4"/>
-    <circle cx="12" cy="12" r="6" fill="#ffffff" stroke="#3584e4" stroke-width="2" filter="url(#shadow)"/>
-    <circle cx="116" cy="12" r="6" fill="#ffffff" stroke="#3584e4" stroke-width="2" filter="url(#shadow)"/>
-    <circle cx="12" cy="116" r="6" fill="#ffffff" stroke="#3584e4" stroke-width="2" filter="url(#shadow)"/>
-    <circle cx="116" cy="116" r="6" fill="#ffffff" stroke="#3584e4" stroke-width="2" filter="url(#shadow)"/>
+  <g style="" transform="matrix(0.220333, 0, 0, 0.199255, 2.746493, 3.219199)">
+    <rect x="7.574" y="7.065" width="113.679" height="116.207" fill="none" stroke="#99c1f1" stroke-width="2" stroke-dasharray="8 4" rx="4.181" ry="4.181" style=""/>
+  </g>
+  <g id="svg11300" style="" transform="matrix(0.271662, 0, 0, 0.244248, 17.823923, 16.194525)">
+    <title id="title4162">Adwaita Icon Template</title>
+    <g transform="matrix(1, 0, 0, 1, 526.086975, -183.839844)" id="g49" style="display:inline;enable-background:new">
+      <g style="stroke-width:0.904534" transform="matrix(1.2222219,0,0,1,-268.12825,-10.211197)" id="g43"/>
+      <g id="g48" transform="translate(0,2)">
+        <g id="g44" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+        <g id="g45" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+        <g style="fill:#c0bfbc;stroke-width:1.25" transform="matrix(0.8,0,0,0.8,-457.2,28.4)" id="g47"/>
+      </g>
+    </g>
   </g>
 </svg>

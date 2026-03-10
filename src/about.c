@@ -5,16 +5,9 @@
 void show_about_dialog (GtkWindow *parent) {
   static const char *developers[] = {"vani-tty1", NULL};
   static const char *designers[] = {"vani-tty1", NULL};
-  static const char *release_notes = 
-     "<p>Enhancements:</p>"
-      "<ul>"
-      "<li>Made the file operations asynchronous</li>"
-      "<li>Added line wrapping</li>"
-      "</ul>"
-     "<p>Bug Fixes</p>"
-      "<ul>"
-      "<li>Fixed unable to export due to sandboxing</li>"
-      "</ul> ";
+    
+  GBytes *notes_bytes = g_resources_lookup_data("/io/github/vani_tty1/memerist/release-notes.html", G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+  const char *release_notes = notes_bytes ? g_bytes_get_data(notes_bytes, NULL) : "";
   
   
   g_autofree char *os_release_content = NULL;
