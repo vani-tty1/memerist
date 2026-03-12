@@ -4,6 +4,10 @@ myapp_sources = [
   'meme-application.c',
   'meme-window.c',
   'meme-core.c',
+  'meme-window.c',
+  'meme-history.c',
+  'meme-canvas.c',
+  'meme-fileio.c',
   'meme-renderer.c',
   'about.c',
   'keyboard-shortcuts.c'
