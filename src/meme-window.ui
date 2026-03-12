@@ -321,11 +321,24 @@
                                         <child>
                                             <object class="AdwPreferencesGroup" id="layer_group">
                                                 <property name="title">Selected Layer</property>
-
                                                 <child>
-                                                    <object class="AdwEntryRow" id="layer_text_entry">
-                                                        <property name="title">Text Content</property>
-                                                        <property name="visible">false</property>
+                                                    <object class="GtkFrame" id="layer_text_container">
+                                                      <property name="visible">false</property>
+                                                      <style>
+                                                        <class name="card"/>
+                                                      </style>
+                                                      <child>
+                                                        <object class="GtkScrolledWindow">
+                                                          <property name="height-request">100</property>
+                                                          <child>
+                                                            <object class="GtkTextView" id="layer_text_view">
+                                                              <property name="wrap-mode">word-char</property>
+                                                              <property name="left-margin">12</property>
+                                                              <property name="right-margin">12</property>
+                                                            </object>
+                                                          </child>
+                                                        </object>
+                                                      </child>
                                                     </object>
                                                 </child>
                                                 

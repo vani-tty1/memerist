@@ -60,7 +60,12 @@ static void on_deep_fry_toggled (GtkToggleButton *btn, MyappWindow *self) { rend
 static void on_layer_text_changed (MyappWindow *self) {
     if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
         g_free (self->selected_layer->text);
-        self->selected_layer->text = g_strdup (gtk_editable_get_text (GTK_EDITABLE (self->layer_text_entry)));
+      
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+        GtkTextIter start, end;
+        gtk_text_buffer_get_bounds (buffer, &start, &end);
+        
+        self->selected_layer->text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
         self->selected_layer->font_size = gtk_spin_button_get_value (self->layer_font_size);
         render_meme (self);
     }
@@ -194,7 +199,8 @@ void sync_ui_with_layer(MyappWindow *self) {
 
     g_signal_handlers_block_by_func(self->layer_opacity_scale, on_text_changed, self);
     g_signal_handlers_block_by_func(self->layer_rotation_scale, on_text_changed, self);
-    g_signal_handlers_block_by_func(self->layer_text_entry, on_layer_text_changed, self);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+    g_signal_handlers_block_by_func(buffer, on_layer_text_changed, self);
     g_signal_handlers_block_by_func(self->layer_font_size, on_layer_text_changed, self);
 
     if (sensitive) {
@@ -202,11 +208,14 @@ void sync_ui_with_layer(MyappWindow *self) {
         gtk_range_set_value(GTK_RANGE(self->layer_rotation_scale), self->selected_layer->rotation);
         adw_combo_row_set_selected(self->blend_mode_row, self->selected_layer->blend_mode);
         if (is_text) {
-            gtk_editable_set_text(GTK_EDITABLE(self->layer_text_entry), self->selected_layer->text);
+            gtk_text_buffer_set_text(buffer, self->selected_layer->text ? self->selected_layer->text : "", -1);
             gtk_spin_button_set_value(self->layer_font_size, self->selected_layer->font_size);
         }
     }
-    gtk_widget_set_visible(GTK_WIDGET(self->layer_text_entry), is_text);
+    if (self->transform_group) {
+            gtk_widget_set_visible(GTK_WIDGET(self->transform_group), sensitive && !is_text);
+    }
+    gtk_widget_set_visible(GTK_WIDGET(self->layer_text_container), is_text);
     gtk_widget_set_visible(GTK_WIDGET(self->layer_font_size_row), is_text);
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_opacity_scale), sensitive);
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_rotation_scale), sensitive);
@@ -215,7 +224,7 @@ void sync_ui_with_layer(MyappWindow *self) {
     
     g_signal_handlers_unblock_by_func(self->layer_opacity_scale, on_text_changed, self);
     g_signal_handlers_unblock_by_func(self->layer_rotation_scale, on_text_changed, self);
-    g_signal_handlers_unblock_by_func(self->layer_text_entry, on_layer_text_changed, self);
+    g_signal_handlers_unblock_by_func(buffer, on_layer_text_changed, self);
     g_signal_handlers_unblock_by_func(self->layer_font_size, on_layer_text_changed, self);
 
     gtk_widget_set_visible (GTK_WIDGET (self->font_choose_row), is_text);
@@ -528,7 +537,8 @@ static void myapp_window_class_init (MyappWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_row);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_btn);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_entry);
+    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_container);
+    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_view);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
     gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
@@ -579,7 +589,8 @@ static void myapp_window_init (MyappWindow *self) {
     
     g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
     g_signal_connect (self->font_choose_btn, "notify::font-desc", G_CALLBACK (on_font_changed), self);
-    g_signal_connect_swapped (self->layer_text_entry, "changed", G_CALLBACK (on_layer_text_changed), self);
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+    g_signal_connect_swapped (buffer, "changed", G_CALLBACK (on_layer_text_changed), self);
     g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
     
     g_signal_connect_swapped (self->load_image_button, "clicked", G_CALLBACK (on_load_image_clicked), self);
