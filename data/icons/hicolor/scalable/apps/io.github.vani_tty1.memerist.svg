@@ -16,9 +16,9 @@
       <stop offset="0" style="stop-color:#f9f06b;stop-opacity:1"/>
       <stop offset="1" style="stop-color:#e5a50a;stop-opacity:1"/>
     </linearGradient>
-    <radialGradient gradientUnits="userSpaceOnUse" cx="62.813" cy="61.44" r="73.411" id="gradient-0" gradientTransform="matrix(0.996999, 0, 0, 1, -0.310199, -0.052926)">
-      <stop offset="0" style="stop-opacity: 1; stop-color: rgb(158, 195, 241);"/>
-      <stop offset="1" style="stop-opacity: 1; stop-color: rgb(55, 121, 202);"/>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="23.413" cy="63.829" r="73.411" id="gradient-0" gradientTransform="matrix(-0.015548, 0.846116, -0.999832, -0.018373, 128.286263, 25.701401)">
+      <stop offset="0" style="stop-opacity: 1; stop-color: rgb(72, 138, 221);"/>
+      <stop offset="1" style="stop-opacity: 1; stop-color: rgb(35, 94, 167);"/>
     </radialGradient>
     <linearGradient id="linearGradient56" gradientUnits="userSpaceOnUse" x1="-148.80418" y1="278.21121" x2="-76.804184" y2="278.21121" href="#linearGradient1" gradientTransform="matrix(2.035446, 0, 0, 1.305846, 292.129074, -257.857697)"/>
     <linearGradient id="linearGradient1">

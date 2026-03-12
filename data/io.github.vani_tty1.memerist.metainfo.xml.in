@@ -72,7 +72,20 @@
 </screenshots>
 
   <releases>
-  
+    <release version="0.5.0" date="2026-04-08">
+     <description translate="no">
+      <p>Chores:</p>
+      <ul>
+      <li>Make window.c much more modular</li>
+      </ul>
+      <p>Enhancements:</p>
+      <ul>
+      <li>New app icon</li>
+      <li>UI Overhaul</li>
+      </ul>
+     </description>
+    </release>
+    
     <release version="0.4.4" date="2026-03-09">
      <description translate="no">
      <p>Enhancements:</p>

@@ -38,7 +38,7 @@ void show_about_dialog (GtkWindow *parent) {
                         "version", PACKAGE_VERSION,
                         "developers", developers,
                         "designers", designers,
-                        "copyright", "©2026 vani-tty1",
+                        "copyright", "©2025 vani-tty1",
                         "website", "https://github.com/vani-tty1/memerist",
                         "issue-url", "https://github.com/vani-tty1/memerist/issues",
                         "support-url", "https://github.com/vani-tty1/memerist/discussions",
