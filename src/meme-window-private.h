@@ -16,7 +16,8 @@ struct _MyappWindow {
     GtkImage *add_text_button;
     AdwActionRow *font_choose_row;
     GtkFontDialogButton *font_choose_btn;
-    AdwEntryRow *layer_text_entry;
+    GtkFrame        *layer_text_container;
+    GtkTextView     *layer_text_view;
     AdwActionRow *layer_font_size_row;
     GtkSpinButton *layer_font_size;
     GtkMenuButton *main_menu_button;    

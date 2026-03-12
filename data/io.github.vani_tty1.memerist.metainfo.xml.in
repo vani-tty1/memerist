@@ -81,7 +81,8 @@
       <p>Enhancements:</p>
       <ul>
       <li>New app icon</li>
-      <li>UI Overhaul</li>
+      <li>Support for multi line text</li>
+      <li>Sidebar now auto collapses if the window is small</li>
       </ul>
      </description>
     </release>
