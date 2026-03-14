@@ -4,5 +4,7 @@ data/io.github.vani_tty1.memerist.desktop.in
 data/io.github.vani_tty1.memerist.metainfo.xml.in
 data/io.github.vani_tty1.memerist.gschema.xml
 src/main.c
-src/myapp-window.c
-src/myapp-window.ui
+src/meme-window.c
+src/meme-window.ui
+src/primary-menu.ui
+src/shortcuts-dialog.ui
