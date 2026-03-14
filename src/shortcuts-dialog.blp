@@ -1,0 +1,45 @@
+using Gtk 4.0;
+
+ShortcutsWindow shortcuts_dialog {
+  modal: true;
+
+  ShortcutsSection {
+    section-name: "shortcuts";
+    max-height: 12;
+
+    ShortcutsGroup {
+      title: _("General");
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Quit");
+        accelerator: "<ctrl>q";
+        action-name: "app.quit";
+      }
+    }
+
+    ShortcutsGroup {
+      title: _("Editing");
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Undo");
+        accelerator: "<ctrl>z";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Redo");
+        accelerator: "<ctrl>y";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Save Project");
+        accelerator: "<ctrl>s";
+      }
+
+      ShortcutsShortcut {
+        title: C_("shortcut window", "Copy to Clipboard");
+        accelerator: "<Control><Shift>c";
+      }
+    }
+  }
+}
+
