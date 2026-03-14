@@ -32,10 +32,16 @@ myapp_deps = [
 ]
 
 resources = gnome.compile_resources(
-  'memerist-resources',
-  'memerist.gresource.xml',
-  dependencies: blueprints,
-  source_dir: [meson.current_build_dir(), meson.current_source_dir()]
+    'memerist-resources',
+    'memerist.gresource.xml',
+    dependencies: blueprints,
+    source_dir: [
+        meson.current_build_dir(),
+        meson.current_source_dir(),
+        meson.project_source_root() / 'data',
+        meson.project_build_root() / 'data'
+    ],
+    c_name: 'memerist',
 )
 
 executable('memerist', myapp_sources, resources,
