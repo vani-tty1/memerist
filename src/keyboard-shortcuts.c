@@ -1,6 +1,10 @@
 #include "keyboard-shortcuts.h"
 #include "gdk/gdk.h"
+#include "gdk/gdkkeysyms.h"
+#include "glibconfig.h"
 #include "meme-window.h"
+#include <sys/stat.h>
+#include "meme-fileio.h"
 
 
 gboolean on_window_key_pressed (GtkEventControllerKey *controller,
@@ -22,6 +26,12 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
     // Ctrl + S = Save
     if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_s || keyval == GDK_KEY_S)) {
         myapp_window_save_project(self);
+        return TRUE;
+    }
+    
+    // Ctrl + E 
+    if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_e || keyval == GDK_KEY_E)){
+        on_export_clicked(self);
         return TRUE;
     }
 
