@@ -1,45 +1,44 @@
 using Gtk 4.0;
+using Adw 1;
 
-ShortcutsWindow shortcuts_dialog {
-  modal: true;
+Adw.ShortcutsDialog shortcuts_dialog {
+  
+  Adw.ShortcutsSection {
+    title: _("General");
 
-  ShortcutsSection {
-    section-name: "shortcuts";
-    max-height: 12;
+    Adw.ShortcutsItem {
+      title: C_("shortcut window", "Quit");
+      accelerator: "<ctrl>q";
+      action-name: "app.quit";
+    }
+  }
 
-    ShortcutsGroup {
-      title: _("General");
+  Adw.ShortcutsSection {
+    title: _("Editing");
 
-      ShortcutsShortcut {
-        title: C_("shortcut window", "Quit");
-        accelerator: "<ctrl>q";
-        action-name: "app.quit";
-      }
+    Adw.ShortcutsItem {
+      title: C_("shortcut window", "Undo");
+      accelerator: "<ctrl>z";
     }
 
-    ShortcutsGroup {
-      title: _("Editing");
+    Adw.ShortcutsItem {
+      title: C_("shortcut window", "Redo");
+      accelerator: "<ctrl>y";
+    }
 
-      ShortcutsShortcut {
-        title: C_("shortcut window", "Undo");
-        accelerator: "<ctrl>z";
-      }
+    Adw.ShortcutsItem {
+      title: C_("shortcut window", "Save Project");
+      accelerator: "<ctrl>s";
+    }
 
-      ShortcutsShortcut {
-        title: C_("shortcut window", "Redo");
-        accelerator: "<ctrl>y";
-      }
-
-      ShortcutsShortcut {
-        title: C_("shortcut window", "Save Project");
-        accelerator: "<ctrl>s";
-      }
-
-      ShortcutsShortcut {
-        title: C_("shortcut window", "Copy to Clipboard");
-        accelerator: "<Control><Shift>c";
-      }
+    Adw.ShortcutsItem {
+      title: C_("shortcut window", "Copy to Clipboard");
+      accelerator: "<Control><Shift>c";
+    }
+    
+    Adw.ShortcutsItem {
+      title: C_("shortcuts window", "Export");
+      accelerator: "<Control>c";
     }
   }
 }
-

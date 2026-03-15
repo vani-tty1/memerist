@@ -21,6 +21,7 @@
 #include "about.h"
 #include <glib/gi18n.h>
 #include "meme-application.h"
+#include "adwaita.h"
 #include "meme-window.h"
 
 struct _MyappApplication
@@ -94,14 +95,12 @@ myapp_application_shortcuts_action (GSimpleAction *action,
   MyappApplication *self = user_data;
   GtkWindow *parent = gtk_application_get_active_window (GTK_APPLICATION (self));
   GtkBuilder *builder;
-  GtkWindow *shortcuts_window;
+  AdwDialog *shortcuts_window;
   builder = gtk_builder_new_from_resource ("/io/github/vani_tty1/memerist/shortcuts-dialog.ui");
-  shortcuts_window = GTK_WINDOW (gtk_builder_get_object (builder, "shortcuts_dialog"));
+  shortcuts_window = ADW_DIALOG (gtk_builder_get_object (builder, "shortcuts_dialog"));
   if (parent) {
-      gtk_window_set_transient_for (shortcuts_window, parent);
-      gtk_window_present (shortcuts_window);
+        adw_dialog_present (ADW_DIALOG (shortcuts_window), GTK_WIDGET (parent));
   }
-
   g_object_unref (builder);
 }
 
