@@ -31,8 +31,13 @@ void show_about_dialog(GtkWindow *parent) {
         PACKAGE_VERSION
     );
     
+    static const char *developers[] = {"vani-tty1", NULL};
+    static const char *designers[] = {"vani-tty1", NULL};
+    
+    
+    adw_about_dialog_set_developers(ADW_ABOUT_DIALOG(dialog), developers);
+    adw_about_dialog_set_designers(ADW_ABOUT_DIALOG(dialog), designers);
     adw_about_dialog_set_version(ADW_ABOUT_DIALOG(dialog), PACKAGE_VERSION);
-
     adw_about_dialog_set_debug_info(ADW_ABOUT_DIALOG(dialog), debug_text);
     adw_about_dialog_set_debug_info_filename(ADW_ABOUT_DIALOG(dialog), "meme-debug.txt");
     
