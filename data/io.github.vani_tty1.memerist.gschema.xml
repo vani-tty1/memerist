@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="memerist">
-	<schema id="io.github.vani_tty1.memerist" path="/io/github/vani1_2/memerist/myapp-window.ui">
+	<schema id="io.github.vani_tty1.memerist" path="/io/github/vani_tty1/memerist/">
 		<key name="window-width" type="i">
 			<default>900</default>
 			<summary>Window width</summary>
