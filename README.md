@@ -60,7 +60,7 @@
 
 **Install the required development packages:**
 ```bash
-sudo dnf install gtk4-devel libadwaita-devel meson ninja-build
+sudo dnf install gtk4-devel libadwaita-devel meson ninja-build blueprint-compiler
 # distributions often names these packages differently, use your package manager
 # to search for this packages or browse your distributions package repo.
 ```
