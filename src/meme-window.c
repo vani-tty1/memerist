@@ -28,20 +28,26 @@
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
 
-// Function prototypes for internal use
 static void populate_template_gallery (MyappWindow *self);
 
 void render_meme (MyappWindow *self) {
     if (!self->template_image) return;
     gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
-    if (self->final_meme) g_object_unref(self->final_meme);
-    self->final_meme = meme_render_composite(
-        self->template_image,
-        self->layers,
-        is_dragging ? FALSE : gtk_toggle_button_get_active(self->cinematic_button),
-        is_dragging ? FALSE : gtk_toggle_button_get_active(self->deep_fry_button)
-    );
+    
+    gboolean is_crop_drag = (self->drag_type == DRAG_TYPE_CROP_MOVE || 
+                             self->drag_type == DRAG_TYPE_CROP_RESIZE);
 
+    if (!self->final_meme || !is_crop_drag) {
+        if (self->final_meme) g_object_unref(self->final_meme);
+        self->final_meme = meme_render_composite(
+            self->template_image,
+            self->layers,
+            is_dragging ? FALSE : gtk_toggle_button_get_active(self->cinematic_button),
+            is_dragging ? FALSE : gtk_toggle_button_get_active(self->deep_fry_button)
+        );
+    }
+    // why did I even write this in C?
+    // am I actually stupid?
     GdkTexture *tex = meme_render_editor_overlay(
         self->final_meme,
         self->layers,
@@ -53,6 +59,8 @@ void render_meme (MyappWindow *self) {
     gtk_picture_set_paintable(self->meme_preview, GDK_PAINTABLE(tex));
     g_object_unref(tex);
 }
+
+
 
 static void on_text_changed (MyappWindow *self) { if (self->template_image) render_meme (self); }
 static void on_deep_fry_toggled (GtkToggleButton *btn, MyappWindow *self) { render_meme (self); }
