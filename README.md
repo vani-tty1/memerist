@@ -102,7 +102,9 @@ sudo meson install -C build
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
-
+Note:
+  Please submit your Pull Request against the `testing` branch (do not submit directly to `main`).
+  
 ## License
 
 This project is open source. Please check the LICENSE file for details.
