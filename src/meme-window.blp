@@ -330,11 +330,13 @@ template $MyappWindow: Adw.ApplicationWindow {
 
             Adw.ActionRow {
               title: "Opacity";
-
+              
+              [suffix]
               Scale layer_opacity_scale {
+                valign: center;
                 hexpand: true;
                 sensitive: false;
-                width-request: 100;
+                width-request: 150;
                 draw-value: true;
 
                 adjustment: Adjustment {
@@ -348,11 +350,12 @@ template $MyappWindow: Adw.ApplicationWindow {
 
             Adw.ActionRow {
               title: "Rotation";
-
+              [suffix]
               Scale layer_rotation_scale {
+                valign: center;
                 hexpand: true;
                 sensitive: false;
-                width-request: 100;
+                width-request: 150;
                 draw-value: false;
 
                 adjustment: Adjustment {

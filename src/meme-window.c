@@ -350,18 +350,67 @@ static void add_file_to_gallery (MyappWindow *self, const char *full_path) {
     gtk_flow_box_append (self->template_gallery, picture);
 }
 
-static void scan_directory_for_templates (MyappWindow *self, const char *dir_path) {
-    GDir *dir = g_dir_open (dir_path, 0, NULL);
-    const char *filename;
-    if (!dir) return;
-    while ((filename = g_dir_read_name (dir)) != NULL) {
-        if (g_str_has_suffix (filename, ".png") || g_str_has_suffix (filename, ".jpg") || g_str_has_suffix (filename, ".jpeg")) {
-            char *full_path = g_build_filename (dir_path, filename, NULL);
+// files are processed in small background batches
+// to (hopefully) increases performance
+static void on_templates_enumerated (GObject *source_object, GAsyncResult *res, gpointer user_data) {
+    GFileEnumerator *enumerator = G_FILE_ENUMERATOR (source_object);
+    MyappWindow *self = MYAPP_WINDOW (user_data);
+    GError *error = NULL;
+    
+    GList *files = g_file_enumerator_next_files_finish (enumerator, res, &error);
+
+    if (error) {
+        g_printerr ("Error reading templates: %s\n", error->message);
+        g_clear_error (&error);
+        g_object_unref (enumerator);
+        return;
+    }
+
+    // if no more files, we are done
+    if (!files) {
+        g_object_unref (enumerator);
+        return;
+    }
+
+    for (GList *l = files; l != NULL; l = l->next) {
+        GFileInfo *info = G_FILE_INFO (l->data);
+        const char *name = g_file_info_get_name (info);
+        
+        if (g_str_has_suffix (name, ".png") || g_str_has_suffix (name, ".jpg") || g_str_has_suffix (name, ".jpeg")) {
+            GFile *child = g_file_enumerator_get_child (enumerator, info);
+            char *full_path = g_file_get_path (child);
             add_file_to_gallery (self, full_path);
             g_free (full_path);
+            g_object_unref (child);
         }
     }
-    g_dir_close (dir);
+    g_list_free_full (files, g_object_unref);
+    g_file_enumerator_next_files_async (enumerator, 10, G_PRIORITY_DEFAULT, NULL, on_templates_enumerated, self);
+}
+
+static void on_templates_dir_opened (GObject *source_object, GAsyncResult *res, gpointer user_data) {
+    GFile *dir = G_FILE (source_object);
+    MyappWindow *self = MYAPP_WINDOW (user_data);
+    GError *error = NULL;
+    GFileEnumerator *enumerator = g_file_enumerate_children_finish (dir, res, &error);
+
+    if (error) {
+        g_clear_error (&error);
+        return;
+    }
+    g_file_enumerator_next_files_async (enumerator, 10, G_PRIORITY_DEFAULT, NULL, on_templates_enumerated, self);
+}
+
+static void scan_directory_for_templates_async (MyappWindow *self, const char *dir_path) {
+    GFile *dir = g_file_new_for_path (dir_path);
+    g_file_enumerate_children_async (dir,
+                                     "standard::name",
+                                     G_FILE_QUERY_INFO_NONE,
+                                     G_PRIORITY_DEFAULT,
+                                     NULL,
+                                     on_templates_dir_opened,
+                                     self);
+    g_object_unref (dir);
 }
 
 static void scan_resources_for_templates (MyappWindow *self) {
@@ -385,7 +434,7 @@ static void populate_template_gallery (MyappWindow *self) {
     scan_resources_for_templates (self);
     user_dir = get_user_template_dir ();
     g_mkdir_with_parents (user_dir, 0755);
-    scan_directory_for_templates (self, user_dir);
+    scan_directory_for_templates_async (self, user_dir); 
     g_free (user_dir);
 }
 
