@@ -19,12 +19,15 @@
  */
 
 
+#include "adwaita.h"
+#include "gtk/gtk.h"
 #include "meme-window-private.h"
 #include "meme-fileio.h"
 #include "meme-canvas.h"
 #include "meme-history.h"
 #include "keyboard-shortcuts.h"
 #include <glib/gstdio.h>
+#include <stdio.h>
 
 G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
 
@@ -481,9 +484,10 @@ static void on_import_template_clicked (MyappWindow *self) {
 }
 
 static void on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d) {
-    GtkAlertDialog *dialog = GTK_ALERT_DIALOG (s);
+    AdwAlertDialog *dialog = ADW_ALERT_DIALOG(s);
     MyappWindow *self = MYAPP_WINDOW (d);
-    if (gtk_alert_dialog_choose_finish (dialog, r, NULL) == 1) {
+    const char *choice = adw_alert_dialog_choose_finish(dialog, r);
+    if (g_strcmp0(choice, "delete") == 0) {
         GList *selected = gtk_flow_box_get_selected_children (self->template_gallery);
         if (selected) {
             GtkFlowBoxChild *child = selected->data;
@@ -499,10 +503,10 @@ static void on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d)
 }
 
 static void on_delete_template_clicked (MyappWindow *self) {
-    GtkAlertDialog *dialog = gtk_alert_dialog_new ("Delete this template?");
-    gtk_alert_dialog_set_buttons (dialog, (const char *[]) {"Cancel", "Delete", NULL});
-    gtk_alert_dialog_set_default_button (dialog, 1);
-    gtk_alert_dialog_choose (dialog, GTK_WINDOW (self), NULL, on_delete_confirm_response, self);
+    AdwAlertDialog *dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Delete this template?", NULL));
+    adw_alert_dialog_add_responses(dialog, "cancel", "Cancel", "delete", "Delete", NULL);
+    adw_alert_dialog_set_response_appearance(dialog, "delete", ADW_RESPONSE_DESTRUCTIVE);
+    adw_alert_dialog_choose(dialog, GTK_WIDGET(self), NULL, on_delete_confirm_response, self);
 }
 
 void apply_zoom(MyappWindow *self) {
