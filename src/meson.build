@@ -20,6 +20,7 @@ myapp_sources = [
   'meme-canvas.c',
   'meme-fileio.c',
   'meme-renderer.c',
+  'meme-gpu.c',
   'about.c',
   'keyboard-shortcuts.c'
 ]
@@ -28,6 +29,7 @@ myapp_deps = [
   dependency('gtk4'),
   dependency('libadwaita-1', version: '>= 1.4'),
   dependency('cairo'),
+  dependency('epoxy'),
   cc.find_library('m'),
 ]
 
