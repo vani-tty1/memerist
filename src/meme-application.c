@@ -23,6 +23,7 @@
 #include "meme-application.h"
 #include "adwaita.h"
 #include "meme-window.h"
+#include "meme-gpu.h"
 
 struct _MyappApplication
 {
@@ -136,6 +137,7 @@ myapp_application_startup (GApplication *app)
 
   G_APPLICATION_CLASS (myapp_application_parent_class)->startup (app);
 
+  meme_gpu_init (NULL);
 
   g_action_map_add_action_entries (G_ACTION_MAP (app),
                                    app_actions,
@@ -152,12 +154,20 @@ myapp_application_startup (GApplication *app)
 }
 
 static void
+myapp_application_shutdown (GApplication *app)
+{
+  meme_gpu_cleanup ();
+  G_APPLICATION_CLASS (myapp_application_parent_class)->shutdown (app);
+}
+
+static void
 myapp_application_class_init (MyappApplicationClass *klass)
 {
   GApplicationClass *app_class = G_APPLICATION_CLASS (klass);
 
-  app_class->startup = myapp_application_startup;
+  app_class->startup  = myapp_application_startup;
   app_class->activate = myapp_application_activate;
+  app_class->shutdown = myapp_application_shutdown;
 }
 
 static void

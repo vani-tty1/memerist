@@ -223,9 +223,9 @@ void sync_ui_with_layer(MyappWindow *self) {
             gtk_spin_button_set_value(self->layer_font_size, self->selected_layer->font_size);
         }
     }
-    if (self->transform_group) {
-            gtk_widget_set_visible(GTK_WIDGET(self->transform_group), sensitive && !is_text);
-    }
+    // if (self->transform_group) {
+    //         gtk_widget_set_visible(GTK_WIDGET(self->transform_group), sensitive && !is_text);
+    // }
     gtk_widget_set_visible(GTK_WIDGET(self->layer_text_container), is_text);
     gtk_widget_set_visible(GTK_WIDGET(self->layer_font_size_row), is_text);
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_opacity_scale), sensitive);
