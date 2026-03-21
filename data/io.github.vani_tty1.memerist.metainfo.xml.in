@@ -72,6 +72,19 @@
 </screenshots>
 
   <releases>
+    <release version="0.6.0" date="2026-03-21">
+        <description translate="no">
+            <p>Performance and Graphics Improvements:</p>
+            <ul>
+                <li>GPU-accelerated filters</li>
+                <li>Improved pixel rowstride handling</li>
+                <li>Global color adjustments</li>
+                <li>Crop mode performance improvement</li>
+                <li>CPU fallback if gpu init fails</li>
+            </ul>
+        </description>
+    </release>
+    
     <release version="0.5.0" date="2026-03-13">
      <description translate="no">
       <p>Chores:</p>
