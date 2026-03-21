@@ -80,19 +80,22 @@ to search for this packages or browse your distributions package repo.
 ```bash
 # Clone the repository
 git clone https://github.com/vani-tty1/memerist.git
-cd memerist
 
-# Build Only
+# compiles and creates a build directory,
+# run the binary by using ./build/src/memerist
 make build
 
-# Build and Run
+# rebuilds and runs the application.
+# Use this after making changes to quickly compile and launch.
 make run
 
-# Reconfigure build folder
-make reconfigure
+# Compile an optimized release version.
+# create a dir called build-release
+make release
+make run-release
 
-# Install (optional)
-sudo meson install -C build
+# Remove all compiled build directories
+make clean
 ```
 
 ---
@@ -110,6 +113,7 @@ sudo meson install -C build
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
+
 Note:
   Please submit your Pull Request against the `testing` branch (do not submit directly to `main`).
   
