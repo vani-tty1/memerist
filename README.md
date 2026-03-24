@@ -76,6 +76,12 @@ to search for this packages or browse your distributions package repo.
 <br>
 
 #### Build Instructions
+There are two ways to build this from source,
+
+1.  Clone and open this project in GNOME BUilder and hit the play button up top.
+
+2.  Manual way below:
+
 
 ```bash
 # Clone the repository
