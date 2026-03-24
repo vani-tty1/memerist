@@ -219,10 +219,11 @@ void on_add_image_clicked(MyappWindow *self) {
     g_object_unref(dialog);
 }
 
-static void on_export_response(GObject *s, GAsyncResult *r, gpointer d) {
+static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MyappWindow *self = MYAPP_WINDOW(d);
     GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
+
     if (file && self->final_meme) {
         GdkPixbuf *save = self->final_meme;
         if (gtk_toggle_button_get_active(self->crop_mode_button)) {
@@ -230,20 +231,69 @@ static void on_export_response(GObject *s, GAsyncResult *r, gpointer d) {
             save = gdk_pixbuf_new_subpixbuf(save, self->crop_x*iw, self->crop_y*ih, self->crop_w*iw, self->crop_h*ih);
         } else g_object_ref(save);
         
+        const char *format = g_object_get_data(G_OBJECT(dialog), "export-format");
+        if (!format) format = "png";
+        if (g_strcmp0(format, "jpeg") == 0 && gdk_pixbuf_get_has_alpha(save)) {
+            int w = gdk_pixbuf_get_width(save);
+            int h = gdk_pixbuf_get_height(save);
+            GdkPixbuf *flat = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, w, h);
+            gdk_pixbuf_fill(flat, 0xFFFFFFFF); // Solid white
+            gdk_pixbuf_composite(save, flat, 0, 0, w, h, 0, 0, 1.0, 1.0, GDK_INTERP_BILINEAR, 255);
+            g_object_unref(save);
+            save = flat;
+        }
         GError *error = NULL;
         GFileOutputStream *stream = g_file_replace(file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
         if (stream) {
-            gdk_pixbuf_save_to_stream(save, G_OUTPUT_STREAM(stream), "png", NULL, &error, NULL);
-            g_output_stream_close(G_OUTPUT_STREAM(stream), NULL, NULL); g_object_unref(stream);
+            if (g_strcmp0(format, "jpeg") == 0) {
+                gdk_pixbuf_save_to_stream(save, G_OUTPUT_STREAM(stream), format, NULL, &error, "quality", "100", NULL);
+            } else {
+                gdk_pixbuf_save_to_stream(save, G_OUTPUT_STREAM(stream), format, NULL, &error, NULL);
+            }
+            g_output_stream_close(G_OUTPUT_STREAM(stream), NULL, NULL);
+            g_object_unref(stream);
         }
-        g_object_unref(save); g_object_unref(file);
+        g_object_unref(save);
+        g_object_unref(file);
     }
+}
+
+static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
+    AdwAlertDialog *alert = ADW_ALERT_DIALOG(s);
+    MyappWindow *self = MYAPP_WINDOW(d);
+    const char *choice = adw_alert_dialog_choose_finish(alert, r);
+
+    if (g_strcmp0(choice, "cancel") == 0 || !choice) return;
+
+    const char *ext = ".png";
+    if (g_strcmp0(choice, "jpeg") == 0) ext = ".jpg";
+    else if (g_strcmp0(choice, "webp") == 0) ext = ".webp";
+
+    char *filename = g_strdup_printf("meme%s", ext);
+
+    GtkFileDialog *dialog = gtk_file_dialog_new();
+    gtk_file_dialog_set_initial_name(dialog, filename);
+
+    g_object_set_data(G_OBJECT(dialog), "export-format", (gpointer)choice);
+
+    gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_export_file_response, self);
+
+    g_free(filename);
+    g_object_unref(dialog);
 }
 
 void on_export_clicked(MyappWindow *self) {
     if (!self->final_meme) return;
-    GtkFileDialog *dialog = gtk_file_dialog_new();
-    gtk_file_dialog_set_initial_name(dialog, "meme.png");
-    gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_export_response, self);
-    g_object_unref(dialog);
+
+    AdwAlertDialog *dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Export Format", "Choose an image format."));
+    adw_alert_dialog_add_responses(dialog,
+        "cancel", "Cancel",
+        "png", "PNG",
+        "jpeg", "JPG",
+        "webp", "WebP",
+        NULL);
+
+    adw_alert_dialog_set_response_appearance(dialog, "png", ADW_RESPONSE_SUGGESTED);
+
+    adw_alert_dialog_choose(dialog, GTK_WIDGET(self), NULL, on_format_chosen, self);
 }
