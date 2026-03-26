@@ -156,6 +156,7 @@ static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     gtk_widget_set_visible (GTK_WIDGET (self->transform_group), active);
     gtk_widget_set_visible (GTK_WIDGET (self->layer_group), !active);
     gtk_widget_set_visible (GTK_WIDGET (self->templates_group), !active);
+    gtk_widget_set_visible (GTK_WIDGET (self->layer_group), !active && self->selected_layer != NULL);
     if (active) {
     self->crop_x = 0.0; self->crop_y = 0.0;
     self->crop_w = 1.0; self->crop_h = 1.0;
@@ -207,6 +208,8 @@ static void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *sel
 void sync_ui_with_layer(MemeWindow *self) {
     gboolean sensitive = (self->selected_layer != NULL);
     gboolean is_text = (sensitive && self->selected_layer->type == LAYER_TYPE_TEXT);
+    gboolean is_crop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->crop_mode_button));    
+    g_signal_handlers_block_by_func(self->layer_opacity_scale, on_text_changed, self);
 
     g_signal_handlers_block_by_func(self->layer_opacity_scale, on_text_changed, self);
     g_signal_handlers_block_by_func(self->layer_rotation_scale, on_text_changed, self);
@@ -223,6 +226,7 @@ void sync_ui_with_layer(MemeWindow *self) {
             gtk_spin_button_set_value(self->layer_font_size, self->selected_layer->font_size);
         }
     }
+    gtk_widget_set_visible(GTK_WIDGET(self->layer_group), sensitive && !is_crop);
     // if (self->transform_group) {
     //         gtk_widget_set_visible(GTK_WIDGET(self->transform_group), sensitive && !is_text);
     // }
