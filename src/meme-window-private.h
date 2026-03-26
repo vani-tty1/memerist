@@ -4,7 +4,7 @@
 #include "meme-core.h"
 #include "meme-renderer.h"
 
-struct _MyappWindow {
+struct _MemeWindow {
     AdwApplicationWindow parent_instance;
     AdwPreferencesGroup *layer_group;
     AdwPreferencesGroup *templates_group;
@@ -46,8 +46,8 @@ struct _MyappWindow {
     double crop_x, crop_y, crop_w, crop_h;
 };
 
-void sync_ui_with_layer(MyappWindow *self);
-void render_meme(MyappWindow *self);
-void on_clear_clicked(MyappWindow *self);
-void apply_zoom(MyappWindow *self);
-void update_template_image(MyappWindow *self, GdkPixbuf *new_pixbuf);
+void sync_ui_with_layer(MemeWindow *self);
+void render_meme(MemeWindow *self);
+void on_clear_clicked(MemeWindow *self);
+void apply_zoom(MemeWindow *self);
+void update_template_image(MemeWindow *self, GdkPixbuf *new_pixbuf);

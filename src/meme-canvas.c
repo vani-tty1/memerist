@@ -1,8 +1,9 @@
 #include "meme-canvas.h"
+#include "meme-core.h"
 #include "meme-history.h"
 #include <math.h>
 
-void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MyappWindow *self) {
+void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MemeWindow *self) {
     double ix, iy, img_w, img_h;
     if (!self->template_image) { gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL); return; }
     
@@ -23,6 +24,7 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, My
             case HANDLE_LEFT: cursor = "w-resize"; break;
             case HANDLE_RIGHT: cursor = "e-resize"; break;
             case HANDLE_CENTER: cursor = "move"; break;
+            case HANDLE_NONE: cursor = NULL ; break;
             default: cursor = NULL; break;
         }
         gtk_widget_set_cursor_from_name(GTK_WIDGET(self->meme_preview), cursor);
@@ -53,7 +55,7 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, My
     if (!found) gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL);
 }
 
-void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self) {
+void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *self) {
     double ix, iy, img_w, img_h;
     if (!self->template_image) return;
     meme_get_image_coordinates(GTK_WIDGET(self->meme_preview), self->template_image, x, y, &ix, &iy);
@@ -103,7 +105,7 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *se
     if (self->selected_layer) { self->selected_layer = NULL; sync_ui_with_layer(self); render_meme(self); }
 }
 
-void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, MyappWindow *self) {
+void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, MemeWindow *self) {
     double dx, dy, img_w, img_h, ww, wh, wr, hr, s;
     if (self->drag_type == DRAG_TYPE_NONE || !self->template_image) return; 
     img_w = gdk_pixbuf_get_width(self->template_image);
@@ -148,7 +150,7 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
     render_meme(self);
 }
 
-void on_drag_end (GtkGestureDrag *g, double x, double y, MyappWindow *self) { 
+void on_drag_end (GtkGestureDrag *g, double x, double y, MemeWindow *self) { 
     self->drag_type = DRAG_TYPE_NONE; 
     render_meme(self);
 }

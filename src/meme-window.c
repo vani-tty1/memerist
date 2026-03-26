@@ -29,11 +29,11 @@
 #include <glib/gstdio.h>
 #include <stdio.h>
 
-G_DEFINE_FINAL_TYPE (MyappWindow, myapp_window, ADW_TYPE_APPLICATION_WINDOW)
+G_DEFINE_FINAL_TYPE (MemeWindow, meme_window, ADW_TYPE_APPLICATION_WINDOW)
 
-static void populate_template_gallery (MyappWindow *self);
+static void populate_template_gallery (MemeWindow *self);
 
-void render_meme (MyappWindow *self) {
+void render_meme (MemeWindow *self) {
     if (!self->template_image) return;
     gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
     
@@ -65,10 +65,10 @@ void render_meme (MyappWindow *self) {
 
 
 
-static void on_text_changed (MyappWindow *self) { if (self->template_image) render_meme (self); }
-static void on_deep_fry_toggled (GtkToggleButton *btn, MyappWindow *self) { render_meme (self); }
+static void on_text_changed (MemeWindow *self) { if (self->template_image) render_meme (self); }
+static void on_deep_fry_toggled (GtkToggleButton *btn, MemeWindow *self) { render_meme (self); }
 
-static void on_layer_text_changed (MyappWindow *self) {
+static void on_layer_text_changed (MemeWindow *self) {
     if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
         g_free (self->selected_layer->text);
       
@@ -82,7 +82,7 @@ static void on_layer_text_changed (MyappWindow *self) {
     }
 }
 
-static void on_add_text_clicked (MyappWindow *self) {
+static void on_add_text_clicked (MemeWindow *self) {
     push_undo (self);
     ImageLayer *new_layer = g_new0 (ImageLayer, 1);
     new_layer->type = LAYER_TYPE_TEXT;
@@ -97,7 +97,7 @@ static void on_add_text_clicked (MyappWindow *self) {
     render_meme (self);
 }   
 
-void update_template_image (MyappWindow *self, GdkPixbuf *new_pixbuf) {
+void update_template_image (MemeWindow *self, GdkPixbuf *new_pixbuf) {
     if (!new_pixbuf) return;
     push_undo (self);
     if (self->template_image) g_object_unref (self->template_image);
@@ -105,7 +105,7 @@ void update_template_image (MyappWindow *self, GdkPixbuf *new_pixbuf) {
     render_meme (self);
 }
 
-static void on_rotate_clicked (GtkWidget *btn, MyappWindow *self) {
+static void on_rotate_clicked (GtkWidget *btn, MemeWindow *self) {
     gboolean clockwise;
     GdkPixbuf *new_pix;
     if (!self->template_image) return;
@@ -115,7 +115,7 @@ static void on_rotate_clicked (GtkWidget *btn, MyappWindow *self) {
     update_template_image (self, new_pix);
 }
 
-static void on_flip_clicked (GtkWidget *btn, MyappWindow *self) {
+static void on_flip_clicked (GtkWidget *btn, MemeWindow *self) {
     gboolean horizontal;
     GdkPixbuf *new_pix;
     if (!self->template_image) return;
@@ -124,7 +124,7 @@ static void on_flip_clicked (GtkWidget *btn, MyappWindow *self) {
     update_template_image (self, new_pix);
 }
 
-static void on_crop_preset_clicked (GtkWidget *btn, MyappWindow *self) {
+static void on_crop_preset_clicked (GtkWidget *btn, MemeWindow *self) {
     int w, h;
     double target_ratio = 1.0;
     double current_ratio;
@@ -151,7 +151,7 @@ static void on_crop_preset_clicked (GtkWidget *btn, MyappWindow *self) {
     render_meme(self);
 }
 
-static void on_crop_mode_toggled (GtkToggleButton *btn, MyappWindow *self) {
+static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     gboolean active = gtk_toggle_button_get_active (btn);
     gtk_widget_set_visible (GTK_WIDGET (self->transform_group), active);
     gtk_widget_set_visible (GTK_WIDGET (self->layer_group), !active);
@@ -166,7 +166,7 @@ static void on_crop_mode_toggled (GtkToggleButton *btn, MyappWindow *self) {
     render_meme(self);
 }
 
-static void on_apply_crop_clicked (MyappWindow *self) {
+static void on_apply_crop_clicked (MemeWindow *self) {
     if (!self->template_image) return;
     int iw = gdk_pixbuf_get_width(self->template_image);
     int ih = gdk_pixbuf_get_height(self->template_image);
@@ -193,7 +193,7 @@ static void on_apply_crop_clicked (MyappWindow *self) {
     gtk_toggle_button_set_active(self->crop_mode_button, FALSE);
 }
 
-static void on_font_changed (GObject *object, GParamSpec *pspec, MyappWindow *self) {
+static void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
     if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
         PangoFontDescription *desc = gtk_font_dialog_button_get_font_desc (self->font_choose_btn);
         if (desc) {
@@ -204,7 +204,7 @@ static void on_font_changed (GObject *object, GParamSpec *pspec, MyappWindow *se
     }
 }
 
-void sync_ui_with_layer(MyappWindow *self) {
+void sync_ui_with_layer(MemeWindow *self) {
     gboolean sensitive = (self->selected_layer != NULL);
     gboolean is_text = (sensitive && self->selected_layer->type == LAYER_TYPE_TEXT);
 
@@ -249,7 +249,7 @@ void sync_ui_with_layer(MyappWindow *self) {
     }
 }
 
-static void on_layer_control_changed (MyappWindow *self) {
+static void on_layer_control_changed (MemeWindow *self) {
     if (self->selected_layer) {
         self->selected_layer->opacity = gtk_range_get_value(GTK_RANGE(self->layer_opacity_scale));
         self->selected_layer->rotation = gtk_range_get_value(GTK_RANGE(self->layer_rotation_scale));
@@ -258,7 +258,7 @@ static void on_layer_control_changed (MyappWindow *self) {
     }
 }
 
-static void on_delete_layer_clicked (MyappWindow *self) {
+static void on_delete_layer_clicked (MemeWindow *self) {
     if (self->selected_layer) {
         push_undo (self);
         self->layers = g_list_remove(self->layers, self->selected_layer);
@@ -269,7 +269,7 @@ static void on_delete_layer_clicked (MyappWindow *self) {
     }
 }
 
-void on_clear_clicked (MyappWindow *self) {
+void on_clear_clicked (MemeWindow *self) {
     gtk_stack_set_visible_child_name (self->content_stack, "empty");
     g_clear_object (&self->template_image);
     g_clear_object (&self->final_meme);
@@ -294,7 +294,7 @@ void on_clear_clicked (MyappWindow *self) {
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
 }
 
-void on_copy_clipboard_clicked (MyappWindow *self) {
+void on_copy_clipboard_clicked (MemeWindow *self) {
     if (!self->final_meme) return;
 
     GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (self));
@@ -318,13 +318,13 @@ void on_copy_clipboard_clicked (MyappWindow *self) {
 }
 
 static void myapp_window_finalize (GObject *object) {
-    MyappWindow *self = MYAPP_WINDOW (object);
+    MemeWindow *self = MEME_WINDOW (object);
     g_clear_object (&self->template_image);
     g_clear_object (&self->final_meme);
     if (self->layers) meme_layer_list_free (self->layers);
     free_history_stack (&self->undo_stack);
     free_history_stack (&self->redo_stack);
-    G_OBJECT_CLASS (myapp_window_parent_class)->finalize (object);
+    G_OBJECT_CLASS (meme_window_parent_class)->finalize (object);
 }
 
 static char * get_user_template_dir (void) {
@@ -336,7 +336,7 @@ static gboolean is_user_template (const char *path) {
     return g_str_has_prefix (path, user_dir);
 }
 
-static void add_file_to_gallery (MyappWindow *self, const char *full_path) {
+static void add_file_to_gallery (MemeWindow *self, const char *full_path) {
     GtkWidget *picture;
     if (g_str_has_prefix (full_path, "resource://")) {
         picture = gtk_picture_new_for_resource (full_path + 11);
@@ -354,7 +354,7 @@ static void add_file_to_gallery (MyappWindow *self, const char *full_path) {
 // to (hopefully) increases performance
 static void on_templates_enumerated (GObject *source_object, GAsyncResult *res, gpointer user_data) {
     GFileEnumerator *enumerator = G_FILE_ENUMERATOR (source_object);
-    MyappWindow *self = MYAPP_WINDOW (user_data);
+    MemeWindow *self = MEME_WINDOW (user_data);
     GError *error = NULL;
     
     GList *files = g_file_enumerator_next_files_finish (enumerator, res, &error);
@@ -390,7 +390,7 @@ static void on_templates_enumerated (GObject *source_object, GAsyncResult *res, 
 
 static void on_templates_dir_opened (GObject *source_object, GAsyncResult *res, gpointer user_data) {
     GFile *dir = G_FILE (source_object);
-    MyappWindow *self = MYAPP_WINDOW (user_data);
+    MemeWindow *self = MEME_WINDOW (user_data);
     GError *error = NULL;
     GFileEnumerator *enumerator = g_file_enumerate_children_finish (dir, res, &error);
 
@@ -401,7 +401,7 @@ static void on_templates_dir_opened (GObject *source_object, GAsyncResult *res, 
     g_file_enumerator_next_files_async (enumerator, 10, G_PRIORITY_DEFAULT, NULL, on_templates_enumerated, self);
 }
 
-static void scan_directory_for_templates_async (MyappWindow *self, const char *dir_path) {
+static void scan_directory_for_templates_async (MemeWindow *self, const char *dir_path) {
     GFile *dir = g_file_new_for_path (dir_path);
     g_file_enumerate_children_async (dir,
                                      "standard::name",
@@ -413,7 +413,7 @@ static void scan_directory_for_templates_async (MyappWindow *self, const char *d
     g_object_unref (dir);
 }
 
-static void scan_resources_for_templates (MyappWindow *self) {
+static void scan_resources_for_templates (MemeWindow *self) {
     GError *error = NULL;
     const char *res_path = "/io/github/vani_tty1/memerist/templates";
     char **files = g_resources_enumerate_children (res_path, 0, &error);
@@ -428,7 +428,7 @@ static void scan_resources_for_templates (MyappWindow *self) {
     }
 }
 
-static void populate_template_gallery (MyappWindow *self) {
+static void populate_template_gallery (MemeWindow *self) {
     char *user_dir;
     gtk_flow_box_remove_all(self->template_gallery);
     scan_resources_for_templates (self);
@@ -438,7 +438,7 @@ static void populate_template_gallery (MyappWindow *self) {
     g_free (user_dir);
 }
 
-static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MyappWindow *self) {
+static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MemeWindow *self) {
     GtkWidget *image;
     const char *template_path;
     GError *error = NULL;
@@ -487,7 +487,7 @@ static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, M
 
 static void on_copy_import_finished(GObject *source_object, GAsyncResult *res, gpointer user_data){
     GFile * source_file = G_FILE(source_object);
-    MyappWindow *self = MYAPP_WINDOW(g_object_get_data(G_OBJECT(source_file), "window-ptr"));
+    MemeWindow *self = MEME_WINDOW(g_object_get_data(G_OBJECT(source_file), "window-ptr"));
     char *dest_path = g_object_get_data(G_OBJECT(source_file), "dest-path");
     GError *error = NULL;
     
@@ -502,7 +502,7 @@ static void on_copy_import_finished(GObject *source_object, GAsyncResult *res, g
 
 static void on_import_template_response(GObject *s, GAsyncResult *r, gpointer d){
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *source_file, *dest_file;
     GError *error = NULL;
     char *filename, *user_dir_path, *dest_path;
@@ -525,7 +525,7 @@ static void on_import_template_response(GObject *s, GAsyncResult *r, gpointer d)
     g_object_unref(dest_file);
 }
 
-static void on_import_template_clicked (MyappWindow *self) {
+static void on_import_template_clicked (MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new ();
     gtk_file_dialog_set_title (dialog, "Import Template");
     gtk_file_dialog_open (dialog, GTK_WINDOW (self), NULL, on_import_template_response, self);
@@ -534,7 +534,7 @@ static void on_import_template_clicked (MyappWindow *self) {
 
 static void on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d) {
     AdwAlertDialog *dialog = ADW_ALERT_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW (d);
+    MemeWindow *self = MEME_WINDOW (d);
     const char *choice = adw_alert_dialog_choose_finish(dialog, r);
     if (g_strcmp0(choice, "delete") == 0) {
         GList *selected = gtk_flow_box_get_selected_children (self->template_gallery);
@@ -551,14 +551,14 @@ static void on_delete_confirm_response (GObject *s, GAsyncResult *r, gpointer d)
     }
 }
 
-static void on_delete_template_clicked (MyappWindow *self) {
+static void on_delete_template_clicked (MemeWindow *self) {
     AdwAlertDialog *dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Delete this template?", NULL));
     adw_alert_dialog_add_responses(dialog, "cancel", "Cancel", "delete", "Delete", NULL);
     adw_alert_dialog_set_response_appearance(dialog, "delete", ADW_RESPONSE_DESTRUCTIVE);
     adw_alert_dialog_choose(dialog, GTK_WIDGET(self), NULL, on_delete_confirm_response, self);
 }
 
-void apply_zoom(MyappWindow *self) {
+void apply_zoom(MemeWindow *self) {
     if (!self->template_image) return;
     int img_w = gdk_pixbuf_get_width(self->template_image);
     int img_h = gdk_pixbuf_get_height(self->template_image);
@@ -572,70 +572,70 @@ void apply_zoom(MyappWindow *self) {
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), (int)(img_w * final_scale), (int)(img_h * final_scale));
 }
 
-static void on_zoom_in_clicked(MyappWindow *self) {
+static void on_zoom_in_clicked(MemeWindow *self) {
     self->zoom_level += 0.2; 
     apply_zoom(self);
 }
 
-static void on_zoom_out_clicked(MyappWindow *self) {
+static void on_zoom_out_clicked(MemeWindow *self) {
     self->zoom_level = MAX(0.2, self->zoom_level - 0.2); 
     apply_zoom(self);
 }
 
-static void myapp_window_class_init (MyappWindowClass *klass) {
+static void meme_window_class_init (MemeWindowClass *klass) {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
     
     object_class->finalize = myapp_window_finalize;
     
     gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_group);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, templates_group);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, transform_group);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, meme_preview);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, content_stack);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, split_view);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_text_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_row);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, font_choose_btn);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_container);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_text_view);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_font_size_row);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, export_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_image_button);
-    gtk_widget_class_bind_template_child(widget_class, MyappWindow, pill_btn_open_image);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, clear_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, add_image_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, import_template_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_template_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, global_filters_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, deep_fry_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, template_gallery);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, cinematic_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_opacity_scale);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, layer_rotation_scale);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, blend_mode_row);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, delete_layer_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_mode_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_left_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, rotate_right_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_h_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, flip_v_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_square_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_43_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, crop_169_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_group);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, templates_group);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, transform_group);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, meme_preview);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, content_stack);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, split_view);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, add_text_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, font_choose_row);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, font_choose_btn);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_text_container);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_text_view);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_font_size);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_font_size_row);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, export_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_image_button);
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, pill_btn_open_image);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, clear_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, add_image_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, import_template_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, delete_template_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, global_filters_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, deep_fry_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, template_gallery);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, cinematic_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_opacity_scale);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_rotation_scale);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, blend_mode_row);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, delete_layer_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_mode_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, rotate_left_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, rotate_right_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, flip_h_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, flip_v_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_square_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_43_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_169_button);
     gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, save_project_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, load_project_button);
-    gtk_widget_class_bind_template_child(widget_class, MyappWindow, main_menu_button);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_in);
-    gtk_widget_class_bind_template_child (widget_class, MyappWindow, zoom_out);
-    gtk_widget_class_bind_template_child(widget_class, MyappWindow, copy_clipboard_button);
-    gtk_widget_class_bind_template_child(widget_class, MyappWindow, copy_clip_feedback);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, save_project_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_project_button);
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, main_menu_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, zoom_in);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, zoom_out);
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clipboard_button);
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clip_feedback);
 }
 
-static void myapp_window_init (MyappWindow *self) {
+static void meme_window_init (MemeWindow *self) {
     gtk_widget_init_template (GTK_WIDGET (self));
     self->layers = NULL; self->undo_stack = NULL; self->redo_stack = NULL;
     

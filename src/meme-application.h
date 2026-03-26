@@ -24,11 +24,11 @@
 
 G_BEGIN_DECLS
 
-#define MYAPP_TYPE_APPLICATION (myapp_application_get_type())
+#define MEME_TYPE_APPLICATION (meme_application_get_type())
 
-G_DECLARE_FINAL_TYPE (MyappApplication, myapp_application, MYAPP, APPLICATION, AdwApplication)
+G_DECLARE_FINAL_TYPE (MemeApplication, meme_application, MEME, APPLICATION, AdwApplication)
 
-MyappApplication *myapp_application_new (const char        *application_id,
+MemeApplication *meme_application_new (const char        *application_id,
                                          GApplicationFlags  flags);
 
 G_END_DECLS

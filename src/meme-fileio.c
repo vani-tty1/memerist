@@ -1,4 +1,5 @@
 #include "meme-fileio.h"
+#include "adwaita.h"
 #include "meme-history.h"
 #include <glib/gstdio.h>
 
@@ -24,7 +25,7 @@ static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
 
 static void on_save_project_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
     if (file) {
         GKeyFile *keyfile = g_key_file_new();
@@ -63,7 +64,7 @@ static void on_save_project_response(GObject *s, GAsyncResult *r, gpointer d) {
     }
 }
 
-void myapp_window_save_project(MyappWindow *self) {
+void myapp_window_save_project(MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new();
     GtkFileFilter *filter = gtk_file_filter_new();
     gtk_file_filter_set_name(filter, "Memerist Project");
@@ -78,7 +79,7 @@ void myapp_window_save_project(MyappWindow *self) {
 
 static void on_project_load_contents_finished(GObject *source_object, GAsyncResult *res, gpointer user_data) {
     GFile *file = G_FILE(source_object);
-    MyappWindow *self = MYAPP_WINDOW(user_data);
+    MemeWindow *self = MEME_WINDOW(user_data);
     char *contents = NULL; gsize length = 0; GError *error = NULL;
     
     if(g_file_load_contents_finish(file, res, &contents, &length, NULL, &error)){
@@ -139,12 +140,12 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
 
 static void on_load_project_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if(file) g_file_load_contents_async(file, NULL, on_project_load_contents_finished, self);
 }
 
-void on_load_project_clicked(MyappWindow *self) {
+void on_load_project_clicked(MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new();
     GtkFileFilter *filter = gtk_file_filter_new();
     gtk_file_filter_set_name(filter, "Memerist Project");
@@ -158,7 +159,7 @@ void on_load_project_clicked(MyappWindow *self) {
 
 static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if (file) {  
         char *path = g_file_get_path(file);
@@ -186,7 +187,7 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     }
 }
 
-void on_load_image_clicked(MyappWindow *self) {
+void on_load_image_clicked(MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new();
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_image_response, self);
     g_object_unref(dialog);
@@ -194,7 +195,7 @@ void on_load_image_clicked(MyappWindow *self) {
 
 static void on_add_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if (file) {
         char *path = g_file_get_path(file);
@@ -213,7 +214,7 @@ static void on_add_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     }
 }
 
-void on_add_image_clicked(MyappWindow *self) {
+void on_add_image_clicked(MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new();
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_add_image_response, self);
     g_object_unref(dialog);
@@ -221,7 +222,7 @@ void on_add_image_clicked(MyappWindow *self) {
 
 static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
 
     if (file && self->final_meme) {
@@ -260,7 +261,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
 
 static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
     AdwAlertDialog *alert = ADW_ALERT_DIALOG(s);
-    MyappWindow *self = MYAPP_WINDOW(d);
+    MemeWindow *self = MEME_WINDOW(d);
     const char *choice = adw_alert_dialog_choose_finish(alert, r);
 
     if (g_strcmp0(choice, "cancel") == 0 || !choice) return;
@@ -282,7 +283,7 @@ static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
     g_object_unref(dialog);
 }
 
-void on_export_clicked(MyappWindow *self) {
+void on_export_clicked(MemeWindow *self) {
     if (!self->final_meme) return;
 
     AdwAlertDialog *dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Export Format", "Choose an image format."));
@@ -294,6 +295,7 @@ void on_export_clicked(MyappWindow *self) {
         NULL);
 
     adw_alert_dialog_set_response_appearance(dialog, "png", ADW_RESPONSE_SUGGESTED);
+    adw_alert_dialog_set_response_appearance(dialog, "cancel", ADW_RESPONSE_DESTRUCTIVE);
 
     adw_alert_dialog_choose(dialog, GTK_WIDGET(self), NULL, on_format_chosen, self);
 }

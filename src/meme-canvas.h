@@ -20,7 +20,7 @@
 #pragma once
 #include "meme-window-private.h"
 
-void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MyappWindow *self);
-void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MyappWindow *self);
-void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, MyappWindow *self);
-void on_drag_end (GtkGestureDrag *g, double x, double y, MyappWindow *self);
+void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MemeWindow *self);
+void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *self);
+void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, MemeWindow *self);
+void on_drag_end (GtkGestureDrag *g, double x, double y, MemeWindow *self);

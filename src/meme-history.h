@@ -22,4 +22,4 @@
 #include "meme-window-private.h"
 
 void free_history_stack (GList **stack);
-void push_undo (MyappWindow *self);
+void push_undo (MemeWindow *self);

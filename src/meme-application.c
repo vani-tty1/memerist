@@ -25,20 +25,20 @@
 #include "meme-window.h"
 #include "meme-gpu.h"
 
-struct _MyappApplication
+struct _MemeApplication
 {
   AdwApplication parent_instance;
 };
 
-G_DEFINE_FINAL_TYPE (MyappApplication, myapp_application, ADW_TYPE_APPLICATION)
+G_DEFINE_FINAL_TYPE (MemeApplication, meme_application, ADW_TYPE_APPLICATION)
 
-MyappApplication *
-myapp_application_new (const char        *application_id,
+MemeApplication *
+meme_application_new (const char        *application_id,
                        GApplicationFlags  flags)
 {
   g_return_val_if_fail (application_id != NULL, NULL);
 
-  return g_object_new (MYAPP_TYPE_APPLICATION,
+  return g_object_new (MEME_TYPE_APPLICATION,
                        "application-id", application_id,
                        "flags", flags,
                        "resource-base-path", "/io/github/vani_tty1/memerist",
@@ -46,15 +46,15 @@ myapp_application_new (const char        *application_id,
 }
 
 static void
-myapp_application_activate (GApplication *app)
+meme_application_activate (GApplication *app)
 {
   GtkWindow *window;
 
-  g_assert (MYAPP_IS_APPLICATION (app));
+  g_assert (MEME_IS_APPLICATION (app));
 
   window = gtk_application_get_active_window (GTK_APPLICATION (app));
   if (window == NULL)
-    window = g_object_new (MYAPP_TYPE_WINDOW,
+    window = g_object_new (MEME_TYPE_WINDOW,
                            "application", app,
                            NULL);
 
@@ -62,11 +62,11 @@ myapp_application_activate (GApplication *app)
 }
 
 static void
-myapp_application_about_action (GSimpleAction *action,
+meme_application_about_action (GSimpleAction *action,
                                 GVariant      *parameter,
                                 gpointer       user_data)
 {
-  MyappApplication *self = user_data;
+  MemeApplication *self = user_data;
   GtkWindow *window = gtk_application_get_active_window (GTK_APPLICATION (self));
 
   show_about_dialog (window);
@@ -76,24 +76,24 @@ myapp_application_about_action (GSimpleAction *action,
 
 
 static void
-myapp_application_quit_action (GSimpleAction *action,
+meme_application_quit_action (GSimpleAction *action,
                                GVariant      *parameter,
                                gpointer       user_data)
 {
-  MyappApplication *self = user_data;
+  MemeApplication *self = user_data;
 
-  g_assert (MYAPP_IS_APPLICATION (self));
+  g_assert (MEME_IS_APPLICATION (self));
 
   g_application_quit (G_APPLICATION (self));
 }
 
 
 static void
-myapp_application_shortcuts_action (GSimpleAction *action,
+meme_application_shortcuts_action (GSimpleAction *action,
                                     GVariant      *parameter,
                                     gpointer       user_data)
 {
-  MyappApplication *self = user_data;
+  MemeApplication *self = user_data;
   GtkWindow *parent = gtk_application_get_active_window (GTK_APPLICATION (self));
   GtkBuilder *builder;
   AdwDialog *shortcuts_window;
@@ -106,7 +106,7 @@ myapp_application_shortcuts_action (GSimpleAction *action,
 }
 
 static void
-myapp_application_color_scheme_action (GSimpleAction *action,
+meme_application_color_scheme_action (GSimpleAction *action,
                                        GVariant      *parameter,
                                        gpointer       user_data)
 {
@@ -125,17 +125,17 @@ myapp_application_color_scheme_action (GSimpleAction *action,
 }
 
 static const GActionEntry app_actions[] = {
-  { "quit", myapp_application_quit_action },
-  { "about", myapp_application_about_action },
-  { "shortcuts", myapp_application_shortcuts_action },
-  { "color-scheme", myapp_application_color_scheme_action, "s", "'default'", NULL },
+  { "quit", meme_application_quit_action },
+  { "about", meme_application_about_action },
+  { "shortcuts", meme_application_shortcuts_action },
+  { "color-scheme", meme_application_color_scheme_action, "s", "'default'", NULL },
 };
 
 static void
-myapp_application_startup (GApplication *app)
+meme_application_startup (GApplication *app)
 {
 
-  G_APPLICATION_CLASS (myapp_application_parent_class)->startup (app);
+  G_APPLICATION_CLASS (meme_application_parent_class)->startup (app);
 
   meme_gpu_init (NULL);
 
@@ -154,22 +154,22 @@ myapp_application_startup (GApplication *app)
 }
 
 static void
-myapp_application_shutdown (GApplication *app)
+meme_application_shutdown (GApplication *app)
 {
   meme_gpu_cleanup ();
-  G_APPLICATION_CLASS (myapp_application_parent_class)->shutdown (app);
+  G_APPLICATION_CLASS (meme_application_parent_class)->shutdown (app);
 }
 
 static void
-myapp_application_class_init (MyappApplicationClass *klass)
+meme_application_class_init (MemeApplicationClass *klass)
 {
   GApplicationClass *app_class = G_APPLICATION_CLASS (klass);
 
-  app_class->startup  = myapp_application_startup;
-  app_class->activate = myapp_application_activate;
-  app_class->shutdown = myapp_application_shutdown;
+  app_class->startup  = meme_application_startup;
+  app_class->activate = meme_application_activate;
+  app_class->shutdown = meme_application_shutdown;
 }
 
 static void
-myapp_application_init (MyappApplication *self)
+meme_application_init (MemeApplication *self)
 {}

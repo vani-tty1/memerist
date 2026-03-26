@@ -11,7 +11,7 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
                                 guint keyval,
                                 guint keycode,
                                 GdkModifierType state,
-                                MyappWindow *self) {
+                                MemeWindow *self) {
     // Ctrl + Z = Undo
     if ((state & GDK_CONTROL_MASK) && (keyval == GDK_KEY_z || keyval == GDK_KEY_Z)) {
         myapp_window_perform_undo (self);

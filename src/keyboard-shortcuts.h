@@ -6,5 +6,5 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
                                 guint keyval,
                                 guint keycode,
                                 GdkModifierType state,
-                                MyappWindow *self);
+                                MemeWindow *self);
 

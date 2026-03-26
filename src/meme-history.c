@@ -28,7 +28,7 @@ void free_history_stack (GList **stack) {
     *stack = NULL;
 }
 
-void push_undo (MyappWindow *self) {
+void push_undo (MemeWindow *self) {
     free_history_stack (&self->redo_stack);
     if (g_list_length (self->undo_stack) >= 20) {
         GList *last = g_list_last (self->undo_stack);
@@ -38,7 +38,7 @@ void push_undo (MyappWindow *self) {
     self->undo_stack = g_list_prepend (self->undo_stack, meme_layer_list_copy (self->layers));
 }
 
-void myapp_window_perform_undo(MyappWindow *self) {
+void myapp_window_perform_undo(MemeWindow *self) {
     if (!self->undo_stack) return;
     self->redo_stack = g_list_prepend (self->redo_stack, self->layers);
     self->layers = (GList *)self->undo_stack->data;
@@ -48,7 +48,7 @@ void myapp_window_perform_undo(MyappWindow *self) {
     render_meme (self);
 }
 
-void myapp_window_perform_redo (MyappWindow *self) {
+void myapp_window_perform_redo (MemeWindow *self) {
     if (!self->redo_stack) return;
     self->undo_stack = g_list_prepend (self->undo_stack, self->layers);
     self->layers = (GList *)self->redo_stack->data;

@@ -24,13 +24,13 @@
 
 G_BEGIN_DECLS
 
-#define MYAPP_TYPE_WINDOW (myapp_window_get_type())
+#define MEME_TYPE_WINDOW (meme_window_get_type())
 
-G_DECLARE_FINAL_TYPE (MyappWindow, myapp_window, MYAPP, WINDOW, AdwApplicationWindow)
+G_DECLARE_FINAL_TYPE (MemeWindow, meme_window, MEME, WINDOW, AdwApplicationWindow)
 
 G_END_DECLS
 
-void myapp_window_perform_undo (MyappWindow *self);
-void myapp_window_perform_redo (MyappWindow *self);
-void myapp_window_save_project (MyappWindow *self);
-void on_copy_clipboard_clicked (MyappWindow *self);
+void myapp_window_perform_undo (MemeWindow *self);
+void myapp_window_perform_redo (MemeWindow *self);
+void myapp_window_save_project (MemeWindow *self);
+void on_copy_clipboard_clicked (MemeWindow *self);
