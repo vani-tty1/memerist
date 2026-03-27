@@ -72,6 +72,18 @@
 </screenshots>
 
   <releases>
+    <release version="0.6.1" date="2026-03-27">
+    <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+      <description translate="no">
+          <p>Minor adjustments:</p>
+          <ul>
+              <li>Update runtime to GNOME 50</li>
+              <li>Added more file format options for exporting</li>
+              <li>Hid layer options when no layer is actively selected</li>
+          </ul>
+      </description>
+    </release>
+    
     <release version="0.6.0" date="2026-03-21">
         <description translate="no">
             <p>Performance and Graphics Improvements:</p>
