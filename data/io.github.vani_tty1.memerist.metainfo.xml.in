@@ -72,6 +72,21 @@
 </screenshots>
 
   <releases>
+  
+    <release version="0.6.2" date="2026-04-01">
+    <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+        <description translate="no">
+            <p>Enhancements:</p>
+            <ul>
+                <li>Crop grab handles now use a consistent 20px physical hit radius</li>
+            </ul>
+            <p>Bug Fix:</p>
+            <ul>
+                <li>fix(renderer): prevent RTL text clipping</li>
+            </ul>
+        </description>
+    </release>
+    
     <release version="0.6.1" date="2026-03-27">
     <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
       <description translate="no">
