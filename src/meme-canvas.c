@@ -12,7 +12,12 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, Me
     img_h = gdk_pixbuf_get_height(self->template_image);
     
     if (gtk_toggle_button_get_active(self->crop_mode_button)) {
-        ResizeHandle h = meme_get_crop_handle_at_position(ix, iy, self->crop_x, self->crop_y, self->crop_w, self->crop_h);
+        double ww = gtk_widget_get_width(GTK_WIDGET(self->meme_preview));
+        double wh = gtk_widget_get_height(GTK_WIDGET(self->meme_preview));
+        double scale = (ww / img_w < wh / img_h) ? (ww / img_w) : (wh / img_h);
+        double rx = 15.0 / (img_w * scale);
+        double ry = 15.0 / (img_h * scale);
+        ResizeHandle h = meme_get_crop_handle_at_position(ix, iy, self->crop_x, self->crop_y, self->crop_w, self->crop_h, rx, ry);
         const char *cursor = NULL;
         switch (h) {
             case HANDLE_TOP_LEFT: cursor = "nw-resize"; break;
@@ -63,7 +68,12 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *sel
     img_h = gdk_pixbuf_get_height(self->template_image);
 
     if (gtk_toggle_button_get_active(self->crop_mode_button)) {
-        self->active_crop_handle = meme_get_crop_handle_at_position(ix, iy, self->crop_x, self->crop_y, self->crop_w, self->crop_h);
+        double ww = gtk_widget_get_width(GTK_WIDGET(self->meme_preview));
+        double wh = gtk_widget_get_height(GTK_WIDGET(self->meme_preview));
+        double scale = (ww / img_w < wh / img_h) ? (ww / img_w) : (wh / img_h);
+        double rx = 20.0 / (img_w * scale);
+        double ry = 20.0 / (img_h * scale);
+        self->active_crop_handle = meme_get_crop_handle_at_position(ix, iy, self->crop_x, self->crop_y, self->crop_w, self->crop_h, rx, ry);
         if (self->active_crop_handle == HANDLE_CENTER) self->drag_type = DRAG_TYPE_CROP_MOVE;
         else if (self->active_crop_handle != HANDLE_NONE) self->drag_type = DRAG_TYPE_CROP_RESIZE;
         else self->drag_type = DRAG_TYPE_NONE;

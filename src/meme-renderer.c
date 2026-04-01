@@ -46,29 +46,18 @@ void meme_get_image_coordinates(GtkWidget *widget, GdkPixbuf *img, double wx, do
 }
 
 ResizeHandle
-meme_get_crop_handle_at_position(double x, double y, double cx, double cy, double cw, double ch) {
-    double handle_radius = 0.05;
+meme_get_crop_handle_at_position(double x, double y, double cx, double cy, double cw, double ch, double rx, double ry) {
+    if (fabs(x - cx) < rx && fabs(y - cy) < ry) return HANDLE_TOP_LEFT;
+    if (fabs(x - (cx + cw)) < rx && fabs(y - cy) < ry) return HANDLE_TOP_RIGHT;
+    if (fabs(x - cx) < rx && fabs(y - (cy + ch)) < ry) return HANDLE_BOTTOM_LEFT;
+    if (fabs(x - (cx + cw)) < rx && fabs(y - (cy + ch)) < ry) return HANDLE_BOTTOM_RIGHT;
 
-    if (fabs(x - cx) < handle_radius && fabs(y - cy) < handle_radius)
-        return HANDLE_TOP_LEFT;
-    if (fabs(x - (cx + cw)) < handle_radius && fabs(y - cy) < handle_radius)
-        return HANDLE_TOP_RIGHT;
-    if (fabs(x - cx) < handle_radius && fabs(y - (cy + ch)) < handle_radius)
-        return HANDLE_BOTTOM_LEFT;
-    if (fabs(x - (cx + cw)) < handle_radius && fabs(y - (cy + ch)) < handle_radius)
-        return HANDLE_BOTTOM_RIGHT;
+    if (fabs(y - cy) < ry && x > cx && x < cx + cw) return HANDLE_TOP;
+    if (fabs(y - (cy + ch)) < ry && x > cx && x < cx + cw) return HANDLE_BOTTOM;
+    if (fabs(x - cx) < rx && y > cy && y < cy + ch) return HANDLE_LEFT;
+    if (fabs(x - (cx + cw)) < rx && y > cy && y < cy + ch) return HANDLE_RIGHT;
 
-    if (fabs(y - cy) < handle_radius && x > cx && x < cx + cw)
-        return HANDLE_TOP;
-    if (fabs(y - (cy + ch)) < handle_radius && x > cx && x < cx + cw)
-        return HANDLE_BOTTOM;
-    if (fabs(x - cx) < handle_radius && y > cy && y < cy + ch)
-        return HANDLE_LEFT;
-    if (fabs(x - (cx + cw)) < handle_radius && y > cy && y < cy + ch)
-        return HANDLE_RIGHT;
-
-    if (x > cx && x < cx + cw && y > cy && y < cy + ch)
-        return HANDLE_CENTER;
+    if (x > cx && x < cx + cw && y > cy && y < cy + ch) return HANDLE_CENTER;
 
     return HANDLE_NONE;
 }
