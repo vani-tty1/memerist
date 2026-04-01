@@ -188,6 +188,7 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 double max_width = (w * 0.9) / layer->scale;
                 pango_layout_set_width(layout, max_width * PANGO_SCALE);
                 pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
+                pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
 
                 PangoFontDescription *desc = layer->font_family
                                                  ? pango_font_description_from_string(layer->font_family)
@@ -196,8 +197,10 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 pango_layout_set_font_description(layout, desc);
                 pango_font_description_free(desc);
 
-                int tw, th;
-                pango_layout_get_pixel_size(layout, &tw, &th);
+                PangoRectangle ink_rect;
+                pango_layout_get_pixel_extents(layout, &ink_rect, NULL);
+                int tw = ink_rect.width;
+                int th = ink_rect.height;
                 layer->width = tw + 10;
                 layer->height = th + 10;
 
@@ -215,6 +218,7 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 pango_layout_set_text(layout2, layer->text, -1);
                 pango_layout_set_width(layout2, max_width * PANGO_SCALE);
                 pango_layout_set_wrap(layout2, PANGO_WRAP_WORD_CHAR);
+                pango_layout_set_alignment(layout2, PANGO_ALIGN_CENTER);
 
                 PangoFontDescription *desc2 = layer->font_family
                                                   ? pango_font_description_from_string(layer->font_family)
@@ -223,7 +227,7 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 pango_layout_set_font_description(layout2, desc2);
                 pango_font_description_free(desc2);
 
-                cairo_move_to(cr, 5.0, 5.0);
+                cairo_move_to(cr, 5.0 - ink_rect.x, 5.0 - ink_rect.y);
                 pango_cairo_layout_path(cr, layout2);
 
                 cairo_set_source_rgba(cr, 0, 0, 0, layer->opacity);
@@ -291,6 +295,7 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 double max_width = (w * 0.9) / layer->scale;
                 pango_layout_set_width(layout, max_width * PANGO_SCALE);
                 pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
+                pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
                 PangoFontDescription *desc;
                 if (layer->font_family) {
                     desc = pango_font_description_from_string(layer->font_family);
@@ -300,11 +305,17 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 pango_font_description_set_absolute_size(desc, layer->font_size * PANGO_SCALE);
                 pango_layout_set_font_description(layout, desc);
                 pango_font_description_free(desc);
-                int tw, th;
-                pango_layout_get_pixel_size(layout, &tw, &th);
+                
+                
+                PangoRectangle ink_rect;
+                pango_layout_get_pixel_extents(layout, &ink_rect, NULL);
+                int tw = ink_rect.width;
+                int th = ink_rect.height;
                 layer->width = tw + 10;
                 layer->height = th + 10;
-                cairo_move_to(cr, -tw / 2.0, -th / 2.0);
+                
+                cairo_move_to(cr, -tw / 2.0 - ink_rect.x, -th / 2.0 - ink_rect.y);
+                
                 pango_cairo_layout_path(cr, layout);
                 cairo_set_source_rgba(cr, 0, 0, 0, layer->opacity);
                 cairo_set_line_width(cr, layer->font_size * 0.08);
