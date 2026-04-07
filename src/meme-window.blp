@@ -28,19 +28,22 @@ template $MemeWindow: Adw.ApplicationWindow {
       [top]
       Adw.HeaderBar {
         title-widget: Adw.WindowTitle {
-          title: "Meme Editor";
         };
-
+        [start]
+        Button load_image_button {
+            icon-name: "image-x-generic-symbolic";
+            tooltip-text: _("Open Base Image");
+        }
         [start]
         Button load_project_button {
           icon-name: "folder-new-symbolic";
-          tooltip-text: "Load Project";
+          tooltip-text: _("Load Project");
         }
 
         [start]
         Button save_project_button {
           icon-name: "media-floppy-symbolic";
-          tooltip-text: "Save Project";
+          tooltip-text: _("Save Project");
           sensitive: false;
         }
 
@@ -102,8 +105,8 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                     child: Adw.StatusPage {
                       icon-name: "image-x-generic-symbolic";
-                      title: "No Image Loaded";
-                      description: "Open an image to start editing ";
+                      title: _("No Image Loaded");
+                      description: _("Open an image to start editing ");
                       hexpand: true;
                       vexpand: true;
 
@@ -160,11 +163,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               "toolbar",
             ]
 
-            [start]
-            Button load_image_button {
-              icon-name: "image-x-generic-symbolic";
-              tooltip-text: "Open Base Image";
-            }
+
 
             Button add_image_button {
               icon-name: "insert-image-symbolic";

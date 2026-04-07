@@ -586,6 +586,16 @@ static void on_zoom_out_clicked(MemeWindow *self) {
     apply_zoom(self);
 }
 
+static gboolean on_canvas_scroll(GtkEventControllerScroll *ctrl, double dx, double dy, MemeWindow *self) {
+    if (dy > 0) {
+        self->zoom_level = MAX(0.2, self->zoom_level - 0.1);
+    } else if (dy < 0) {
+        self->zoom_level += 0.1;
+    }
+    apply_zoom(self);
+    return TRUE;
+}
+
 static void meme_window_class_init (MemeWindowClass *klass) {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -699,6 +709,11 @@ static void meme_window_init (MemeWindow *self) {
     GtkEventController *key_controller = gtk_event_controller_key_new ();
     g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_window_key_pressed), self);
     gtk_widget_add_controller (GTK_WIDGET (self), key_controller);
+    
+    
+    GtkEventController *scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
+    g_signal_connect(scroll, "scroll", G_CALLBACK(on_canvas_scroll), self);
+    gtk_widget_add_controller(GTK_WIDGET(self->meme_preview), scroll);
     
     GtkBuilder *builder = gtk_builder_new_from_resource("/io/github/vani_tty1/memerist/primary-menu.ui");
     GMenuModel *menu = G_MENU_MODEL(gtk_builder_get_object(builder, "primary_menu"));
