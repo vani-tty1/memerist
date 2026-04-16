@@ -63,7 +63,17 @@ void render_meme (MemeWindow *self) {
     g_object_unref(tex);
 }
 
-
+static void on_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
+    if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
+        const GdkRGBA *tc = gtk_color_dialog_button_get_rgba(GTK_COLOR_DIALOG_BUTTON(self->text_color_btn));
+        const GdkRGBA *sc = gtk_color_dialog_button_get_rgba(GTK_COLOR_DIALOG_BUTTON(self->stroke_color_btn));
+        
+        if (tc) self->selected_layer->text_color = *tc;
+        if (sc) self->selected_layer->stroke_color = *sc;
+        
+        render_meme(self);
+    }
+}
 
 static void on_text_changed (MemeWindow *self) { if (self->template_image) render_meme (self); }
 static void on_deep_fry_toggled (GtkToggleButton *btn, MemeWindow *self) { render_meme (self); }
@@ -243,6 +253,16 @@ void sync_ui_with_layer(MemeWindow *self) {
     g_signal_handlers_unblock_by_func(self->layer_font_size, on_layer_text_changed, self);
 
     gtk_widget_set_visible (GTK_WIDGET (self->font_choose_row), is_text);
+    g_signal_handlers_block_by_func(self->text_color_btn, on_color_changed, self);
+    g_signal_handlers_block_by_func(self->stroke_color_btn, on_color_changed, self);
+
+    if (sensitive && is_text) {
+        gtk_color_dialog_button_set_rgba(GTK_COLOR_DIALOG_BUTTON(self->text_color_btn), &self->selected_layer->text_color);
+        gtk_color_dialog_button_set_rgba(GTK_COLOR_DIALOG_BUTTON(self->stroke_color_btn), &self->selected_layer->stroke_color);
+    }
+
+    g_signal_handlers_unblock_by_func(self->text_color_btn, on_color_changed, self);
+    g_signal_handlers_unblock_by_func(self->stroke_color_btn, on_color_changed, self);
     
     if (is_text && self->selected_layer->font_family) {
         g_signal_handlers_block_by_func (self->font_choose_btn, on_font_changed, self);
@@ -647,11 +667,15 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, zoom_out);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clipboard_button);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clip_feedback);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, text_color_btn);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, stroke_color_btn);
 }
 
 static void meme_window_init (MemeWindow *self) {
     gtk_widget_init_template (GTK_WIDGET (self));
     self->layers = NULL; self->undo_stack = NULL; self->redo_stack = NULL;
+    g_signal_connect (self->text_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
+    g_signal_connect (self->stroke_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
     
     g_signal_connect (self->rotate_left_button, "clicked", G_CALLBACK (on_rotate_clicked), self);
     g_signal_connect (self->rotate_right_button, "clicked", G_CALLBACK (on_rotate_clicked), self);

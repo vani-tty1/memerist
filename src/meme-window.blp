@@ -321,6 +321,32 @@ template $MemeWindow: Adw.ApplicationWindow {
                 };
               }
             }
+            
+            Adw.ActionRow text_color_row {
+              title: "Text Color";
+              visible: bind layer_text_container.visible;
+
+              [suffix]
+              ColorDialogButton text_color_btn {
+                valign: center;
+                dialog: ColorDialog {
+                  with-alpha: true;
+                };
+              }
+            }
+
+            Adw.ActionRow stroke_color_row {
+              title: "Stroke Color";
+              visible: bind layer_text_container.visible;
+
+              [suffix]
+              ColorDialogButton stroke_color_btn {
+                valign: center;
+                dialog: ColorDialog {
+                  with-alpha: true;
+                };
+              }
+            }
 
             Adw.ComboRow blend_mode_row {
               title: "Blend Mode";

@@ -37,6 +37,8 @@ struct _MemeWindow {
     GList *layers, *undo_stack, *redo_stack;
     ImageLayer *selected_layer; 
     DragType drag_type;
+    GtkWidget *text_color_btn;
+    GtkWidget *stroke_color_btn;
     
     GtkGestureDrag *drag_gesture;
     ResizeHandle active_crop_handle;    

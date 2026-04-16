@@ -1,4 +1,5 @@
 #pragma once
+#include "gdk/gdk.h"
 #include <gtk/gtk.h>
 #define CLAMP_U8(val) ((val) < 0 ? 0 : ((val) > 255 ? 255 : (val)))
 
@@ -51,6 +52,8 @@ typedef struct {
   double rotation;
   double opacity;
   BlendMode blend_mode;
+  GdkRGBA text_color;
+  GdkRGBA stroke_color;
 } ImageLayer;
 
 

@@ -219,10 +219,10 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 cairo_move_to(cr, 5.0 - ink_rect.x, 5.0 - ink_rect.y);
                 pango_cairo_layout_path(cr, layout2);
 
-                cairo_set_source_rgba(cr, 0, 0, 0, layer->opacity);
+                cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, layer->opacity);
                 cairo_set_line_width(cr, layer->font_size * 0.08);
                 cairo_stroke_preserve(cr);
-                cairo_set_source_rgba(cr, 1, 1, 1, layer->opacity);
+                cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, layer->opacity);
                 cairo_fill(cr);
 
                 cairo_surface_flush(surf);
@@ -306,10 +306,10 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
                 cairo_move_to(cr, -tw / 2.0 - ink_rect.x, -th / 2.0 - ink_rect.y);
                 
                 pango_cairo_layout_path(cr, layout);
-                cairo_set_source_rgba(cr, 0, 0, 0, layer->opacity);
+                cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, layer->opacity);
                 cairo_set_line_width(cr, layer->font_size * 0.08);
                 cairo_stroke_preserve(cr);
-                cairo_set_source_rgba(cr, 1, 1, 1, layer->opacity);
+                cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, layer->opacity);
                 cairo_fill(cr);
                 g_object_unref(layout);
             }
