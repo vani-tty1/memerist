@@ -26,6 +26,8 @@
   <url type="homepage">https://vani-tty1.github.io/memerist</url>
   <url type="bugtracker">https://github.com/vani-tty1/memerist/issues</url>
   <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
+  <url type="help">https://github.com/vani_tty1/memerist/discussion</url>
+  <url type="contact">https://github.com/vani_tty1</url>
   
   <supports>
     <control>pointing</control>
