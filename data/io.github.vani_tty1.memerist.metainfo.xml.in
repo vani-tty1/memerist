@@ -1,324 +1,333 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component type="desktop-application">
-  <id>io.github.vani_tty1.memerist</id>
-  <metadata_license>CC0-1.0</metadata_license>
-  <project_license>GPL-3.0-or-later</project_license>
-  <name>Memerist</name>
-  <summary>Create memes with text overlays</summary>
-  <description>
-    <p>
-      Simple Libadwaita app for editing memes.
-    </p>
-    <p>Features:</p>
-    <ul>
-      <li>Text and Image layers</li>
-      <li>Real-time preview as you type</li>
-      <li>Add Filters</li>
-      <li>Export memes as PNG images</li>
-      <li>Let it Happen</li>
+    <id>io.github.vani_tty1.memerist</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0-or-later</project_license>
+    <name>Memerist</name>
+    <summary>Create memes with text overlays</summary>
+    <description>
+        <p>
+        Simple Libadwaita app for editing memes.
+        </p>
+        <p>Features:</p>
+        <ul>
+            <li>Text and Image layers</li>
+            <li>Real-time preview as you type</li>
+            <li>Add Filters</li>
+            <li>Export memes as PNG images</li>
+            <li>Let it Happen</li>
+        </ul>
+    </description>
+    <developer id="io.github.vani_tty1.memerist">
+        <name>Giovanni Rafanan</name>
+    </developer>
 
-    </ul>
-  </description>
-  <developer id="io.github.vani_tty1.memerist">
-    <name>Giovanni Rafanan</name>
-  </developer>
-  
-  <url type="homepage">https://vani-tty1.github.io/memerist</url>
-  <url type="bugtracker">https://github.com/vani-tty1/memerist/issues</url>
-  <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
-  <url type="help">https://github.com/vani_tty1/memerist/discussion</url>
-  <url type="contact">https://github.com/vani_tty1</url>
-  
-  <supports>
-    <control>pointing</control>
-    <control>keyboard</control>
-    <control>touch</control>
-  </supports>
-   
-  <categories>
-    <category>Graphics</category>
-  </categories>
-  
-  <keywords>
-    <keyword>GTK</keyword>
-    <keyword>VectorGraphics</keyword>
-  </keywords>
-  
-  
-  
-  <translation type="gettext">memerist</translation>
-  <launchable type="desktop-id">io.github.vani_tty1.memerist.desktop</launchable>
-  
-  <content_rating type="oars-1.1">
-    <content_attribute id="language-humor">mild</content_attribute>
-  </content_rating>
-  
-  <branding>
-    <color type="primary" scheme_preference="light">#3584e4</color>
-    <color type="primary" scheme_preference="dark">#1c71d8</color>
-  </branding>
-  
-<screenshots>
-  <screenshot type="default">
-    <caption>Main window</caption>
-    <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png</image>
-  </screenshot>
-  <screenshot>
-    <caption>Import from Meme Gallery</caption>
-    <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot2.png</image>
-  </screenshot>
-  <screenshot>
-  <caption>Crop</caption>
-  <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png</image>
-  </screenshot>
-</screenshots>
+    <url type="homepage">https://vani-tty1.github.io/memerist</url>
+    <url type="bugtracker">https://github.com/vani-tty1/memerist/issues</url>
+    <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
+    <url type="help">https://github.com/vani-tty1/memerist/discussions</url>
+    <url type="contact">https://github.com/vani-tty1</url>
 
-  <releases>
-  
-    <release version="0.6.2" date="2026-04-01">
-    <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
-        <description translate="no">
-            <p>Enhancements:</p>
-            <ul>
-                <li>Crop grab handles now use a consistent 20px physical hit radius</li>
-            </ul>
-            <p>Bug Fix:</p>
-            <ul>
-                <li>fix(renderer): prevent RTL text clipping</li>
-            </ul>
-        </description>
-    </release>
-    
-    <release version="0.6.1" date="2026-03-27">
-    <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
-      <description translate="no">
-          <p>Minor adjustments:</p>
-          <ul>
-              <li>Update runtime to GNOME 50</li>
-              <li>Added more file format options for exporting</li>
-              <li>Hid layer options when no layer is actively selected</li>
-          </ul>
-      </description>
-    </release>
-    
-    <release version="0.6.0" date="2026-03-21">
-        <description translate="no">
-            <p>Performance and Graphics Improvements:</p>
-            <ul>
-                <li>GPU-accelerated filters</li>
-                <li>Improved pixel rowstride handling</li>
-                <li>Global color adjustments</li>
-                <li>Crop mode performance improvement</li>
-                <li>CPU fallback if gpu init fails</li>
-            </ul>
-        </description>
-    </release>
-    
-    <release version="0.5.0" date="2026-03-13">
-     <description translate="no">
-      <p>Chores:</p>
-      <ul>
-      <li>Make window.c much more modular</li>
-      </ul>
-      <p>Enhancements:</p>
-      <ul>
-      <li>New app icon</li>
-      <li>Support for multi line text</li>
-      <li>Sidebar now auto collapses if the window is small</li>
-      </ul>
-     </description>
-    </release>
-    
-    <release version="0.4.4" date="2026-03-09">
-     <description translate="no">
-     <p>Enhancements:</p>
-      <ul>
-      <li>Made the file operations asynchronous</li>
-      <li>Added line wrapping</li>
-      </ul>
-     <p>Bug Fixes</p>
-      <ul>
-      <li>Fixed unable to export due to sandboxing</li>
-      </ul> 
-     </description>
-    </release>
-    
-    
-    <release version="0.4.3" date="2026-03-07">
-     <description translate="no">
-     <p>Enhancements:</p>
-      <ul>
-        <li>New templates</li>
-        <li>Can now copy to clipboard by clicking the button on the left side or Ctrl + Shift + C</li>
-        <li>Increased layer resize hitboxes.</li>
-        <li>Added visual resize handles to selected layers.</li>
-        <li>Improved drag performance by skipping rendering of heavy filters.</li>
-        <li>Replaced floating point calculation of apply_saturation_contrast to a lookup table</li>
-     </ul>
-     <p>Bug Fixes:</p>
-      <ul>
-        <li>Fixed crash when changing templates with active layers.</li>
-        <li>Removed "No Image Loaded" appearing in between template transitions.</li>
-      </ul>
-     </description>
-    </release>
-    
-    <release version="0.4.2" date="2026-03-03">
-     <description translate="no">
-     <p>New Feature:</p>
-       <ul>
-       <li>New Zoom In/Out fauture</li>
-       <li>Added a button at the center to select an image</li>
-       </ul>
-     <p>Bug Fixes and Improvements:</p>
-       <ul>
-       <li>Fixed duplicate g_object_unref causing crash alert on abrt</li>
-       <li>Adjust preview size</li>
-       </ul>
-     </description>
-    </release>
-  
-    <release version="0.4.1" date="2026-02-28">
-      <description translate="no">
-       <ul>
-       <li>fixed wrong metainfo date</li>
-       </ul>
-      </description>
-    </release>
-    
-    <release version="0.4.0" date="2026-02-28">
-      <description translate="no">
-      <p>New Feature:</p>
-        <ul>
-        <li>New Fonts changer(uses system installed fonts).</li>
-        <li>New keyboard shortcuts for saving a project(Ctrl + S)</li>
-        </ul>
-      <p>Bug Fixes and Improvements:</p>
-        <ul>
-        <li>Fixed an issue where you get stuck on crop mode when clicking clear all.</li>
-        <li>Make all buttons related to editing inactive when no photo is loaded.</li>
-        </ul>
-      </description>
-    </release>
-    
-    <release version="0.3.4" date="2026-02-26">
-      <description translate="no">
-        <ul>
-        <li>fixed some memory leaks upon opening dialogs</li>
-        <li>added more info in the about section</li>
-        <li>brought back the theme switcher</li>
-        </ul>
-      </description>
-    </release>
-    
-    <release version="0.3.3" date="2026-02-21">
-      <description translate="no">
-        <ul>
-        <li>projects can now be saved and loaded in a .meme format</li>
-        <li>button layout optimization</li>
-        </ul>
-      </description>
-    </release>
-    
-    <release version="0.3.2" date="2026-02-07">
-          <description translate="no">
-            <ul>
-            <li>changed application ID</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.3.1" date="2026-02-06">
-          <description translate="no">
-            <ul>
-            <li>Code refactoring and decluttering</li>
-            <li>sourcode cleanup</li>
-            <li>Fixed an issue where contrast filter does not work on templates</li>
-            <li>Fixed keyboard shortcuts not showing in header menu</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.3.0" date="2026-02-05">
-          <description translate="no">
-            <ul>
-            <li>New and improved crop feature</li>
-            <li>Fixed an issue where the selection highlight gets also get exported</li>
-            <li>Fixed app crashing when clicking apply changes in crop mode</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.5" date="2026-01-21">
-          <description translate="no">
-            <ul>
-            <li>Fixed an issue where translations would not load</li>
-            <li>Fixed text rendering by adding a fallback for the Impact font</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.4" date="2026-01-19">
-          <description translate="no">
-            <ul>
-              <li>fixed translation generation</li>
-              <li>new app icon</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.3" date="2026-01-09">
-          <description translate="no">
-            <ul>
-              <li>skip heavy filters while dragging to improvw performance</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.2" date="2026-01-08">
-          <description translate="no">
-            <ul>
-              <li> moved the delete layer button on the floating sidebar </li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.1" date="2026-01-06">
-          <description translate="no">
-            <ul>
-              <li>updated template selection</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.2.0" date="2026-01-06">
-          <description translate="no">
-            <ul>
-            <li>new copy to clipboard</li>
-            <li>new crop mode</li>
-            <li>new image rotation</li>
-            <li>new image flipping</li>
-            <li>new aspect ratio</li>
-            <li>fixed XML nesting error</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.1.5" date="2026-01-02">
-          <description translate="no">
-            <ul>
-              <li>Major UI redesign and functions optimization</li>
-            </ul>
-          </description>
-    </release>
-    
-    <release version="0.1.4" date="2025-12-29">
-          <description translate="no">
-            <ul>
-              <li>removed unused install directories</li>
-            </ul>
-          </description>
-    </release>
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>touch</control>
+    </supports>
 
-  </releases>
+    <categories>
+        <category>Graphics</category>
+    </categories>
+
+    <keywords>
+        <keyword>GTK</keyword>
+        <keyword>VectorGraphics</keyword>
+    </keywords>
+
+    <translation type="gettext">memerist</translation>
+    <launchable type="desktop-id">io.github.vani_tty1.memerist.desktop</launchable>
+
+    <content_rating type="oars-1.1">
+        <content_attribute id="language-humor">mild</content_attribute>
+    </content_rating>
+
+    <branding>
+        <color type="primary" scheme_preference="light">#3584e4</color>
+        <color type="primary" scheme_preference="dark">#1c71d8</color>
+    </branding>
+
+    <screenshots>
+        <screenshot type="default">
+            <caption>Main window</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Import from Meme Gallery</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot2.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Crop</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png</image>
+        </screenshot>
+    </screenshots>
+
+    <releases>
+        <release version="0.7.0" date="2026-04-18">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>New Feature:</p>
+                <ul>
+                    <li>New color picker for text layers</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Refactor: consolidate history management into meme-canvas.c</li>
+                    <li>Refactor: consolidate about dialog into meme-application.c</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.6.2" date="2026-04-01">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>Enhancements:</p>
+                <ul>
+                    <li>Crop grab handles now use a consistent 20px physical hit radius</li>
+                </ul>
+                <p>Bug Fix:</p>
+                <ul>
+                    <li>fix(renderer): prevent RTL text clipping</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.6.1" date="2026-03-27">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>Minor adjustments:</p>
+                <ul>
+                    <li>Update runtime to GNOME 50</li>
+                    <li>Added more file format options for exporting</li>
+                    <li>Hid layer options when no layer is actively selected</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.6.0" date="2026-03-21">
+            <description translate="no">
+                <p>Performance and Graphics Improvements:</p>
+                <ul>
+                    <li>GPU-accelerated filters</li>
+                    <li>Improved pixel rowstride handling</li>
+                    <li>Global color adjustments</li>
+                    <li>Crop mode performance improvement</li>
+                    <li>CPU fallback if gpu init fails</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.5.0" date="2026-03-13">
+            <description translate="no">
+                <p>Chores:</p>
+                <ul>
+                    <li>Make window.c much more modular</li>
+                </ul>
+                <p>Enhancements:</p>
+                <ul>
+                    <li>New app icon</li>
+                    <li>Support for multi line text</li>
+                    <li>Sidebar now auto collapses if the window is small</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.4.4" date="2026-03-09">
+            <description translate="no">
+                <p>Enhancements:</p>
+                <ul>
+                    <li>Made the file operations asynchronous</li>
+                    <li>Added line wrapping</li>
+                </ul>
+                <p>Bug Fixes</p>
+                <ul>
+                    <li>Fixed unable to export due to sandboxing</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.4.3" date="2026-03-07">
+            <description translate="no">
+                <p>Enhancements:</p>
+                <ul>
+                    <li>New templates</li>
+                    <li>Can now copy to clipboard by clicking the button on the left side or Ctrl + Shift + C</li>
+                    <li>Increased layer resize hitboxes.</li>
+                    <li>Added visual resize handles to selected layers.</li>
+                    <li>Improved drag performance by skipping rendering of heavy filters.</li>
+                    <li>Replaced floating point calculation of apply_saturation_contrast to a lookup table</li>
+                </ul>
+                <p>Bug Fixes:</p>
+                <ul>
+                    <li>Fixed crash when changing templates with active layers.</li>
+                    <li>Removed "No Image Loaded" appearing in between template transitions.</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.4.2" date="2026-03-03">
+            <description translate="no">
+                <p>New Feature:</p>
+                <ul>
+                    <li>New Zoom In/Out fauture</li>
+                    <li>Added a button at the center to select an image</li>
+                </ul>
+                <p>Bug Fixes and Improvements:</p>
+                <ul>
+                    <li>Fixed duplicate g_object_unref causing crash alert on abrt</li>
+                    <li>Adjust preview size</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.4.1" date="2026-02-28">
+            <description translate="no">
+                <ul>
+                    <li>fixed wrong metainfo date</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.4.0" date="2026-02-28">
+            <description translate="no">
+                <p>New Feature:</p>
+                <ul>
+                    <li>New Fonts changer(uses system installed fonts).</li>
+                    <li>New keyboard shortcuts for saving a project(Ctrl + S)</li>
+                </ul>
+                <p>Bug Fixes and Improvements:</p>
+                <ul>
+                    <li>Fixed an issue where you get stuck on crop mode when clicking clear all.</li>
+                    <li>Make all buttons related to editing inactive when no photo is loaded.</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.3.4" date="2026-02-26">
+            <description translate="no">
+                <ul>
+                    <li>fixed some memory leaks upon opening dialogs</li>
+                    <li>added more info in the about section</li>
+                    <li>brought back the theme switcher</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.3.3" date="2026-02-21">
+            <description translate="no">
+                <ul>
+                    <li>projects can now be saved and loaded in a .meme format</li>
+                    <li>button layout optimization</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.3.2" date="2026-02-07">
+            <description translate="no">
+                <ul>
+                    <li>changed application ID</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.3.1" date="2026-02-06">
+            <description translate="no">
+                <ul>
+                    <li>Code refactoring and decluttering</li>
+                    <li>sourcode cleanup</li>
+                    <li>Fixed an issue where contrast filter does not work on templates</li>
+                    <li>Fixed keyboard shortcuts not showing in header menu</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.3.0" date="2026-02-05">
+            <description translate="no">
+                <ul>
+                    <li>New and improved crop feature</li>
+                    <li>Fixed an issue where the selection highlight gets also get exported</li>
+                    <li>Fixed app crashing when clicking apply changes in crop mode</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.5" date="2026-01-21">
+            <description translate="no">
+                <ul>
+                    <li>Fixed an issue where translations would not load</li>
+                    <li>Fixed text rendering by adding a fallback for the Impact font</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.4" date="2026-01-19">
+            <description translate="no">
+                <ul>
+                    <li>fixed translation generation</li>
+                    <li>new app icon</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.3" date="2026-01-09">
+            <description translate="no">
+                <ul>
+                    <li>skip heavy filters while dragging to improvw performance</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.2" date="2026-01-08">
+            <description translate="no">
+                <ul>
+                    <li>moved the delete layer button on the floating sidebar</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.1" date="2026-01-06">
+            <description translate="no">
+                <ul>
+                    <li>updated template selection</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.2.0" date="2026-01-06">
+            <description translate="no">
+                <ul>
+                    <li>new copy to clipboard</li>
+                    <li>new crop mode</li>
+                    <li>new image rotation</li>
+                    <li>new image flipping</li>
+                    <li>new aspect ratio</li>
+                    <li>fixed XML nesting error</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.1.5" date="2026-01-02">
+            <description translate="no">
+                <ul>
+                    <li>Major UI redesign and functions optimization</li>
+                </ul>
+            </description>
+        </release>
+
+        <release version="0.1.4" date="2025-12-29">
+            <description translate="no">
+                <ul>
+                    <li>removed unused install directories</li>
+                </ul>
+            </description>
+        </release>
+    </releases>
 </component>
