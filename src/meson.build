@@ -21,7 +21,6 @@ myapp_sources = [
   'meme-fileio.c',
   'meme-renderer.c',
   'meme-gpu.c',
-  'about.c',
   'keyboard-shortcuts.c'
 ]
 
