@@ -1,6 +1,5 @@
 #include "meme-canvas.h"
 #include "meme-core.h"
-#include "meme-history.h"
 #include <math.h>
 
 void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MemeWindow *self) {
@@ -163,4 +162,41 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
 void on_drag_end (GtkGestureDrag *g, double x, double y, MemeWindow *self) { 
     self->drag_type = DRAG_TYPE_NONE; 
     render_meme(self);
+}
+
+void free_history_stack (GList **stack) {
+    GList *l;
+    for (l = *stack; l != NULL; l = l->next) meme_layer_list_free ((GList *)l->data);
+    g_list_free (*stack);
+    *stack = NULL;
+}
+
+void push_undo (MemeWindow *self) {
+    free_history_stack (&self->redo_stack);
+    if (g_list_length (self->undo_stack) >= 20) {
+        GList *last = g_list_last (self->undo_stack);
+        meme_layer_list_free ((GList *)last->data);
+        self->undo_stack = g_list_delete_link (self->undo_stack, last);
+    }
+    self->undo_stack = g_list_prepend (self->undo_stack, meme_layer_list_copy (self->layers));
+}
+
+void myapp_window_perform_undo(MemeWindow *self) {
+    if (!self->undo_stack) return;
+    self->redo_stack = g_list_prepend (self->redo_stack, self->layers);
+    self->layers = (GList *)self->undo_stack->data;
+    self->undo_stack = g_list_delete_link (self->undo_stack, self->undo_stack);
+    self->selected_layer = NULL;
+    sync_ui_with_layer (self);
+    render_meme (self);
+}
+
+void myapp_window_perform_redo (MemeWindow *self) {
+    if (!self->redo_stack) return;
+    self->undo_stack = g_list_prepend (self->undo_stack, self->layers);
+    self->layers = (GList *)self->redo_stack->data;
+    self->redo_stack = g_list_delete_link (self->redo_stack, self->redo_stack);
+    self->selected_layer = NULL;
+    sync_ui_with_layer (self);
+    render_meme (self);
 }

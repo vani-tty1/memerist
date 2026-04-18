@@ -1,6 +1,6 @@
 #include "meme-fileio.h"
 #include "adwaita.h"
-#include "meme-history.h"
+#include "meme-canvas.h"
 #include <glib/gstdio.h>
 
 static gchar *pixbuf_to_base64(GdkPixbuf *pixbuf) {

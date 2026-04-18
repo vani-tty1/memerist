@@ -24,7 +24,6 @@
 #include "meme-window-private.h"
 #include "meme-fileio.h"
 #include "meme-canvas.h"
-#include "meme-history.h"
 #include "keyboard-shortcuts.h"
 #include <glib/gstdio.h>
 #include <stdio.h>
