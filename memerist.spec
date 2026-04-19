@@ -1,6 +1,6 @@
 Name:           memerist
 Version:        0.7.0~preview
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
