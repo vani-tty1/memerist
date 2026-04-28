@@ -84,24 +84,29 @@ There are two ways to build this from source,
 
 
 ```bash
-# Clone the repository
+# Clone the repository and enter the directory
 git clone https://github.com/vani-tty1/memerist.git
+cd memerist
 
-# compiles and creates a build directory,
-# run the binary by using ./build/src/memerist
-make build
+# Check if you have all required dependencies installed
+make check-deps
 
-# rebuilds and runs the application.
-# Use this after making changes to quickly compile and launch.
+# Compile a debug build (creates a 'build' directory)
+make all
+
+# Rebuild and run the application
+# Use this after making changes to quickly compile and launch
 make run
 
-# Compile an optimized release version.
-# create a dir called build-release
+# Compile an optimized release version (creates 'build-release' directory)
 make release
 make run-release
 
-# Remove all compiled build directories
+# Remove the debug build directory
 make clean
+
+# Remove all compiled build directories
+make clean-all
 ```
 
 ---
