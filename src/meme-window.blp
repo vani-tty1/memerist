@@ -56,7 +56,7 @@ template $MemeWindow: Adw.ApplicationWindow {
         [end]
         ToggleButton sidebar_toggle {
           icon-name: "sidebar-show-right-symbolic";
-          tooltip-text: "Toggle Sidebar";
+          tooltip-text: _("Toggle Sidebar");
           active: bind split_view.show-sidebar bidirectional;
         }
 
@@ -167,7 +167,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
             Button add_image_button {
               icon-name: "insert-image-symbolic";
-              tooltip-text: "Add Overlay Image";
+              tooltip-text: _("Add Overlay Image");
               sensitive: false;
             }
 
@@ -179,19 +179,19 @@ template $MemeWindow: Adw.ApplicationWindow {
 
             Button add_text_button {
               icon-name: "format-text-bold-symbolic";
-              tooltip-text: "Add Text Layer";
+              tooltip-text: _("Add Text Layer");
               sensitive: false;
             }
 
             Button copy_clipboard_button {
               icon-name: "edit-paste-symbolic";
-              tooltip-text: "Copy to Clipboard";
+              tooltip-text: _("Copy to Clipboard");
               sensitive: false;
             }
 
             MenuButton global_filters_button {
               icon-name: "applications-graphics-symbolic";
-              tooltip-text: "Global Filters";
+              tooltip-text: _("Global Filters");
               sensitive: false;
               direction: right;
 
@@ -205,15 +205,15 @@ template $MemeWindow: Adw.ApplicationWindow {
                   margin-end: 1;
 
                   ToggleButton cinematic_button {
-                    label: "Cinematic";
-                    tooltip-text: "High Contrast";
+                    label: _("Cinematic");
+                    tooltip-text: _("High Contrast");
                     icon-name: "daytime-sunrise-symbolic";
                     sensitive: false;
                   }
 
                   ToggleButton deep_fry_button {
-                    label: "Deep Fry";
-                    tooltip-text: "Ensh*tify";
+                    label: _("Deep Fry");
+                    tooltip-text: _("Ensh*tify");
                     icon-name: "emblem-important-symbolic";
                     sensitive: false;
 
@@ -227,7 +227,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
             Button delete_layer_button {
               icon-name: "user-trash-symbolic";
-              tooltip-text: "Delete Selected Layer";
+              tooltip-text: _("Delete Selected Layer");
               sensitive: false;
 
               styles [
@@ -236,30 +236,28 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Separator {
-              visible: true;
               orientation: vertical;
             }
 
             Button zoom_in {
               icon-name: "zoom-in-symbolic";
-              tooltip-text: "Zoom In";
+              tooltip-text: _("Zoom In");
               sensitive: false;
             }
 
             Button zoom_out {
               icon-name: "zoom-out-symbolic";
-              tooltip-text: "Zoom Out";
+              tooltip-text: _("Zoom Out");
               sensitive: false;
             }
 
             Separator {
-              visible: true;
               orientation: vertical;
             }
 
             Button clear_button {
               icon-name: "edit-delete-symbolic";
-              tooltip-text: "Clear All";
+              tooltip-text: _("Clear All");
               sensitive: false;
 
               styles [
@@ -271,7 +269,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
         sidebar: Adw.PreferencesPage {
           Adw.PreferencesGroup layer_group {
-            title: "Selected Layer";
+            title: _("Selected Layer");
             visible: false;
 
             Adw.PreferencesRow {
@@ -295,7 +293,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow font_choose_row {
-              title: "Font";
+              title: _("Font");
               visible: false;
 
               [suffix]
@@ -323,7 +321,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
             
             Adw.ActionRow text_color_row {
-              title: "Text Color";
+              title: _("Text Color");
               visible: bind layer_text_container.visible;
 
               [suffix]
@@ -336,7 +334,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow stroke_color_row {
-              title: "Stroke Color";
+              title: _("Stroke Color");
               visible: bind layer_text_container.visible;
 
               [suffix]
@@ -349,13 +347,13 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ComboRow blend_mode_row {
-              title: "Blend Mode";
+              title: _("Blend Mode");
               model: blend_mode_model;
               sensitive: false;
             }
 
             Adw.ActionRow {
-              title: "Opacity";
+              title: _("Opacity");
               
               [suffix]
               Scale layer_opacity_scale {
@@ -375,7 +373,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow {
-              title: "Rotation";
+              title: _("Rotation");
               [suffix]
               Scale layer_rotation_scale {
                 valign: center;
@@ -395,16 +393,16 @@ template $MemeWindow: Adw.ApplicationWindow {
           }
 
           Adw.PreferencesGroup templates_group {
-            title: "Templates";
+            title: _("Templates");
 
             Adw.ExpanderRow {
-              title: "Gallery";
+              title: _("Gallery");
               expanded: true;
 
               [suffix]
               Button import_template_button {
                 icon-name: "list-add-symbolic";
-                tooltip-text: "Import Template";
+                tooltip-text: _("Import Template");
 
                 styles [
                   "flat",
@@ -414,7 +412,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               [suffix]
               Button delete_template_button {
                 icon-name: "user-trash-symbolic";
-                tooltip-text: "Remove Imported Template";
+                tooltip-text: _("Remove Imported Template");
                 sensitive: false;
 
                 styles [
@@ -441,11 +439,11 @@ template $MemeWindow: Adw.ApplicationWindow {
           }
 
           Adw.PreferencesGroup transform_group {
-            title: "Transform";
+            title: _("Transform");
             visible: false;
 
             Adw.ActionRow {
-              title: "Rotate";
+              title: _("Rotate");
 
               Box {
                 valign: center;
@@ -453,7 +451,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                 Button rotate_left_button {
                   icon-name: "object-rotate-left-symbolic";
-                  tooltip-text: "Rotate Left";
+                  tooltip-text: _("Rotate Left");
 
                   styles [
                     "flat",
@@ -462,7 +460,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                 Button rotate_right_button {
                   icon-name: "object-rotate-right-symbolic";
-                  tooltip-text: "Rotate Right";
+                  tooltip-text: _("Rotate Right");
 
                   styles [
                     "flat",
@@ -472,7 +470,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow {
-              title: "Flip";
+              title: _("Flip");
 
               Box {
                 valign: center;
@@ -480,7 +478,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                 Button flip_h_button {
                   icon-name: "object-flip-horizontal-symbolic";
-                  tooltip-text: "Flip Horizontal";
+                  tooltip-text: _("Flip Horizontal");
 
                   styles [
                     "flat",
@@ -489,7 +487,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                 Button flip_v_button {
                   icon-name: "object-flip-vertical-symbolic";
-                  tooltip-text: "Flip Vertical";
+                  tooltip-text: _("Flip Vertical");
 
                   styles [
                     "flat",
@@ -499,7 +497,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow {
-              title: "Crop";
+              title: _("Crop");
 
               Box {
                 spacing: 6;
@@ -531,10 +529,10 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             Adw.ActionRow {
-              title: "Apply Changes";
+              title: _("Apply Changes");
 
               Button apply_crop_button {
-                label: "Apply Crop";
+                label: _("Apply Crop");
                 valign: center;
 
                 styles [
