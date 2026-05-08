@@ -71,6 +71,22 @@
     </screenshots>
 
     <releases>
+        <release version="0.7.1" date="2026-05-08">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>Performance:</p>
+                <ul>
+                    <li>Fixed severe framerate drops when dragging text on high-resolution images by caching text layers as pixbufs and skipping UI overlays during movement</li>
+                </ul>
+                <p>Fixes:</p>
+                <ul>
+                    <li>Resolved a segmentation fault that occurred during OpenGL initialization fallback</li>
+                    <li>Fixed a use-after-free crash that triggered when adding or editing text layers</li>
+                </ul>
+            </description>
+        </release>
+
+        
         <release version="0.7.0" date="2026-04-18">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
