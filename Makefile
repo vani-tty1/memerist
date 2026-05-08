@@ -51,7 +51,7 @@ run-release: release
 	./$(REL)/src/$(PROJECT) $(ARGS)
 
 test: all
-	meson test -C $(BUILD)
+	meson test -v -C $(BUILD)
 
 install: release
 	meson install -C $(REL)
