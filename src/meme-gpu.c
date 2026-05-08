@@ -386,11 +386,13 @@ meme_gpu_init(GdkDisplay *display) {
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    gdk_gl_context_clear_current();
+    
 
     g_gpu.available = TRUE;
     g_message("meme-gpu: GPU acceleration active (GL %s)",
               glGetString(GL_VERSION));
+    
+    gdk_gl_context_clear_current();
     return TRUE;
 }
 

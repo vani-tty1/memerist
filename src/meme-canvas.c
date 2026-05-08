@@ -155,6 +155,9 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
         double cdx = (self->drag_start_x + offset_x/s) - cx, cdy = (self->drag_start_y + offset_y/s) - cy;
         double dist_s = sqrt(sdx*sdx + sdy*sdy), dist_c = sqrt(cdx*cdx + cdy*cdy);
         if (dist_s > 5.0) self->selected_layer->scale = CLAMP(self->drag_obj_start_scale * (dist_c/dist_s), 0.1, 5.0);
+        if (self->selected_layer->type == LAYER_TYPE_TEXT) {
+            self->selected_layer->pixbuf = NULL;
+        }
     }
     render_meme(self);
 }

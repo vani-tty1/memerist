@@ -140,6 +140,68 @@ GdkPixbuf *meme_apply_deep_fry(GdkPixbuf *src) {
     return final;
 }
 
+static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
+    if (layer->type != LAYER_TYPE_TEXT || !layer->text || layer->pixbuf) return;
+
+    cairo_surface_t *surf_m = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
+    cairo_t *cr_m = cairo_create(surf_m);
+    PangoLayout *layout = pango_cairo_create_layout(cr_m);
+    pango_layout_set_text(layout, layer->text, -1);
+    double max_width = (bg_width * 0.9) / layer->scale;
+    pango_layout_set_width(layout, max_width * PANGO_SCALE);
+    pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
+    pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+    
+    PangoFontDescription *desc = layer->font_family
+                                     ? pango_font_description_from_string(layer->font_family)
+                                     : pango_font_description_from_string("Sans Bold");
+    pango_font_description_set_absolute_size(desc, layer->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout, desc);
+
+    PangoRectangle ink_rect;
+    pango_layout_get_pixel_extents(layout, &ink_rect, NULL);
+    int tw = ink_rect.width;
+    int th = ink_rect.height;
+    layer->width = tw + 10;
+    layer->height = th + 10;
+    
+    g_object_unref(layout);
+    cairo_destroy(cr_m);
+    cairo_surface_destroy(surf_m);
+
+    cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, tw + 10, th + 10);
+    cairo_t *cr = cairo_create(surf);
+    cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+    cairo_paint(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+
+    PangoLayout *layout2 = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout2, layer->text, -1);
+    pango_layout_set_width(layout2, max_width * PANGO_SCALE);
+    pango_layout_set_wrap(layout2, PANGO_WRAP_WORD_CHAR);
+    pango_layout_set_alignment(layout2, PANGO_ALIGN_CENTER);
+    pango_layout_set_font_description(layout2, desc);
+
+    cairo_move_to(cr, 5.0 - ink_rect.x, 5.0 - ink_rect.y);
+    pango_cairo_layout_path(cr, layout2);
+    
+    // Draw with 1.0 opacity (the compositor shader handles layer opacity)
+    cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, 1.0);
+    cairo_set_line_width(cr, layer->font_size * 0.08);
+    cairo_stroke_preserve(cr);
+    cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, 1.0);
+    cairo_fill(cr);
+    cairo_surface_flush(surf);
+
+    layer->pixbuf = gdk_pixbuf_get_from_surface(surf, 0, 0, tw + 10, th + 10);
+
+    cairo_destroy(cr);
+    cairo_surface_destroy(surf);
+    g_object_unref(layout2);
+    pango_font_description_free(desc);
+}
+
+
 GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry) {
     if (!bg)
         return NULL;
@@ -147,6 +209,10 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
     int h = gdk_pixbuf_get_height(bg);
 
     GdkPixbuf *comp = NULL;
+
+    for (GList *l = layers; l != NULL; l = l->next) {
+        meme_layer_ensure_text_pixbuf((ImageLayer *)l->data, w);
+    }
 
     if (meme_gpu_is_available()) {
         int n = g_list_length(layers);
@@ -164,6 +230,10 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
             gpu_layers[idx].scale = layer->scale;
             gpu_layers[idx].opacity = layer->opacity;
             gpu_layers[idx].blend_mode = (int)layer->blend_mode;
+
+            if (layer->pixbuf){
+                gpu_layers[idx].pixbuf = layer->pixbuf;
+            } 
 
             if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
                 gpu_layers[idx].pixbuf = layer->pixbuf;
@@ -272,46 +342,13 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
             else
                 cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 
-            if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
+            // Both text and image layers now have a cached pixbuf
+            if (layer->pixbuf) {
                 gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
                 if (layer->opacity < 1.0)
                     cairo_paint_with_alpha(cr, layer->opacity);
                 else
                     cairo_paint(cr);
-            } else if (layer->type == LAYER_TYPE_TEXT && layer->text) {
-                PangoLayout *layout = pango_cairo_create_layout(cr);
-                pango_layout_set_text(layout, layer->text, -1);
-                double max_width = (w * 0.9) / layer->scale;
-                pango_layout_set_width(layout, max_width * PANGO_SCALE);
-                pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
-                pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
-                PangoFontDescription *desc;
-                if (layer->font_family) {
-                    desc = pango_font_description_from_string(layer->font_family);
-                } else {
-                    desc = pango_font_description_from_string("Sans Bold");
-                }
-                pango_font_description_set_absolute_size(desc, layer->font_size * PANGO_SCALE);
-                pango_layout_set_font_description(layout, desc);
-                pango_font_description_free(desc);
-                
-                
-                PangoRectangle ink_rect;
-                pango_layout_get_pixel_extents(layout, &ink_rect, NULL);
-                int tw = ink_rect.width;
-                int th = ink_rect.height;
-                layer->width = tw + 10;
-                layer->height = th + 10;
-                
-                cairo_move_to(cr, -tw / 2.0 - ink_rect.x, -th / 2.0 - ink_rect.y);
-                
-                pango_cairo_layout_path(cr, layout);
-                cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, layer->opacity);
-                cairo_set_line_width(cr, layer->font_size * 0.08);
-                cairo_stroke_preserve(cr);
-                cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, layer->opacity);
-                cairo_fill(cr);
-                g_object_unref(layout);
             }
             cairo_restore(cr);
         }

@@ -50,13 +50,21 @@ void render_meme (MemeWindow *self) {
     }
     // why did I even write this in C?
     // am I actually stupid?
-    GdkTexture *tex = meme_render_editor_overlay(
-        self->final_meme,
-        self->layers,
-        self->selected_layer,
-        gtk_toggle_button_get_active(self->crop_mode_button),
-        self->crop_x, self->crop_y, self->crop_w, self->crop_h
-    );
+    GdkTexture *tex; 
+    if (is_dragging) {
+        // FAST PATH: Skip the expensive blue overlay handles while dragging.
+        // This eliminates a massive 4K Cairo memory copy per frame.
+        tex = gdk_texture_new_for_pixbuf(self->final_meme);
+    } else {
+        // SLOW PATH: Draw the selection handles only when the mouse is released.
+        tex = meme_render_editor_overlay(
+            self->final_meme,
+            self->layers,
+            self->selected_layer,
+            gtk_toggle_button_get_active(self->crop_mode_button),
+            self->crop_x, self->crop_y, self->crop_w, self->crop_h
+        );
+    }
 
     gtk_picture_set_paintable(self->meme_preview, GDK_PAINTABLE(tex));
     g_object_unref(tex);
@@ -71,6 +79,8 @@ static void on_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *se
         if (sc) self->selected_layer->stroke_color = *sc;
         
         render_meme(self);
+        g_clear_object(&self->selected_layer->pixbuf);
+        self->selected_layer->pixbuf = NULL;
     }
 }
 
@@ -88,6 +98,8 @@ static void on_layer_text_changed (MemeWindow *self) {
         self->selected_layer->text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
         self->selected_layer->font_size = gtk_spin_button_get_value (self->layer_font_size);
         render_meme (self);
+        g_clear_object(&self->selected_layer->pixbuf);
+        self->selected_layer->pixbuf = NULL;
     }
 }
 
@@ -210,6 +222,8 @@ static void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *sel
             g_free (self->selected_layer->font_family);
             self->selected_layer->font_family = pango_font_description_to_string (desc);
             render_meme (self);
+            // g_clear_object(&self->selected_layer->pixbuf);
+            self->selected_layer->pixbuf = NULL;
         }
     }
 }
