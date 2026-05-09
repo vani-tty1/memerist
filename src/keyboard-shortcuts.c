@@ -35,6 +35,14 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
         return TRUE;
     }
 
+    // Backspace or Delete key = delete layer
+    if (keyval == GDK_KEY_BackSpace || keyval == GDK_KEY_Delete) {
+        if (self->selected_layer) {
+            gtk_widget_activate(GTK_WIDGET(self->delete_layer_button));
+            return TRUE;
+        }
+    }
+
     //Ctrl + Shift + C = copy to clipboard
     if ((state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) && 
         (keyval == GDK_KEY_s || keyval == GDK_KEY_C)) {
