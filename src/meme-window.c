@@ -51,12 +51,11 @@ void render_meme (MemeWindow *self) {
     // why did I even write this in C?
     // am I actually stupid?
     GdkTexture *tex; 
-    if (is_dragging) {
-        // FAST PATH: Skip the expensive blue overlay handles while dragging.
-        // This eliminates a massive 4K Cairo memory copy per frame.
+    if (is_dragging && !is_crop_drag) {
+        // FAST PATH: Skip the expensive blue overlay handles while dragging layers.
         tex = gdk_texture_new_for_pixbuf(self->final_meme);
     } else {
-        // SLOW PATH: Draw the selection handles only when the mouse is released.
+        // SLOW PATH: Draw the selection handles AND the crop overlay.
         tex = meme_render_editor_overlay(
             self->final_meme,
             self->layers,
