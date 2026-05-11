@@ -1,4 +1,4 @@
-app-id: io.github.vani_tty1.memerist
+app-id: io.github.vani_tty1.memerist.Devel
 runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
@@ -11,6 +11,9 @@ finish-args:
 modules:
   - name: memerist
     buildsystem: meson
+    config-opts:
+      - -Dprofile=development
+      - -Dapp_id_suffix=.Devel
     sources:
       - type: dir
         path: ..
