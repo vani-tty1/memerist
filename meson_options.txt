@@ -1,0 +1,13 @@
+option(
+	'profile', 
+	type: 'combo',
+	choices: ['default', 'development'],
+	value: 'default',
+	description: 'Build profile'
+)
+option(
+	'app_id_suffix',
+	type: 'string',
+	value: '',
+	description: 'String to append to the application id'
+)
