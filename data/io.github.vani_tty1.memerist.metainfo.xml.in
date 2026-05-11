@@ -71,6 +71,16 @@
     </screenshots>
 
     <releases>
+		<release version="0.7.2" date="2026-05-11">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>Fixes:</p>
+                <ul>
+                    <li>Fixed crop overlay disappearing during movement.</li>
+                </ul>
+            </description>
+        </release>
+		
         <release version="0.7.1" date="2026-05-08">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
