@@ -1,6 +1,6 @@
 Name:           memerist
 Version:        0.7.2~upstream
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -30,6 +30,5 @@ Create memes with custom text overlays using a native GNOME interface.
 
 
 %changelog
-* Sun May 10 2026 vani-tty1 <giovannirafanan609@gmail.com> - 0.7.2-1
+* Mon May 11 2026 vani-tty1 <giovannirafanan609@gmail.com> - 0.7.2-2
 - build from the latest commits of testing branch
-- includes latest patches that fixes crop overlay dissapearing during movement
