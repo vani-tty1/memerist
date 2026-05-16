@@ -2,16 +2,7 @@
 #include "adwaita.h"
 #include "meme-canvas.h"
 #include <glib/gstdio.h>
-
-static gchar *pixbuf_to_base64(GdkPixbuf *pixbuf) {
-    if (!pixbuf) return NULL;
-    gchar *buffer = NULL; gsize buffer_size = 0;
-    if (gdk_pixbuf_save_to_buffer(pixbuf, &buffer, &buffer_size, "png", NULL, NULL)) {
-        gchar *base64 = g_base64_encode((const guchar *)buffer, buffer_size);
-        g_free(buffer); return base64;
-    }
-    return NULL;
-}
+#include <gio/gio.h>
 
 static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
     if (!base64) return NULL;
@@ -23,46 +14,126 @@ static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
     g_object_unref(stream); return pixbuf;
 }
 
-static void on_save_project_response(GObject *s, GAsyncResult *r, gpointer d) {
-    GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
-    MemeWindow *self = MEME_WINDOW(d);
-    GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
-    if (file) {
-        GKeyFile *keyfile = g_key_file_new();
-        if (self->template_image) {
-            gchar *b64 = pixbuf_to_base64(self->template_image);
-            g_key_file_set_string(keyfile, "Project", "template", b64);
-            g_free(b64);
-        }
-        g_key_file_set_boolean(keyfile, "Project", "deep_fry", gtk_toggle_button_get_active(self->deep_fry_button));
-        g_key_file_set_boolean(keyfile, "Project", "cinematic", gtk_toggle_button_get_active(self->cinematic_button));
-        
-        int i = 0;
-        for (GList *l = self->layers; l != NULL; l = l->next, i++) {
-            ImageLayer *layer = (ImageLayer *)l->data;
-            gchar group[32]; g_snprintf(group, sizeof(group), "Layer%d", i);
-            g_key_file_set_integer(keyfile, group, "type", layer->type);
-            g_key_file_set_double(keyfile, group, "x", layer->x);
-            g_key_file_set_double(keyfile, group, "y", layer->y);
-            g_key_file_set_double(keyfile, group, "scale", layer->scale);
-            g_key_file_set_double(keyfile, group, "rotation", layer->rotation);
-            g_key_file_set_double(keyfile, group, "opacity", layer->opacity);
-            g_key_file_set_integer(keyfile, group, "blend_mode", layer->blend_mode);
 
-            if (layer->type == LAYER_TYPE_TEXT && layer->text) {
-                g_key_file_set_string(keyfile, group, "text", layer->text);
-                g_key_file_set_double(keyfile, group, "font_size", layer->font_size);
-            } else if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
-                gchar *b64 = pixbuf_to_base64(layer->pixbuf);
-                g_key_file_set_string(keyfile, group, "pixbuf", b64);
-                g_free(b64);
-            }
+static void 
+encode_base64_thread (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
+    GdkPixbuf *pixbuf = GDK_PIXBUF(task_data);
+    gchar *buffer = NULL;
+    gsize buffer_size = 0;
+
+    if (gdk_pixbuf_save_to_buffer(pixbuf, &buffer, &buffer_size, "png", NULL, NULL)) {
+        gchar *base64 = g_base64_encode((const guchar *)buffer, buffer_size);
+        g_free(buffer);
+        g_task_return_pointer(task, base64, g_free); // Sends result back to main thread
+    } else {
+        g_task_return_new_error(task, G_IO_ERROR, G_IO_ERROR_FAILED, "Failed to encode");
+    }
+}
+
+static void 
+pixbuf_to_base64_async (GdkPixbuf *pixbuf, GAsyncReadyCallback callback, gpointer user_data) {
+    GTask *task = g_task_new(NULL, NULL, callback, user_data);
+    g_task_set_task_data(task, g_object_ref(pixbuf), g_object_unref);
+    g_task_run_in_thread(task, encode_base64_thread);
+    g_object_unref(task);
+}
+
+static void
+on_base64_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+    EncodeCtx *ctx = user_data;
+    GError *error = NULL;
+    gchar *base64 = g_task_propagate_pointer (G_TASK (res), &error);
+
+    if (base64) {
+        g_key_file_set_string (ctx->save_ctx->keyfile, ctx->group, ctx->key, base64);
+        g_free (base64);
+    } else {
+        g_warning ("Failed to encode image: %s", error ? error->message : "unknown");
+        g_clear_error (&error);
+    }
+
+    g_free (ctx->group);
+    g_free (ctx->key);
+    g_free (ctx);
+
+    ctx->save_ctx->pending--;
+    if (ctx->save_ctx->pending == 0) {
+        gchar *path = g_file_get_path (ctx->save_ctx->file);
+        g_key_file_save_to_file (ctx->save_ctx->keyfile, path, NULL);
+        g_free (path);
+        g_key_file_free (ctx->save_ctx->keyfile);
+        g_object_unref (ctx->save_ctx->file);
+        g_free (ctx->save_ctx);
+    }
+}
+
+static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
+    GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
+    MemeWindow *self = MEME_WINDOW (d);
+    GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
+    if (!file) return;
+
+    GKeyFile *keyfile = g_key_file_new ();
+
+    // Count async encodes needed upfront
+    int encode_count = (self->template_image != NULL) ? 1 : 0;
+    for (GList *l = self->layers; l != NULL; l = l->next) {
+        ImageLayer *layer = l->data;
+        if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf)
+            encode_count++;
+    }
+
+    SaveCtx *save_ctx = g_new0 (SaveCtx, 1);
+    save_ctx->file    = file;
+    save_ctx->keyfile = keyfile;
+    save_ctx->pending = encode_count;
+
+    g_key_file_set_boolean (keyfile, "Project", "deep_fry",  gtk_toggle_button_get_active (self->deep_fry_button));
+    g_key_file_set_boolean (keyfile, "Project", "cinematic", gtk_toggle_button_get_active (self->cinematic_button));
+
+    int i = 0;
+    for (GList *l = self->layers; l != NULL; l = l->next, i++) {
+        ImageLayer *layer = l->data;
+        gchar group[32];
+        g_snprintf (group, sizeof (group), "Layer%d", i);
+
+        g_key_file_set_integer (keyfile, group, "type",       layer->type);
+        g_key_file_set_double  (keyfile, group, "x",          layer->x);
+        g_key_file_set_double  (keyfile, group, "y",          layer->y);
+        g_key_file_set_double  (keyfile, group, "scale",      layer->scale);
+        g_key_file_set_double  (keyfile, group, "rotation",   layer->rotation);
+        g_key_file_set_double  (keyfile, group, "opacity",    layer->opacity);
+        g_key_file_set_integer (keyfile, group, "blend_mode", layer->blend_mode);
+
+        if (layer->type == LAYER_TYPE_TEXT && layer->text) {
+            g_key_file_set_string (keyfile, group, "text",      layer->text);
+            g_key_file_set_double (keyfile, group, "font_size", layer->font_size);
+        } else if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf) {
+            EncodeCtx *ctx  = g_new0 (EncodeCtx, 1);
+            ctx->save_ctx   = save_ctx;
+            ctx->group      = g_strdup (group);
+            ctx->key        = g_strdup ("pixbuf");
+            pixbuf_to_base64_async (layer->pixbuf, on_base64_ready, ctx);
         }
-        g_key_file_set_integer(keyfile, "Project", "layer_count", i);
-        gchar *path = g_file_get_path(file);
-        g_key_file_save_to_file(keyfile, path, NULL);
-        g_free(path);
-        g_key_file_free(keyfile); g_object_unref(file);
+    }
+    g_key_file_set_integer (keyfile, "Project", "layer_count", i);
+
+    if (self->template_image) {
+        EncodeCtx *ctx  = g_new0 (EncodeCtx, 1);
+        ctx->save_ctx   = save_ctx;
+        ctx->group      = g_strdup ("Project");
+        ctx->key        = g_strdup ("template");
+        pixbuf_to_base64_async (self->template_image, on_base64_ready, ctx);
+    }
+
+    if (encode_count == 0) {
+        gchar *path = g_file_get_path (file);
+        g_key_file_save_to_file (keyfile, path, NULL);
+        g_free (path);
+        g_key_file_free (keyfile);
+        g_object_unref (file);
+        g_free (save_ctx);
     }
 }
 
