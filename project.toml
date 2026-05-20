@@ -1,4 +1,4 @@
 # this is just used to trigger a copr rebuild
 [package]
 version = "0.8.0"
-release = ""
+release = "666666"
