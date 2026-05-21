@@ -9,6 +9,17 @@ finish-args:
   - --socket=wayland
   - --device=dri
 modules:
+  - name: imagemagick
+    buildsystem: autotools
+    config-opts:
+      - --disable-static
+      - --without-x
+    sources:
+      - type: archive
+        url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-23.tar.gz
+        sha256: f129f7d87fc21da453d032dd291b80ea13faf2497f13ef8279d97759ed7d5c46
+
+
   - name: memerist
     buildsystem: meson
     config-opts:
