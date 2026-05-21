@@ -71,7 +71,23 @@
     </screenshots>
 
     <releases>
-		<release version="0.7.2" date="2026-05-11">
+        <release version="0.8.0" date="2026-05-21">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>What;s New:</p>
+                <ul>
+                  <li>Added GIF support</li>
+                </ul>
+                <p>Improvements:</p>
+                <ul>
+                    <li>Fix: fix: blend_mode loaded with wrong type</li>
+                    <li>make base64 encoding async in project save</li>
+                    <li>Plug leaks</li>
+                </ul>
+            </description>
+        </release>
+      
+		    <release version="0.7.2" date="2026-05-11">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
                 <p>Fixes:</p>
