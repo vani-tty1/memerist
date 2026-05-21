@@ -46,6 +46,9 @@ struct _MemeWindow {
     double drag_obj_start_x, drag_obj_start_y, drag_obj_start_scale, drag_obj_start_h;
     double zoom_level;
     double crop_x, crop_y, crop_w, crop_h;
+
+    GdkPixbufAnimation *template_anim;
+    GtkBox *export_loading_screen;
 };
 
 void sync_ui_with_layer(MemeWindow *self);

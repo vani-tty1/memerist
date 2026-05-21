@@ -29,6 +29,7 @@ template $MemeWindow: Adw.ApplicationWindow {
       Adw.HeaderBar {
         title-widget: Adw.WindowTitle {
         };
+
         [start]
         Button load_image_button {
             icon-name: "image-x-generic-symbolic";
@@ -71,348 +72,160 @@ template $MemeWindow: Adw.ApplicationWindow {
         }
       }
 
-      content: Adw.OverlaySplitView split_view {
-        sidebar-position: end;
-        max-sidebar-width: 320;
-        min-sidebar-width: 270;
-        collapsed: false;
-        show-sidebar: true;
+      content: Overlay {
+        child: Adw.OverlaySplitView split_view {
+          sidebar-position: end;
+          max-sidebar-width: 320;
+          min-sidebar-width: 270;
+          collapsed: false;
+          show-sidebar: true;
 
-        content: Overlay {
-          ScrolledWindow {
-            hexpand: true;
-            vexpand: true;
+          content: Overlay {
+            ScrolledWindow {
+              hexpand: true;
+              vexpand: true;
 
-            Viewport {
-              Box {
-                halign: center;
-                valign: center;
-                hexpand: true;
-                vexpand: true;
-                margin-top: 24;
-                margin-bottom: 80;
-                margin-start: 80;
-                margin-end: 24;
-
-                Stack content_stack {
-                  hexpand: true;
-                  vexpand: true;
+              Viewport {
+                Box {
                   halign: center;
                   valign: center;
+                  hexpand: true;
+                  vexpand: true;
+                  margin-top: 24;
+                  margin-bottom: 80;
+                  margin-start: 80;
+                  margin-end: 24;
 
-                  StackPage {
-                    name: "empty";
+                  Stack content_stack {
+                    hexpand: true;
+                    vexpand: true;
+                    halign: center;
+                    valign: center;
 
-                    child: Adw.StatusPage {
-                      icon-name: "image-x-generic-symbolic";
-                      title: _("No Image Loaded");
-                      description: _("Open an image to start editing ");
-                      hexpand: true;
-                      vexpand: true;
-
-                      Button pill_btn_open_image {
-                        label: _("Select Image");
-                        margin-bottom: 12;
-
-                        styles [
-                          "pill",
-                          "suggested-action",
-                        ]
-                      }
-                    };
-                  }
-
-                  StackPage {
-                    name: "content";
-
-                    child: Frame {
-                      styles [
-                        "card",
-                      ]
-
-                      halign: center;
-                      valign: center;
-                      hexpand: false;
-                      vexpand: false;
-                      margin-top: 10;
-                      margin-bottom: 10;
-
-                      Picture meme_preview {
-                        content-fit: contain;
-                        can-shrink: true;
+                    StackPage {
+                      name: "empty";
+                      child: Adw.StatusPage {
+                        icon-name: "image-x-generic-symbolic";
+                        title: _("No Image Loaded");
+                        description: _("Open an image to start editing ");
                         hexpand: true;
+                        vexpand: true;
+
+                        Button pill_btn_open_image {
+                          label: _("Select Image");
+                          margin-bottom: 12;
+
+                          styles [
+                            "pill",
+                            "suggested-action",
+                          ]
+                        }
+                      };
+                    }
+
+                    StackPage {
+                      name: "content";
+                      child: Frame {
+                        styles [
+                          "card",
+                        ]
+
+                        halign: center;
+                        valign: center;
+                        hexpand: false;
                         vexpand: false;
-                      }
-                    };
+                        margin-top: 10;
+                        margin-bottom: 10;
+
+                        Picture meme_preview {
+                          content-fit: contain;
+                          can-shrink: true;
+                          hexpand: true;
+                          vexpand: false;
+                        }
+                      };
+                    }
                   }
                 }
               }
             }
-          }
 
-          [overlay]
-          Box {
-            halign: start;
-            valign: center;
-            orientation: vertical;
-            margin-start: 12;
-            spacing: 6;
-
-            styles [
-              "osd",
-              "toolbar",
-            ]
-
-
-
-            Button add_image_button {
-              icon-name: "insert-image-symbolic";
-              tooltip-text: _("Add Overlay Image");
-              sensitive: false;
-            }
-
-            ToggleButton crop_mode_button {
-              icon-name: "edit-cut-symbolic";
-              tooltip-text: _("Crop & Rotate");
-              sensitive: false;
-            }
-
-            Button add_text_button {
-              icon-name: "format-text-bold-symbolic";
-              tooltip-text: _("Add Text Layer");
-              sensitive: false;
-            }
-
-            Button copy_clipboard_button {
-              icon-name: "edit-paste-symbolic";
-              tooltip-text: _("Copy to Clipboard");
-              sensitive: false;
-            }
-
-            MenuButton global_filters_button {
-              icon-name: "applications-graphics-symbolic";
-              tooltip-text: _("Global Filters");
-              sensitive: false;
-              direction: right;
-
-              popover: Popover {
-                Box {
-                  orientation: horizontal;
-                  spacing: 6;
-                  margin-top: 1;
-                  margin-bottom: 1;
-                  margin-start: 1;
-                  margin-end: 1;
-
-                  ToggleButton cinematic_button {
-                    label: _("Cinematic");
-                    tooltip-text: _("High Contrast");
-                    icon-name: "daytime-sunrise-symbolic";
-                    sensitive: false;
-                  }
-
-                  ToggleButton deep_fry_button {
-                    label: _("Deep Fry");
-                    tooltip-text: _("Ensh*tify");
-                    icon-name: "emblem-important-symbolic";
-                    sensitive: false;
-
-                    styles [
-                      "destructive-action",
-                    ]
-                  }
-                }
-              };
-            }
-
-            Button delete_layer_button {
-              icon-name: "user-trash-symbolic";
-              tooltip-text: _("Delete Selected Layer");
-              sensitive: false;
+            [overlay]
+            Box {
+              halign: start;
+              valign: center;
+              orientation: vertical;
+              margin-start: 12;
+              spacing: 6;
 
               styles [
-                "destructive-action",
+                "osd",
+                "toolbar",
               ]
-            }
 
-            Separator {
-              orientation: vertical;
-            }
+              Button add_image_button {
+                icon-name: "insert-image-symbolic";
+                tooltip-text: _("Add Overlay Image");
+                sensitive: false;
+              }
 
-            Button zoom_in {
-              icon-name: "zoom-in-symbolic";
-              tooltip-text: _("Zoom In");
-              sensitive: false;
-            }
+              ToggleButton crop_mode_button {
+                icon-name: "edit-cut-symbolic";
+                tooltip-text: _("Crop & Rotate");
+                sensitive: false;
+              }
 
-            Button zoom_out {
-              icon-name: "zoom-out-symbolic";
-              tooltip-text: _("Zoom Out");
-              sensitive: false;
-            }
+              Button add_text_button {
+                icon-name: "format-text-bold-symbolic";
+                tooltip-text: _("Add Text Layer");
+                sensitive: false;
+              }
 
-            Separator {
-              orientation: vertical;
-            }
+              Button copy_clipboard_button {
+                icon-name: "edit-paste-symbolic";
+                tooltip-text: _("Copy to Clipboard");
+                sensitive: false;
+              }
 
-            Button clear_button {
-              icon-name: "edit-delete-symbolic";
-              tooltip-text: _("Clear All");
-              sensitive: false;
+              MenuButton global_filters_button {
+                icon-name: "applications-graphics-symbolic";
+                tooltip-text: _("Global Filters");
+                sensitive: false;
+                direction: right;
 
-              styles [
-                "destructive-action",
-              ]
-            }
-          }
-        };
+                popover: Popover {
+                  Box {
+                    orientation: horizontal;
+                    spacing: 6;
+                    margin-top: 1;
+                    margin-bottom: 1;
+                    margin-start: 1;
+                    margin-end: 1;
 
-        sidebar: Adw.PreferencesPage {
-          Adw.PreferencesGroup layer_group {
-            title: _("Selected Layer");
-            visible: false;
+                    ToggleButton cinematic_button {
+                      label: _("Cinematic");
+                      tooltip-text: _("High Contrast");
+                      icon-name: "daytime-sunrise-symbolic";
+                      sensitive: false;
+                    }
 
-            Adw.PreferencesRow {
-              Frame layer_text_container {
-                visible: false;
+                    ToggleButton deep_fry_button {
+                      label: _("Deep Fry");
+                      tooltip-text: _("Ensh*tify");
+                      icon-name: "emblem-important-symbolic";
+                      sensitive: false;
 
-                styles [
-                  "card",
-                ]
-
-                ScrolledWindow {
-                  height-request: 100;
-
-                  TextView layer_text_view {
-                    wrap-mode: word_char;
-                    left-margin: 12;
-                    right-margin: 12;
+                      styles [
+                        "destructive-action",
+                      ]
+                    }
                   }
-                }
-              }
-            }
-
-            Adw.ActionRow font_choose_row {
-              title: _("Font");
-              visible: false;
-
-              [suffix]
-              FontDialogButton font_choose_btn {
-                valign: center;
-
-                dialog: FontDialog {};
-              }
-            }
-
-            Adw.ActionRow layer_font_size_row {
-              title: "Font Size";
-              visible: false;
-
-              SpinButton layer_font_size {
-                valign: center;
-
-                adjustment: Adjustment {
-                  lower: 10;
-                  upper: 300;
-                  value: 60;
-                  step-increment: 5;
                 };
               }
-            }
-            
-            Adw.ActionRow text_color_row {
-              title: _("Text Color");
-              visible: bind layer_text_container.visible;
 
-              [suffix]
-              ColorDialogButton text_color_btn {
-                valign: center;
-                dialog: ColorDialog {
-                  with-alpha: true;
-                };
-              }
-            }
-
-            Adw.ActionRow stroke_color_row {
-              title: _("Stroke Color");
-              visible: bind layer_text_container.visible;
-
-              [suffix]
-              ColorDialogButton stroke_color_btn {
-                valign: center;
-                dialog: ColorDialog {
-                  with-alpha: true;
-                };
-              }
-            }
-
-            Adw.ComboRow blend_mode_row {
-              title: _("Blend Mode");
-              model: blend_mode_model;
-              sensitive: false;
-            }
-
-            Adw.ActionRow {
-              title: _("Opacity");
-              
-              [suffix]
-              Scale layer_opacity_scale {
-                valign: center;
-                hexpand: true;
-                sensitive: false;
-                width-request: 150;
-                draw-value: true;
-
-                adjustment: Adjustment {
-                  lower: 0.0;
-                  upper: 1.0;
-                  value: 1.0;
-                  step-increment: 0.1;
-                };
-              }
-            }
-
-            Adw.ActionRow {
-              title: _("Rotation");
-              [suffix]
-              Scale layer_rotation_scale {
-                valign: center;
-                hexpand: true;
-                sensitive: false;
-                width-request: 150;
-                draw-value: false;
-
-                adjustment: Adjustment {
-                  lower: 0.0;
-                  upper: 6.28;
-                  value: 0.0;
-                  step-increment: 0.1;
-                };
-              }
-            }
-          }
-
-          Adw.PreferencesGroup templates_group {
-            title: _("Templates");
-
-            Adw.ExpanderRow {
-              title: _("Gallery");
-              expanded: true;
-
-              [suffix]
-              Button import_template_button {
-                icon-name: "list-add-symbolic";
-                tooltip-text: _("Import Template");
-
-                styles [
-                  "flat",
-                ]
-              }
-
-              [suffix]
-              Button delete_template_button {
+              Button delete_layer_button {
                 icon-name: "user-trash-symbolic";
-                tooltip-text: _("Remove Imported Template");
+                tooltip-text: _("Delete Selected Layer");
                 sensitive: false;
 
                 styles [
@@ -420,132 +233,355 @@ template $MemeWindow: Adw.ApplicationWindow {
                 ]
               }
 
-              Box {
-                height-request: 450;
+              Separator {
+                orientation: vertical;
+              }
 
-                ScrolledWindow {
+              Button zoom_in {
+                icon-name: "zoom-in-symbolic";
+                tooltip-text: _("Zoom In");
+                sensitive: false;
+              }
+
+              Button zoom_out {
+                icon-name: "zoom-out-symbolic";
+                tooltip-text: _("Zoom Out");
+                sensitive: false;
+              }
+
+              Separator {
+                orientation: vertical;
+              }
+
+              Button clear_button {
+                icon-name: "edit-delete-symbolic";
+                tooltip-text: _("Clear All");
+                sensitive: false;
+
+                styles [
+                  "destructive-action",
+                ]
+              }
+            }
+          };
+
+          sidebar: Adw.PreferencesPage {
+            Adw.PreferencesGroup layer_group {
+              title: _("Selected Layer");
+              visible: false;
+
+              Adw.PreferencesRow {
+                Frame layer_text_container {
+                  visible: false;
+
+                  styles [
+                    "card",
+                  ]
+
+                  ScrolledWindow {
+                    height-request: 100;
+
+                    TextView layer_text_view {
+                      wrap-mode: word_char;
+                      left-margin: 12;
+                      right-margin: 12;
+                    }
+                  }
+                }
+              }
+
+              Adw.ActionRow font_choose_row {
+                title: _("Font");
+                visible: false;
+
+                [suffix]
+                FontDialogButton font_choose_btn {
+                  valign: center;
+
+                  dialog: FontDialog {};
+                }
+              }
+
+              Adw.ActionRow layer_font_size_row {
+                title: "Font Size";
+                visible: false;
+
+                SpinButton layer_font_size {
+                  valign: center;
+
+                  adjustment: Adjustment {
+                    lower: 10;
+                    upper: 300;
+                    value: 60;
+                    step-increment: 5;
+                  };
+                }
+              }
+
+              Adw.ActionRow text_color_row {
+                title: _("Text Color");
+                visible: bind layer_text_container.visible;
+
+                [suffix]
+                ColorDialogButton text_color_btn {
+                  valign: center;
+
+                  dialog: ColorDialog {
+                    with-alpha: true;
+                  };
+                }
+              }
+
+              Adw.ActionRow stroke_color_row {
+                title: _("Stroke Color");
+                visible: bind layer_text_container.visible;
+
+                [suffix]
+                ColorDialogButton stroke_color_btn {
+                  valign: center;
+
+                  dialog: ColorDialog {
+                    with-alpha: true;
+                  };
+                }
+              }
+
+              Adw.ComboRow blend_mode_row {
+                title: _("Blend Mode");
+                model: blend_mode_model;
+                sensitive: false;
+              }
+
+              Adw.ActionRow {
+                title: _("Opacity");
+
+                [suffix]
+                Scale layer_opacity_scale {
+                  valign: center;
                   hexpand: true;
-                  vexpand: true;
-                  hscrollbar-policy: always;
-                  vscrollbar-policy: always;
+                  sensitive: false;
+                  width-request: 150;
+                  draw-value: true;
 
-                  FlowBox template_gallery {
-                    selection-mode: single;
-                    max-children-per-line: 2;
+                  adjustment: Adjustment {
+                    lower: 0.0;
+                    upper: 1.0;
+                    value: 1.0;
+                    step-increment: 0.1;
+                  };
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Rotation");
+
+                [suffix]
+                Scale layer_rotation_scale {
+                  valign: center;
+                  hexpand: true;
+                  sensitive: false;
+                  width-request: 150;
+                  draw-value: false;
+
+                  adjustment: Adjustment {
+                    lower: 0.0;
+                    upper: 6.28;
+                    value: 0.0;
+                    step-increment: 0.1;
+                  };
+                }
+              }
+            }
+
+            Adw.PreferencesGroup templates_group {
+              title: _("Templates");
+
+              Adw.ExpanderRow {
+                title: _("Gallery");
+                expanded: true;
+
+                [suffix]
+                Button import_template_button {
+                  icon-name: "list-add-symbolic";
+                  tooltip-text: _("Import Template");
+
+                  styles [
+                    "flat",
+                  ]
+                }
+
+                [suffix]
+                Button delete_template_button {
+                  icon-name: "user-trash-symbolic";
+                  tooltip-text: _("Remove Imported Template");
+                  sensitive: false;
+
+                  styles [
+                    "destructive-action",
+                  ]
+                }
+
+                Box {
+                  height-request: 450;
+
+                  ScrolledWindow {
+                    hexpand: true;
+                    vexpand: true;
+                    hscrollbar-policy: always;
+                    vscrollbar-policy: always;
+
+                    FlowBox template_gallery {
+                      selection-mode: single;
+                      max-children-per-line: 2;
+                    }
                   }
                 }
               }
             }
-          }
 
-          Adw.PreferencesGroup transform_group {
-            title: _("Transform");
-            visible: false;
+            Adw.PreferencesGroup transform_group {
+              title: _("Transform");
+              visible: false;
 
-            Adw.ActionRow {
-              title: _("Rotate");
+              Adw.ActionRow {
+                title: _("Rotate");
 
-              Box {
-                valign: center;
-                spacing: 6;
+                Box {
+                  valign: center;
+                  spacing: 6;
 
-                Button rotate_left_button {
-                  icon-name: "object-rotate-left-symbolic";
-                  tooltip-text: _("Rotate Left");
+                  Button rotate_left_button {
+                    icon-name: "object-rotate-left-symbolic";
+                    tooltip-text: _("Rotate Left");
 
-                  styles [
-                    "flat",
-                  ]
+                    styles [
+                      "flat",
+                    ]
+                  }
+
+                  Button rotate_right_button {
+                    icon-name: "object-rotate-right-symbolic";
+                    tooltip-text: _("Rotate Right");
+
+                    styles [
+                      "flat",
+                    ]
+                  }
                 }
+              }
 
-                Button rotate_right_button {
-                  icon-name: "object-rotate-right-symbolic";
-                  tooltip-text: _("Rotate Right");
+              Adw.ActionRow {
+                title: _("Flip");
+
+                Box {
+                  valign: center;
+                  spacing: 6;
+
+                  Button flip_h_button {
+                    icon-name: "object-flip-horizontal-symbolic";
+                    tooltip-text: _("Flip Horizontal");
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+
+                  Button flip_v_button {
+                    icon-name: "object-flip-vertical-symbolic";
+                    tooltip-text: _("Flip Vertical");
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Crop");
+
+                Box {
+                  spacing: 6;
+
+                  Button crop_square_button {
+                    label: "1:1";
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+
+                  Button crop_43_button {
+                    label: "4:3";
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+
+                  Button crop_169_button {
+                    label: "16:9";
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Apply Changes");
+
+                Button apply_crop_button {
+                  label: _("Apply Crop");
+                  valign: center;
 
                   styles [
-                    "flat",
+                    "suggested-action",
                   ]
+
+                  clicked => $on_apply_crop_clicked() swapped;
                 }
               }
             }
-
-            Adw.ActionRow {
-              title: _("Flip");
-
-              Box {
-                valign: center;
-                spacing: 6;
-
-                Button flip_h_button {
-                  icon-name: "object-flip-horizontal-symbolic";
-                  tooltip-text: _("Flip Horizontal");
-
-                  styles [
-                    "flat",
-                  ]
-                }
-
-                Button flip_v_button {
-                  icon-name: "object-flip-vertical-symbolic";
-                  tooltip-text: _("Flip Vertical");
-
-                  styles [
-                    "flat",
-                  ]
-                }
-              }
-            }
-
-            Adw.ActionRow {
-              title: _("Crop");
-
-              Box {
-                spacing: 6;
-
-                Button crop_square_button {
-                  label: "1:1";
-
-                  styles [
-                    "flat",
-                  ]
-                }
-
-                Button crop_43_button {
-                  label: "4:3";
-
-                  styles [
-                    "flat",
-                  ]
-                }
-
-                Button crop_169_button {
-                  label: "16:9";
-
-                  styles [
-                    "flat",
-                  ]
-                }
-              }
-            }
-
-            Adw.ActionRow {
-              title: _("Apply Changes");
-
-              Button apply_crop_button {
-                label: _("Apply Crop");
-                valign: center;
-
-                styles [
-                  "suggested-action",
-                ]
-
-                clicked => $on_apply_crop_clicked() swapped;
-              }
-            }
-          }
+          };
         };
+
+        [overlay]
+        Adw.Bin export_loading_screen {
+          visible: false;
+          hexpand: true;
+          vexpand: true;
+          halign: fill;
+          valign: fill;
+
+          styles ["background"]
+
+          Box {
+            halign: center;
+            valign: center;
+            orientation: vertical;
+            spacing: 24;
+
+            Adw.Spinner {
+              width-request: 64;
+              height-request: 64;
+            }
+
+            Label {
+              label: _("Exporting Animation!..");
+              styles ["title-1"]
+            }
+
+            Label {
+              label: _("Processing frames, please wait.");
+              styles ["dim-label"]
+            }
+          }
+
+
+        }
       };
     };
   };
 }
-

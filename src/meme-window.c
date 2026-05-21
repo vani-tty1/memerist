@@ -635,6 +635,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     object_class->finalize = myapp_window_finalize;
     
     gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, export_loading_screen);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_group);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, templates_group);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, transform_group);
