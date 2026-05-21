@@ -4,6 +4,85 @@
 #include <glib/gstdio.h>
 #include <gio/gio.h>
 
+typedef struct {
+    GFile *dest_file;
+    GdkPixbufAnimation *anim;
+    GList *layers_copy;
+    gboolean cinematic;
+    gboolean deepfry;
+} GifExportData;
+// async gif handling functions, fucking hell why is it so hard to do async
+// work
+static void gif_export_data_free(gpointer data) {
+    GifExportData *ctx = (GifExportData *)data;
+    g_clear_object(&ctx->dest_file);
+    g_clear_object(&ctx->anim);
+    if (ctx->layers_copy) {
+        meme_layer_list_free(ctx->layers_copy);
+    }
+    g_free(ctx);
+}
+
+static void export_gif_thread(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
+    GifExportData *ctx = (GifExportData *)task_data;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    GdkPixbufAnimationIter *iter = gdk_pixbuf_animation_get_iter(ctx->anim, NULL);
+    int frame_count = 0;
+    GString *im_args = g_string_new("magick -loop 0 ");
+
+    do {
+        GdkPixbuf *frame = gdk_pixbuf_animation_iter_get_pixbuf(iter);
+        int delay_ms = gdk_pixbuf_animation_iter_get_delay_time(iter);
+
+
+        // Render composite using the copied layers and flags
+        GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry);
+
+        char tmp_path[64];
+        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", frame_count++);
+        gdk_pixbuf_save(comp, tmp_path, "png", NULL, NULL);
+        g_object_unref(comp);
+
+        g_string_append_printf(im_args, "-delay %d %s ", delay_ms / 10, tmp_path);
+    } while (gdk_pixbuf_animation_iter_advance(iter, NULL) && frame_count < 200);
+#pragma GCC diagnostic pop
+    char *dest_path = g_file_get_path(ctx->dest_file);
+    g_string_append_printf(im_args, "%s", dest_path);
+
+    g_spawn_command_line_sync(im_args->str, NULL, NULL, NULL, NULL);
+
+    for (int i = 0; i < frame_count; i++) {
+        char tmp_path[64];
+        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", i);
+        g_unlink(tmp_path);
+    }
+
+    g_free(dest_path);
+    g_string_free(im_args, TRUE);
+    g_object_unref(iter);
+
+    g_task_return_boolean(task, TRUE);
+}
+
+static void on_gif_export_ready(GObject *source_object, GAsyncResult *res, gpointer user_data) {
+    MemeWindow *self = MEME_WINDOW(user_data);
+    GError *error = NULL;
+
+    gtk_widget_set_visible(GTK_WIDGET(self->export_loading_screen), FALSE);
+
+    if (g_task_propagate_boolean(G_TASK(res), &error)) {
+        AdwToast *toast = adw_toast_new("GIF exported successfully!");
+        adw_toast_overlay_add_toast(self->copy_clip_feedback, toast);
+    } else {
+        char *err_msg = g_strdup_printf("Failed to export GIF: %s", error->message);
+        AdwToast *toast = adw_toast_new(err_msg);
+        adw_toast_overlay_add_toast(self->copy_clip_feedback, toast);
+        g_free(err_msg);
+        g_error_free(error);
+    }
+}
+
 static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
     if (!base64) return NULL;
     gsize out_len = 0;
@@ -24,7 +103,7 @@ encode_base64_thread (GTask *task, gpointer source_object, gpointer task_data, G
     if (gdk_pixbuf_save_to_buffer(pixbuf, &buffer, &buffer_size, "png", NULL, NULL)) {
         gchar *base64 = g_base64_encode((const guchar *)buffer, buffer_size);
         g_free(buffer);
-        g_task_return_pointer(task, base64, g_free); // Sends result back to main thread
+        g_task_return_pointer(task, base64, g_free);
     } else {
         g_task_return_new_error(task, G_IO_ERROR, G_IO_ERROR_FAILED, "Failed to encode");
     }
@@ -236,8 +315,17 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if (file) {  
         char *path = g_file_get_path(file);
-        g_clear_object(&self->template_image);
-        self->template_image = gdk_pixbuf_new_from_file(path, NULL);
+        if (g_str_has_suffix(path, ".gif")) {
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+            self->template_anim = gdk_pixbuf_animation_new_from_file(path, NULL);
+            self->template_image = gdk_pixbuf_animation_get_static_image(self->template_anim);
+            #pragma GCC diagnostic pop
+            g_object_ref(self->template_image);
+        } else {
+            g_clear_object(&self->template_anim);
+            self->template_image = gdk_pixbuf_new_from_file(path, NULL);
+        }
         if (self->layers) { meme_layer_list_free(self->layers); self->layers = NULL; self->selected_layer = NULL; }
         free_history_stack(&self->undo_stack); free_history_stack(&self->redo_stack);
         if (self->template_image) {
@@ -297,25 +385,57 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
+    if (!file) return;
 
-    if (file && self->final_meme) {
+    const char *format = g_object_get_data(G_OBJECT(dialog), "export-format");
+    if (!format) format = "png";
+
+    if (g_strcmp0(format, "gif") == 0 && self->template_anim) {
+        gtk_widget_set_visible(GTK_WIDGET(self->export_loading_screen), TRUE);
+
+        GifExportData *data = g_new0(GifExportData, 1);
+        data->dest_file = g_object_ref(file);
+
+        AdwToast *starting_toast = adw_toast_new("Exporting GIF... This may take a moment.");
+        adw_toast_set_timeout(starting_toast, 3);
+        adw_toast_overlay_add_toast(self->copy_clip_feedback, starting_toast);
+
+        data->dest_file = g_object_ref(file);
+        data->anim = g_object_ref(self->template_anim);
+        data->layers_copy = meme_layer_list_copy(self->layers);
+        data->cinematic = gtk_toggle_button_get_active(self->cinematic_button);
+        data->deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
+
+        GTask *task = g_task_new(self, NULL, on_gif_export_ready, self);
+        g_task_set_task_data(task, data, gif_export_data_free);
+
+        g_task_run_in_thread(task, export_gif_thread);
+
+        g_object_unref(task);
+        g_object_unref(file);
+        return;
+    }
+
+    if (self->final_meme) {
         GdkPixbuf *save = self->final_meme;
         if (gtk_toggle_button_get_active(self->crop_mode_button)) {
             int iw = gdk_pixbuf_get_width(save); int ih = gdk_pixbuf_get_height(save);
             save = gdk_pixbuf_new_subpixbuf(save, self->crop_x*iw, self->crop_y*ih, self->crop_w*iw, self->crop_h*ih);
-        } else g_object_ref(save);
+        } else {
+            g_object_ref(save);
+        }
         
-        const char *format = g_object_get_data(G_OBJECT(dialog), "export-format");
-        if (!format) format = "png";
+        // Remove alpha channel for JPEGs
         if (g_strcmp0(format, "jpeg") == 0 && gdk_pixbuf_get_has_alpha(save)) {
             int w = gdk_pixbuf_get_width(save);
             int h = gdk_pixbuf_get_height(save);
             GdkPixbuf *flat = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, w, h);
-            gdk_pixbuf_fill(flat, 0xFFFFFFFF); // Solid white
+            gdk_pixbuf_fill(flat, 0xFFFFFFFF);
             gdk_pixbuf_composite(save, flat, 0, 0, w, h, 0, 0, 1.0, 1.0, GDK_INTERP_BILINEAR, 255);
             g_object_unref(save);
             save = flat;
         }
+
         GError *error = NULL;
         GFileOutputStream *stream = g_file_replace(file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
         if (stream) {
@@ -328,8 +448,8 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
             g_object_unref(stream);
         }
         g_object_unref(save);
-        g_object_unref(file);
     }
+    g_object_unref(file);
 }
 
 static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
@@ -342,6 +462,7 @@ static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
     const char *ext = ".png";
     if (g_strcmp0(choice, "jpeg") == 0) ext = ".jpg";
     else if (g_strcmp0(choice, "webp") == 0) ext = ".webp";
+    else if (g_strcmp0(choice, "gif") == 0) ext = ".gif";
 
     char *filename = g_strdup_printf("meme%s", ext);
 
@@ -363,6 +484,7 @@ void on_export_clicked(MemeWindow *self) {
     adw_alert_dialog_add_responses(dialog,
         "cancel", "Cancel",
         "png", "PNG",
+        "gif", "GIF",
         "jpeg", "JPG",
         "webp", "WebP",
         NULL);
