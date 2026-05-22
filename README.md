@@ -57,7 +57,7 @@
 ## Building from Source
 
 #### Prerequisites
-
+**NOTE: This is only required if you are planning to build this outside GNOME Builder**
 **Install the required development packages:**
 
 - `gtk4-devel`
@@ -66,6 +66,7 @@
 - `ninja`
 - `blueprint-compiler`
 - `libepoxy-devel`
+- `ImageMagick`(for exporting GIF's)
 
 <br>
     
@@ -78,7 +79,7 @@ to search for this packages or browse your distributions package repo.
 #### Build Instructions
 There are two ways to build this from source,
 
-1.  Clone and open this project in GNOME BUilder and hit the play button up top.
+1.  Clone and open this project in GNOME Builder and hit the play button up top.
 
 2.  Manual way below:
 
@@ -126,7 +127,7 @@ make clean-all
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
 Note:
-  Please submit your Pull Request against the `testing` branch (do not submit directly to `main`).
+  Please submit your Pull Request against the `unstable` branch (do not submit directly to `main`).
   
 ## License
 
