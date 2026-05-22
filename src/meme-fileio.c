@@ -392,6 +392,14 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     if (!format) format = "png";
 
     if (g_strcmp0(format, "gif") == 0 && self->template_anim) {
+		gchar *magick_path = g_find_program_in_path("magick");
+        if (!magick_path) {
+            AdwToast *toast = adw_toast_new("ImageMagick is required to export GIFs.");
+            adw_toast_overlay_add_toast(self->copy_clip_feedback, toast);
+            g_object_unref(file);
+            return;
+        }
+        g_free(magick_path);
         gtk_widget_set_visible(GTK_WIDGET(self->export_loading_screen), TRUE);
 
         GifExportData *data = g_new0(GifExportData, 1);

@@ -9,6 +9,7 @@ gnome = import('gnome')
 cc = meson.get_compiler('c')
 
 app_id = 'io.github.vani_tty1.memerist' + get_option('app_id_suffix')
+find_program('magick', required: false)
 
 config_h = configuration_data()
 config_h.set_quoted('APP_ID', app_id)
