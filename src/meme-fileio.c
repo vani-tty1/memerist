@@ -40,21 +40,22 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
         GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry);
 
         char tmp_path[64];
-        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", frame_count++);
-        gdk_pixbuf_save(comp, tmp_path, "png", NULL, NULL);
+        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.bmp", frame_count++);
+        gdk_pixbuf_save(comp, tmp_path, "bmp", NULL, NULL);
         g_object_unref(comp);
 
         g_string_append_printf(im_args, "-delay %d %s ", delay_ms / 10, tmp_path);
-    } while (gdk_pixbuf_animation_iter_advance(iter, NULL) && frame_count < 200);
+    } while (gdk_pixbuf_animation_iter_advance(iter, NULL) && frame_count < 250);
 #pragma GCC diagnostic pop
     char *dest_path = g_file_get_path(ctx->dest_file);
+    g_string_append(im_args, "-layers optimize");
     g_string_append_printf(im_args, "%s", dest_path);
 
     g_spawn_command_line_sync(im_args->str, NULL, NULL, NULL, NULL);
 
     for (int i = 0; i < frame_count; i++) {
         char tmp_path[64];
-        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", i);
+        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.bmp", i);
         g_unlink(tmp_path);
     }
 
