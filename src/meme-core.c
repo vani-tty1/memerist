@@ -12,9 +12,9 @@ ImageLayer * meme_layer_copy (const ImageLayer *src) {
 void meme_layer_free (gpointer data) {
   ImageLayer *layer = (ImageLayer *)data;
   if (layer) {
-    if (layer->pixbuf) g_object_unref (layer->pixbuf);
-    if (layer->text) g_free (layer->text);
-    if (layer->font_family) g_free(layer->font_family);
+    if (layer->pixbuf) { g_object_unref (layer->pixbuf); layer->pixbuf = NULL; }
+    if (layer->text) { g_free (layer->text); layer->text = NULL; }
+    if (layer->font_family) { g_free(layer->font_family); layer->font_family = NULL; }
     g_free (layer);
   }
 }
