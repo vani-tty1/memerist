@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [main, unstable]
+    branches: [unstable]
   pull_request:
-    branches: [main]
+    branches: [unstable]
     paths-ignore:
       - "**.md"
       - ".copr"
