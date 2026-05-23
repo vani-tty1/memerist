@@ -14,7 +14,7 @@ Create memes with custom text overlays using a native GNOME interface.
 %autosetup -n memerist-%{version}
 
 %build
-%meson
+%meson -Dbuildtype=release
 %meson_build
 
 %install

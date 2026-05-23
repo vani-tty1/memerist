@@ -4,7 +4,7 @@
 # which means current build does not reflect final released build.
 [package]
 version = "0.8.0"
-release = "9"
+release = "11"
 description = "rebuild with latest upstream commits"
 
 
