@@ -70,7 +70,19 @@
         </screenshot>
     </screenshots>
 
-    <releases>
+	<releases>
+		<release version="0.8.1" date="2026-05-23">
+            <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+            <description translate="no">
+                <p>Improvements:</p>
+                <ul>
+                  <li>GIF export optimizations</li>
+                  <li>add null pointer assignment after freeing</li>
+                  <li>Plug leaks</li>
+                </ul>
+            </description>
+        </release>
+
         <release version="0.8.0" date="2026-05-21">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
@@ -87,7 +99,7 @@
             </description>
         </release>
       
-		    <release version="0.7.2" date="2026-05-11">
+		 <release version="0.7.2" date="2026-05-11">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
                 <p>Fixes:</p>
