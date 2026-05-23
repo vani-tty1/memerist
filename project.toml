@@ -1,4 +1,11 @@
 # this is just used to trigger a copr rebuild
+
+# NOTE: this an experimental build, stated in the description of this copr project,
+# which means current build does not reflect final released build.
 [package]
 version = "0.8.0"
-release = "final_build"
+release = "9"
+description = "rebuild with latest upstream commits"
+
+
+
