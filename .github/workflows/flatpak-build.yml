@@ -1,5 +1,7 @@
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
   pull_request:
     branches: [unstable]
     paths-ignore:
@@ -12,7 +14,7 @@ jobs:
   flatpak:
     name: "Flatpak"
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
       options: --privileged
     strategy:
       matrix:
