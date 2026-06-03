@@ -6,6 +6,7 @@ Icon=io.github.vani_tty1.memerist
 Terminal=false
 Type=Application
 Categories=Graphics;Photography;
+MimeType=image/png;image/jpeg;image/webp;image/gif;image/bmp;image/tiff;image/avif;
 Keywords=meme;image;text;caption;overlay;funny;
 StartupNotify=true
 StartupWMClass=io.github.vani_tty1.memerist
