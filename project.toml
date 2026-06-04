@@ -3,8 +3,8 @@
 # NOTE: this an experimental build, stated in the description of this copr project,
 # which means current build does not reflect final released build.
 [package]
-version = "0.8.0"
-release = "11"
+version = "0.8.2"
+release = "1"
 description = "rebuild with latest upstream commits"
 
 
