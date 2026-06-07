@@ -1,9 +1,5 @@
 # Memerist — COPR Branch
 
-> **This is the COPR packaging branch only.**
-> It contains just the `.spec` file and `.copr/Makefile` used to build RPM packages via [Fedora COPR](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/).
-> **For the actual source code, issues, and contributions, visit the [main branch](https://github.com/vani-tty1/memerist/tree/main).**
-
 ---
 
 <p align="center">
