@@ -4,8 +4,8 @@
 # which means current build does not reflect final released build.
 [package]
 version = "0.8.2"
-release = "1"
-description = "rebuild with latest upstream commits"
+release = "2"
+description = "rebuild for opensuse tumbleweed"
 
 
 
