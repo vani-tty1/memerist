@@ -22,7 +22,7 @@
         <name>Giovanni Rafanan</name>
     </developer>
 
-    <url type="homepage">https://vani-tty1.github.io/memerist</url>
+    <url type="homepage">https://github.com/vani-tty1/memerist</url>
     <url type="bugtracker">https://github.com/vani-tty1/memerist/issues</url>
     <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
     <url type="help">https://github.com/vani-tty1/memerist/discussions</url>
@@ -77,7 +77,8 @@
 			    <p>This is a stable release with following changes:</p>
 				<ul>
 				    <li>optimize GIF processing with in-memory MagickWand</li>
-					<li>Fixed dropped frames during GIF export by correctly advancing the animation clock</li>
+					  <li>Fixed dropped frames during GIF export by correctly advancing the animation clock</li>
+            <li>organize file operations in a single drop down menu</li>
 				</ul>
 
 			</description>
