@@ -16,8 +16,8 @@ modules:
       - --without-x
     sources:
       - type: archive
-        url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-23.tar.gz
-        sha256: f129f7d87fc21da453d032dd291b80ea13faf2497f13ef8279d97759ed7d5c46
+        url: https://github.com/ImageMagick/ImageMagick/archive/refs/tags/7.1.2-26.tar.gz
+        sha256: d63594e334e1c410f600fb9370d78d49e4dc6f315722ca4ba083e864e5c354cb
 
 
   - name: memerist
