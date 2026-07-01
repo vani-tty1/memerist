@@ -27,6 +27,7 @@ myapp_deps = [
   dependency('libadwaita-1', version: '>= 1.4'),
   dependency('cairo'),
   dependency('epoxy'),
+  dependency('MagickWand'),
   cc.find_library('m'),
 ]
 

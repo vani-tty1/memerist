@@ -3,6 +3,7 @@
 #include "meme-canvas.h"
 #include <glib/gstdio.h>
 #include <gio/gio.h>
+#include <MagickWand/MagickWand.h>
 
 typedef struct {
     GFile *dest_file;
@@ -25,42 +26,71 @@ static void gif_export_data_free(gpointer data) {
 
 static void export_gif_thread(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
     GifExportData *ctx = (GifExportData *)task_data;
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    GdkPixbufAnimationIter *iter = gdk_pixbuf_animation_get_iter(ctx->anim, NULL);
+    GTimeVal fake_time;
+    g_get_current_time(&fake_time);
+    GdkPixbufAnimationIter *iter = gdk_pixbuf_animation_get_iter(ctx->anim, &fake_time);
+#pragma GCC diagnostic pop
+
     int frame_count = 0;
-    GString *im_args = g_string_new("magick -loop 0 ");
+    GdkPixbuf *first_frame = NULL;
+
+    MagickWandGenesis();
+    MagickWand *wand = NewMagickWand();
 
     do {
         GdkPixbuf *frame = gdk_pixbuf_animation_iter_get_pixbuf(iter);
-        int delay_ms = gdk_pixbuf_animation_iter_get_delay_time(iter);
 
+        if (frame_count > 0 && frame == first_frame) {
+            break;
+        }
+        if (frame_count == 0) {
+            first_frame = frame;
+        }
 
-        // Render composite using the copied layers and flags
+        int delay_ms = MAX(gdk_pixbuf_animation_iter_get_delay_time(iter), 10);
+
         GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry);
 
-        char tmp_path[64];
-        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", frame_count++);
-        gdk_pixbuf_save(comp, tmp_path, "png", NULL, NULL);
+        int w = gdk_pixbuf_get_width(comp);
+        int h = gdk_pixbuf_get_height(comp);
+        int channels = gdk_pixbuf_get_n_channels(comp);
+        const guchar *pixels = gdk_pixbuf_read_pixels(comp);
+
+        MagickWand *frame_wand = NewMagickWand();
+        MagickConstituteImage(frame_wand, w, h, channels == 4 ? "RGBA" : "RGB", CharPixel, pixels);
+
+        MagickSetImageDelay(frame_wand, delay_ms / 10);
+
+        MagickAddImage(wand, frame_wand);
+        DestroyMagickWand(frame_wand);
         g_object_unref(comp);
 
-        g_string_append_printf(im_args, "-delay %d %s ", delay_ms / 10, tmp_path);
-    } while (gdk_pixbuf_animation_iter_advance(iter, NULL) && frame_count < 200);
+        frame_count++;
+
+        // curse you barbosa you stupid ass whimsy pirate,
+        // jack is better than you
+        fake_time.tv_usec += delay_ms * 1000;
+        if (fake_time.tv_usec >= 1000000) {
+            fake_time.tv_sec += fake_time.tv_usec / 1000000;
+            fake_time.tv_usec %= 1000000;
+        }
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    } while (gdk_pixbuf_animation_iter_advance(iter, &fake_time) && frame_count < 200);
 #pragma GCC diagnostic pop
+
+    MagickWand *optimized = MagickOptimizeImageLayers(wand);
     char *dest_path = g_file_get_path(ctx->dest_file);
-    g_string_append(im_args, "-layers optimize ");
-    g_string_append_printf(im_args, "%s", dest_path);
+    MagickWriteImages(optimized ? optimized : wand, dest_path, MagickTrue);
 
-    g_spawn_command_line_sync(im_args->str, NULL, NULL, NULL, NULL);
-
-    for (int i = 0; i < frame_count; i++) {
-        char tmp_path[64];
-        snprintf(tmp_path, sizeof(tmp_path), "/tmp/meme_frame_%04d.png", i);
-        g_unlink(tmp_path);
-    }
-
+    if (optimized) DestroyMagickWand(optimized);
+    DestroyMagickWand(wand);
+    MagickWandTerminus();
     g_free(dest_path);
-    g_string_free(im_args, TRUE);
     g_object_unref(iter);
 
     g_task_return_boolean(task, TRUE);
@@ -95,7 +125,7 @@ static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
 }
 
 
-static void 
+static void
 encode_base64_thread (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
     GdkPixbuf *pixbuf = GDK_PIXBUF(task_data);
     gchar *buffer = NULL;
@@ -110,7 +140,7 @@ encode_base64_thread (GTask *task, gpointer source_object, gpointer task_data, G
     }
 }
 
-static void 
+static void
 pixbuf_to_base64_async (GdkPixbuf *pixbuf, GAsyncReadyCallback callback, gpointer user_data) {
     GTask *task = g_task_new(NULL, NULL, callback, user_data);
     g_task_set_task_data(task, g_object_ref(pixbuf), g_object_unref);
@@ -234,17 +264,17 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
     GFile *file = G_FILE(source_object);
     MemeWindow *self = MEME_WINDOW(user_data);
     char *contents = NULL; gsize length = 0; GError *error = NULL;
-    
+
     if(g_file_load_contents_finish(file, res, &contents, &length, NULL, &error)){
         GKeyFile *keyfile = g_key_file_new();
         if(g_key_file_load_from_data(keyfile, contents, length, G_KEY_FILE_NONE, &error)){
             on_clear_clicked(self);
             gchar *b64_template = g_key_file_get_string(keyfile, "Project", "template", NULL);
             if(b64_template){ self->template_image = base64_to_pixbuf(b64_template); g_free(b64_template); }
-            
+
             gtk_toggle_button_set_active(self->deep_fry_button, g_key_file_get_boolean(keyfile, "Project", "deep_fry", NULL));
             gtk_toggle_button_set_active(self->cinematic_button, g_key_file_get_boolean(keyfile, "Project", "cinematic", NULL));
-            
+
             int count = g_key_file_get_integer(keyfile, "Project", "layer_count", NULL);
             for(int i = 0; i < count; i++){
                 gchar group[32]; g_snprintf(group, sizeof(group), "Layer%d", i);
@@ -256,7 +286,7 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
                 layer->rotation = g_key_file_get_double(keyfile, group, "rotation", NULL);
                 layer->opacity = g_key_file_get_double(keyfile, group, "opacity", NULL);
                 layer->blend_mode = g_key_file_get_integer(keyfile, group, "blend_mode", NULL);
-                
+
                 if(layer->type == LAYER_TYPE_TEXT){
                     layer->text = g_key_file_get_string(keyfile,group, "text", NULL);
                     layer->font_size = g_key_file_get_double(keyfile, group, "font_size", NULL);
@@ -314,7 +344,7 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
-    if (file) {  
+    if (file) {
         char *path = g_file_get_path(file);
         if (g_str_has_suffix(path, ".gif")) {
             #pragma GCC diagnostic push
@@ -344,7 +374,7 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
             gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
             self->zoom_level = 1.0; apply_zoom(self); render_meme(self);
-        }   
+        }
         g_free(path); g_object_unref(file);
     }
 }
@@ -433,7 +463,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
         } else {
             g_object_ref(save);
         }
-        
+
         // Remove alpha channel for JPEGs
         if (g_strcmp0(format, "jpeg") == 0 && gdk_pixbuf_get_has_alpha(save)) {
             int w = gdk_pixbuf_get_width(save);
