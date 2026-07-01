@@ -71,6 +71,19 @@
     </screenshots>
 
 	<releases>
+	    <release version="0.8.2" date="2026-07-01">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			    <p>This is a stable release with following changes:</p>
+				<ul>
+				    <li>optimize GIF processing with in-memory MagickWand</li>
+					<li>Fixed dropped frames during GIF export by correctly advancing the animation clock</li>
+				</ul>
+
+			</description>
+		</release>
+
+		
 		<release version="0.8.1" date="2026-05-23">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">

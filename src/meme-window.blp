@@ -31,21 +31,33 @@ template $MemeWindow: Adw.ApplicationWindow {
         };
 
         [start]
-        Button load_image_button {
-            icon-name: "image-x-generic-symbolic";
-            tooltip-text: _("Open Base Image");
-        }
-        [start]
-        Button load_project_button {
-          icon-name: "folder-new-symbolic";
-          tooltip-text: _("Load Project");
-        }
+        MenuButton {
+            icon-name: "document-open-symbolic";
+            tooltip-text: _("File Options");
 
-        [start]
-        Button save_project_button {
-          icon-name: "media-floppy-symbolic";
-          tooltip-text: _("Save Project");
-          sensitive: false;
+            popover: Popover file_popover{
+                Box {
+                    orientation: vertical;
+                    spacing: 4;
+                    margin-top: 6; margin-bottom: 6; margin-start: 6; margin-end: 6;
+
+                    Button load_image_button {
+                        icon-name: "image-x-generic-symbolic";
+                        label: _("Open Base Image");
+                    }
+
+                    Button load_project_button {
+                        icon-name: "folder-new-symbolic";
+                        label: _("Load Project");
+                    }
+
+                    Button save_project_button {
+                        icon-name: "media-floppy-symbolic";
+                        label: _("Save Project");
+                        sensitive: false;
+                    }
+                }
+            };
         }
 
         [end]
@@ -112,7 +124,7 @@ template $MemeWindow: Adw.ApplicationWindow {
                         vexpand: true;
 
                         Button pill_btn_open_image {
-                          label: _("Select Image");
+                          label: _("Select File");
                           margin-bottom: 12;
 
                           styles [

@@ -258,6 +258,7 @@ void myapp_window_save_project(MemeWindow *self) {
     gtk_file_dialog_set_initial_name(dialog, "project.meme");
     gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_save_project_response, self);
     g_object_unref(filter); g_object_unref(filters); g_object_unref(dialog);
+    gtk_popover_popdown(self->file_popover);
 }
 
 static void on_project_load_contents_finished(GObject *source_object, GAsyncResult *res, gpointer user_data) {
@@ -338,6 +339,7 @@ void on_load_project_clicked(MemeWindow *self) {
     gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_project_response, self);
     g_object_unref(filter); g_object_unref(filters); g_object_unref(dialog);
+    gtk_popover_popdown(self->file_popover);
 }
 
 static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
@@ -383,6 +385,7 @@ void on_load_image_clicked(MemeWindow *self) {
     GtkFileDialog *dialog = gtk_file_dialog_new();
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_image_response, self);
     g_object_unref(dialog);
+    gtk_popover_popdown(self->file_popover);
 }
 
 static void on_add_image_response(GObject *s, GAsyncResult *r, gpointer d) {

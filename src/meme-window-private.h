@@ -49,6 +49,7 @@ struct _MemeWindow {
 
     GdkPixbufAnimation *template_anim;
     GtkBox *export_loading_screen;
+    GtkPopover *file_popover;
 };
 
 void sync_ui_with_layer(MemeWindow *self);

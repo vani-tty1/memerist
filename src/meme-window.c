@@ -682,6 +682,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clip_feedback);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, text_color_btn);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, stroke_color_btn);
+    gtk_widget_class_bind_template_child(widget_class, MemeWindow, file_popover);
 }
 
 static void meme_window_init (MemeWindow *self) {
