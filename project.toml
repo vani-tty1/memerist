@@ -5,7 +5,7 @@
 [package]
 version = "0.8.2"
 release = "2"
-description = "rebuild for opensuse tumbleweed"
+description = "rebuild with the latest commits"
 
 
 

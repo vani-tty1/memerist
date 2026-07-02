@@ -14,7 +14,7 @@ Create memes with custom text overlays using a native GNOME interface.
 %autosetup -n memerist-%{version}
 
 %build
-%meson
+%meson 
 %meson_build
 
 %install
@@ -30,4 +30,7 @@ Create memes with custom text overlays using a native GNOME interface.
 
 
 %changelog
-%autochangelog
+* Thu Jul 2 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.8.2-2
+- optimize GIF processing with in-memory MagickWand
+- Fixed dropped frames during GIF export by correctly advancing the animation clock 
+- organize file operations in a single drop down menu
