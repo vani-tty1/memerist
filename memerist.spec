@@ -5,7 +5,8 @@ Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
 Source0:        memerist-%{version}.tar.gz
-BuildRequires:  meson gcc pkgconfig(gtk4) pkgconfig(libadwaita-1) pkgconfig(cairo) desktop-file-utils blueprint-compiler libepoxy-devel ImageMagick
+BuildRequires:  meson gcc pkgconfig(gtk4) pkgconfig(libadwaita-1) pkgconfig(cairo)
+BuildRequires:  desktop-file-utils blueprint-compiler libepoxy-devel ImageMagick ImageMagick-devel
 Requires:       gtk4 libadwaita ImageMagick
 %description
 Create memes with custom text overlays using a native GNOME interface.
