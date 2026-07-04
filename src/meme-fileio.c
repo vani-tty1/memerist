@@ -52,7 +52,7 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
 
         int delay_ms = MAX(gdk_pixbuf_animation_iter_get_delay_time(iter), 10);
 
-        GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry);
+        GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, FALSE);
 
         int w = gdk_pixbuf_get_width(comp);
         int h = gdk_pixbuf_get_height(comp);
@@ -163,18 +163,20 @@ on_base64_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
         g_clear_error (&error);
     }
 
+    SaveCtx *save_ctx = ctx->save_ctx;
+
     g_free (ctx->group);
     g_free (ctx->key);
     g_free (ctx);
 
-    ctx->save_ctx->pending--;
-    if (ctx->save_ctx->pending == 0) {
-        gchar *path = g_file_get_path (ctx->save_ctx->file);
-        g_key_file_save_to_file (ctx->save_ctx->keyfile, path, NULL);
+    save_ctx->pending--;
+    if (save_ctx->pending == 0) {
+        gchar *path = g_file_get_path (save_ctx->file);
+        g_key_file_save_to_file (save_ctx->keyfile, path, NULL);
         g_free (path);
-        g_key_file_free (ctx->save_ctx->keyfile);
-        g_object_unref (ctx->save_ctx->file);
-        g_free (ctx->save_ctx);
+        g_key_file_free (save_ctx->keyfile);
+        g_object_unref (save_ctx->file);
+        g_free (save_ctx);
     }
 }
 
