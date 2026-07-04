@@ -1,0 +1,46 @@
+name: New Issue
+description: File a bug report
+title: "[Issue]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this issue! Please provide as much detail as possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      description: A clear and concise description of what the bug is.
+      placeholder: Memerist blown itself apart
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we trigger this bug?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment & OS
+      description: What OS are you using?  Wayland or X11?
+      placeholder: e.g., Fedora Workstation 44
+    validations:
+      required: true
+  - type: input
+    id: scaling
+    attributes:
+      label: Display Scaling
+      description: What is your display scaling set to? (e.g., 100%, 200%, Fractional)
+      placeholder: e.g., 200%
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Files
+      description: If applicable, add screenshots or attach the image/template file that causes the issue.
