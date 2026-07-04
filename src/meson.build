@@ -3,7 +3,6 @@ add_global_arguments('-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_4_10', language: 'c
 blueprints = custom_target('blueprints',
   input: files(
     'meme-window.blp',
-    'primary-menu.blp',
     'shortcuts-dialog.blp',
   ),
   output: '.',

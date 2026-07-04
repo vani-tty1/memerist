@@ -34,20 +34,22 @@ static void populate_template_gallery (MemeWindow *self);
 
 void render_meme (MemeWindow *self) {
     if (!self->template_image) return;
-    gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
     
+    gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
     gboolean is_crop_drag = (self->drag_type == DRAG_TYPE_CROP_MOVE || 
                              self->drag_type == DRAG_TYPE_CROP_RESIZE);
+    gboolean cinematic = gtk_toggle_button_get_active(self->cinematic_button);
+    gboolean deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
 
     if (!self->final_meme || !is_crop_drag) {
         if (self->final_meme) g_object_unref(self->final_meme);
-        self->final_meme = meme_render_composite(
-            self->template_image,
-            self->layers,
-            is_dragging ? FALSE : gtk_toggle_button_get_active(self->cinematic_button),
-            is_dragging ? FALSE : gtk_toggle_button_get_active(self->deep_fry_button)
-        );
+        self->final_meme = meme_render_composite(self->template_image,
+                                                self->layers,
+                                                cinematic,
+                                                deepfry,
+                                                is_dragging);
     }
+    gtk_widget_queue_draw(GTK_WIDGET(self->meme_preview));
     // why did I even write this in C?
     // am I actually stupid?
     GdkTexture *tex; 
@@ -752,11 +754,4 @@ static void meme_window_init (MemeWindow *self) {
     GtkEventController *scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
     g_signal_connect(scroll, "scroll", G_CALLBACK(on_canvas_scroll), self);
     gtk_widget_add_controller(GTK_WIDGET(self->meme_preview), scroll);
-    
-    GtkBuilder *builder = gtk_builder_new_from_resource("/io/github/vani_tty1/memerist/primary-menu.ui");
-    GMenuModel *menu = G_MENU_MODEL(gtk_builder_get_object(builder, "primary_menu"));
-    
-    gtk_menu_button_set_menu_model(self->main_menu_button, menu);
-    
-    g_object_unref(builder);
 }

@@ -10,6 +10,42 @@ StringList blend_mode_model {
   ]
 }
 
+menu primary_menu {
+  submenu {
+    label: _("Theme");
+
+    item {
+      label: "System Default";
+      action: "app.color-scheme";
+      target: "default";
+    }
+
+    item {
+      label: "Light";
+      action: "app.color-scheme";
+      target: "light";
+    }
+
+    item {
+      label: "Dark";
+      action: "app.color-scheme";
+      target: "dark";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("_About Meme Editor");
+      action: "app.about";
+    }
+  }
+}
+
 template $MemeWindow: Adw.ApplicationWindow {
   title: _("Meme Editor");
   default-width: 1100;
@@ -64,6 +100,7 @@ template $MemeWindow: Adw.ApplicationWindow {
         MenuButton main_menu_button {
           primary: true;
           icon-name: "open-menu-symbolic";
+          menu-model: primary_menu;
         }
 
         [end]
