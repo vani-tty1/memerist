@@ -22,8 +22,8 @@
 #include "meme-application.h"
 #include "adwaita.h"
 #include "meme-window.h"
-#include "meme-gpu.h"
 #include "config.h"
+#include <epoxy/gl.h>
 
 struct _MemeApplication
 {
@@ -68,6 +68,32 @@ meme_application_about_action (GSimpleAction *action,
 {
     MemeApplication *self = user_data;
     GtkWindow *window = gtk_application_get_active_window (GTK_APPLICATION (self));
+    const char *vendor = "Unknown";
+    const char *renderer = "Unknown";
+    const char *version = "Unknown";
+
+    GdkDisplay *display = gdk_display_get_default();
+    GError *err = NULL;
+    GdkGLContext *ctx = gdk_display_create_gl_context(display, &err);
+
+    if (ctx && gdk_gl_context_realize(ctx, &err)) {
+        gdk_gl_context_make_current(ctx);
+        vendor = (const char *)glGetString(GL_VENDOR);
+        renderer = (const char *)glGetString(GL_RENDERER);
+        version = (const char *)glGetString(GL_VERSION);
+    } else {
+        if (err) g_clear_error(&err);
+    }
+
+    g_autofree char *debug_info = g_strdup_printf("GPU Vendor: %s\nGPU Renderer: %s\nOpenGL Version: %s",
+                                       vendor ? vendor : "Unknown",
+                                       renderer ? renderer : "Unknown",
+                                       version ? version : "Unknown");
+
+    if (ctx) {
+        gdk_gl_context_clear_current();
+        g_object_unref(ctx);
+    }
     
     g_autofree char *os_release_content = NULL;
     g_autoptr(GError) error = NULL;
@@ -80,12 +106,15 @@ meme_application_about_action (GSimpleAction *action,
     g_autofree char *debug_text = g_strdup_printf (
         "Memerist %s\n"
         "GTK version: %d.%d.%d\n"
+        "--- GPU Info ---\n"
+        "%s\n\n"
         "--- Runtime info ---\n"
         "%s",
         PACKAGE_VERSION,
         gtk_get_major_version (),
         gtk_get_minor_version (),
         gtk_get_micro_version (),
+        debug_info,
         os_release_content
     );
     
@@ -105,7 +134,6 @@ meme_application_about_action (GSimpleAction *action,
     
     adw_dialog_present(dialog, GTK_WIDGET(window));
 }
-
 
 
 
@@ -170,9 +198,6 @@ meme_application_startup (GApplication *app)
 {
 
   G_APPLICATION_CLASS (meme_application_parent_class)->startup (app);
-
-  meme_gpu_init (NULL);
-
   g_action_map_add_action_entries (G_ACTION_MAP (app),
                                    app_actions,
                                    G_N_ELEMENTS (app_actions),
@@ -190,7 +215,6 @@ meme_application_startup (GApplication *app)
 static void
 meme_application_shutdown (GApplication *app)
 {
-  meme_gpu_cleanup ();
   G_APPLICATION_CLASS (meme_application_parent_class)->shutdown (app);
 }
 
