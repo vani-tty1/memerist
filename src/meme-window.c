@@ -376,15 +376,28 @@ static gboolean is_user_template (const char *path) {
 
 static void add_file_to_gallery (MemeWindow *self, const char *full_path) {
     GtkWidget *picture;
+    gint64 *mtime = g_new0(gint64, 1);
+
     if (g_str_has_prefix (full_path, "resource://")) {
         picture = gtk_picture_new_for_resource (full_path + 11);
+        *mtime = 0; // Built-in resources are technically the "oldest"
     } else {
         picture = gtk_picture_new_for_filename (full_path);
+
+        GStatBuf stat_buf;
+        if (g_stat(full_path, &stat_buf) == 0) {
+            *mtime = stat_buf.st_mtime;
+        }
     }
+
     gtk_picture_set_can_shrink (GTK_PICTURE (picture), TRUE);
     gtk_picture_set_content_fit (GTK_PICTURE (picture), GTK_CONTENT_FIT_CONTAIN);
     gtk_widget_set_size_request (picture, 120, 120);
+
     g_object_set_data_full (G_OBJECT (picture), "template-path", g_strdup (full_path), g_free);
+
+    g_object_set_data_full (G_OBJECT (picture), "mtime", mtime, g_free);
+
     gtk_flow_box_append (self->template_gallery, picture);
 }
 
@@ -630,6 +643,21 @@ static gboolean on_canvas_scroll(GtkEventControllerScroll *ctrl, double dx, doub
     return TRUE;
 }
 
+static gint sort_templates_by_mtime(GtkFlowBoxChild *child1, GtkFlowBoxChild *child2, gpointer user_data) {
+    GtkWidget *pic1 = gtk_flow_box_child_get_child (child1);
+    GtkWidget *pic2 = gtk_flow_box_child_get_child (child2);
+
+    gint64 *mtime1 = g_object_get_data (G_OBJECT (pic1), "mtime");
+    gint64 *mtime2 = g_object_get_data (G_OBJECT (pic2), "mtime");
+
+    gint64 t1 = mtime1 ? *mtime1 : 0;
+    gint64 t2 = mtime2 ? *mtime2 : 0;
+
+    if (t1 > t2) return -1;
+    if (t1 < t2) return 1;
+    return 0;
+}
+
 static void meme_window_class_init (MemeWindowClass *klass) {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -754,4 +782,6 @@ static void meme_window_init (MemeWindow *self) {
     GtkEventController *scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
     g_signal_connect(scroll, "scroll", G_CALLBACK(on_canvas_scroll), self);
     gtk_widget_add_controller(GTK_WIDGET(self->meme_preview), scroll);
+
+    gtk_flow_box_set_sort_func (self->template_gallery, sort_templates_by_mtime, NULL, NULL);
 }
