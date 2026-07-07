@@ -2,7 +2,10 @@ PROJECT := memerist
 BUILD   := build
 REL     := build-release
 
-BINS := meson ninja msgfmt appstreamcli desktop-file-validate glib-compile-schemas blueprint-compiler pkg-config msginit msgmerge xgettext gtk4-update-icon-cache update-desktop-database
+BINS := meson ninja msgfmt appstreamcli \
+		desktop-file-validate glib-compile-schemas\
+		blueprint-compiler pkg-config msginit msgmerge\
+		xgettext gtk4-update-icon-cache update-desktop-database magick
 LIBS := gtk4 libadwaita-1 cairo epoxy gio-2.0
 
 .PHONY: all release run test install dist clean clean-all reconfigure fmt check-deps help
