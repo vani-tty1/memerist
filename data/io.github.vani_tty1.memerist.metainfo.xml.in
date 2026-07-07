@@ -71,18 +71,34 @@
     </screenshots>
 
 	<releases>
+
+	    <release version="0.9.0" date="2026-07-07">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>This is a stable release with the following changes:</p>
+				<ul>
+            <li>Migrated image filters to MagickWand</li>
+            <li>Fixed tearing and generation loss when adding too many layers on a high res base image</li>
+            <li>Total rewrite of renderer</li>
+            <li>Improve dragging smoothness of image layers on a high res base image</li>
+            <li>Make recently imported templates appear at the top of the list</li>
+            <li>Fixed use-after-free which causes the app to crash when saving a project</li>
+				</ul>
+			</description>
+		  </release>
+
 	    <release version="0.8.2" date="2026-07-01">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>
 			    <p>This is a stable release with following changes:</p>
 				<ul>
-				    <li>optimize GIF processing with in-memory MagickWand</li>
-					  <li>Fixed dropped frames during GIF export by correctly advancing the animation clock</li>
+            <li>optimize GIF processing with in-memory MagickWand</li>
+            <li>Fixed dropped frames during GIF export by correctly advancing the animation clock</li>
             <li>organize file operations in a single drop down menu</li>
 				</ul>
 
 			</description>
-		</release>
+		  </release>
 
 		
 		<release version="0.8.1" date="2026-05-23">
