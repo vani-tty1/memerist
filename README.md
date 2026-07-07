@@ -25,34 +25,7 @@
 </a>
 
 <br>
-
-
-
----  
-
-
-## Features
-- **Use or Import your own Templates** 
-- **Image Import** - Load any image to use as your meme template
-- **Classic Meme Text** - You can drag the text anywhere in the photo
-- **PNG Export** 
-- **Layers** - Import any images as another layer to the base image
-- **Native GNOME Design**
-- **Let it Happen**
-
-## Screenshots
-
-<p align="center">
- <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot1.png"/>
-</p>
-<p align="center">
- <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot2.png"/>
-</p>
-<p align="center">
- <img width="800" alt="meme example 2" src="https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png"/>
-</p>
-
----
+  
 
 ## Building from Source
 
