@@ -5,7 +5,7 @@
 [package]
 version = "0.9.0"
 release = "2"
-description = "rebuild with the latest commits"
+description = "trigger rebuild"
 
 
 
