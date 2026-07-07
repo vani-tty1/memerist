@@ -1,5 +1,5 @@
 Name:           memerist
-Version:        0.8.2~upstream
+Version:        0.9.0~upstream
 Release:        %autorelease
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
@@ -31,7 +31,10 @@ Create memes with custom text overlays using a native GNOME interface.
 
 
 %changelog
-* Thu Jul 2 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.8.2-2
-- optimize GIF processing with in-memory MagickWand
-- Fixed dropped frames during GIF export by correctly advancing the animation clock 
-- organize file operations in a single drop down menu
+* Thu Jul 7 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.9.0-1
+- Migrated image filters to MagickWand
+- Fixed tearing and generation loss when adding too many layers on a high res base image
+- Total rewrite of renderer
+- Improve dragging smoothness of image layers on a high res base image
+- Make recently imported templates appear at the top of the list
+- Fixed use-after-free which causes the app to crash when saving a project
