@@ -1,6 +1,6 @@
 Name:           memerist
 Version:        0.9.0~upstream
-Release:        %autorelease
+Release:        2%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -21,6 +21,11 @@ Create memes with custom text overlays using a native GNOME interface.
 %install
 %meson_install
 
+%check
+appstreamcli validate --no-net %{buildroot}%{_metainfodir}/*.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+
+
 %files
 %{_bindir}/memerist
 %{_datadir}/applications/io.github.vani_tty1.memerist.desktop
@@ -31,7 +36,7 @@ Create memes with custom text overlays using a native GNOME interface.
 
 
 %changelog
-* Thu Jul 7 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.9.0-1
+* Tue Jul 7 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.9.0-2
 - Migrated image filters to MagickWand
 - Fixed tearing and generation loss when adding too many layers on a high res base image
 - Total rewrite of renderer
