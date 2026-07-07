@@ -78,20 +78,29 @@ template $MemeWindow: Adw.ApplicationWindow {
                     margin-top: 6; margin-bottom: 6; margin-start: 6; margin-end: 6;
 
                     Button load_image_button {
-                        icon-name: "image-x-generic-symbolic";
-                        label: _("Open Base Image");
+                        styles ["flat"]
+                        child: Adw.ButtonContent {
+                            icon-name: "image-x-generic-symbolic";
+                            label: _("Open Base Image");
+                        };
                     }
-
                     Button load_project_button {
-                        icon-name: "folder-new-symbolic";
-                        label: _("Load Project");
+                        styles ["flat"]
+                        child: Adw.ButtonContent {
+                            icon-name: "folder-new-symbolic";
+                            label: _("Load Project");
+                        };
+                    }
+                    Button save_project_button {
+                        styles ["flat"]
+                        sensitive: false;
+                        child: Adw.ButtonContent {
+                            icon-name: "media-floppy-symbolic";
+                            label: _("Save Project");
+
+                        };
                     }
 
-                    Button save_project_button {
-                        icon-name: "media-floppy-symbolic";
-                        label: _("Save Project");
-                        sensitive: false;
-                    }
                 }
             };
         }

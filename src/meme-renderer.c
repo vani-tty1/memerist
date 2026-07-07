@@ -2,7 +2,6 @@
 #include "gdk-pixbuf/gdk-pixbuf.h"
 #include "glib.h"
 #include "meme-core.h"
-#include "meme-gpu.h"
 #include "pango/pango-layout.h"
 #include "pango/pango-types.h"
 #include <cairo.h>
@@ -185,7 +184,6 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     cairo_move_to(cr, 5.0 - ink_rect.x, 5.0 - ink_rect.y);
     pango_cairo_layout_path(cr, layout2);
     
-    // Draw with 1.0 opacity (the compositor shader handles layer opacity)
     cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, 1.0);
     cairo_set_line_width(cr, layer->font_size * 0.08);
     cairo_stroke_preserve(cr);
@@ -201,96 +199,71 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     pango_font_description_free(desc);
 }
 
-
-GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry) {
-    if (!bg)
-        return NULL;
-    int w = gdk_pixbuf_get_width(bg);
-    int h = gdk_pixbuf_get_height(bg);
-
-    GdkPixbuf *comp = NULL;
+GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean fast_mode) {
+    if (!bg) return NULL;
+    int orig_w = gdk_pixbuf_get_width(bg);
+    int orig_h = gdk_pixbuf_get_height(bg);
 
     for (GList *l = layers; l != NULL; l = l->next) {
-        meme_layer_ensure_text_pixbuf((ImageLayer *)l->data, w);
+        meme_layer_ensure_text_pixbuf((ImageLayer *)l->data, orig_w);
     }
 
-    if (meme_gpu_is_available()) {
-        int n = g_list_length(layers);
-        MemeGpuLayer *gpu_layers = g_new0(MemeGpuLayer, MAX(n, 1));
-        GdkPixbuf **text_pixbufs = g_new0(GdkPixbuf *, MAX(n, 1));
-        int idx = 0;
-
-        GList *l;
-        for (l = layers; l != NULL; l = l->next, idx++) {
-            ImageLayer *layer = (ImageLayer *)l->data;
-
-            gpu_layers[idx].x = layer->x;
-            gpu_layers[idx].y = layer->y;
-            gpu_layers[idx].rotation = layer->rotation;
-            gpu_layers[idx].scale = layer->scale;
-            gpu_layers[idx].opacity = layer->opacity;
-            gpu_layers[idx].blend_mode = (int)layer->blend_mode;
-
-            if (layer->pixbuf){
-                gpu_layers[idx].pixbuf = layer->pixbuf;
-            } 
-        }
-
-        comp = meme_gpu_composite_layers(bg, gpu_layers, n);
-
-        for (int i = 0; i < n; i++)
-            if (text_pixbufs[i])
-                g_object_unref(text_pixbufs[i]);
-        g_free(gpu_layers);
-        g_free(text_pixbufs);
+    double scale = 1.0;
+    if (fast_mode && orig_w > 800) {
+        scale = 800.0 / (double)orig_w;
     }
 
-    if (!comp) {
-        cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-        cairo_t *cr = cairo_create(surf);
+    int render_w = orig_w * scale;
+    int render_h = orig_h * scale;
 
+    cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, render_w, render_h);
+    cairo_t *cr = cairo_create(surf);
+
+    if (scale < 1.0) {
+        GdkPixbuf *scaled_bg = gdk_pixbuf_scale_simple(bg, render_w, render_h, GDK_INTERP_NEAREST);
+        gdk_cairo_set_source_pixbuf(cr, scaled_bg, 0.0, 0.0);
+        cairo_paint(cr);
+        g_object_unref(scaled_bg);
+    } else {
         gdk_cairo_set_source_pixbuf(cr, bg, 0.0, 0.0);
         cairo_paint(cr);
+    }
 
-        GList *l;
-        for (l = layers; l != NULL; l = l->next) {
-            ImageLayer *layer = (ImageLayer *)l->data;
-            double draw_x = layer->x * w;
-            double draw_y = layer->y * h;
+    cairo_scale(cr, scale, scale);
 
-            cairo_save(cr);
-            cairo_translate(cr, draw_x, draw_y);
-            cairo_rotate(cr, layer->rotation);
-            cairo_scale(cr, layer->scale, layer->scale);
+    for (GList *l = layers; l != NULL; l = l->next) {
+        ImageLayer *layer = (ImageLayer *)l->data;
+        cairo_save(cr);
 
-            if (layer->blend_mode == BLEND_MULTIPLY)
-                cairo_set_operator(cr, CAIRO_OPERATOR_MULTIPLY);
-            else if (layer->blend_mode == BLEND_SCREEN)
-                cairo_set_operator(cr, CAIRO_OPERATOR_SCREEN);
-            else if (layer->blend_mode == BLEND_OVERLAY)
-                cairo_set_operator(cr, CAIRO_OPERATOR_OVERLAY);
-            else
-                cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+        cairo_translate(cr, layer->x * orig_w, layer->y * orig_h);
+        cairo_rotate(cr, layer->rotation);
+        cairo_scale(cr, layer->scale, layer->scale);
 
-            // Both text and image layers now have a cached pixbuf
-            if (layer->pixbuf) {
-                gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
-                if (layer->opacity < 1.0)
-                    cairo_paint_with_alpha(cr, layer->opacity);
-                else
-                    cairo_paint(cr);
-            }
-            cairo_restore(cr);
+        if (layer->blend_mode == BLEND_MULTIPLY) cairo_set_operator(cr, CAIRO_OPERATOR_MULTIPLY);
+        else if (layer->blend_mode == BLEND_SCREEN) cairo_set_operator(cr, CAIRO_OPERATOR_SCREEN);
+        else if (layer->blend_mode == BLEND_OVERLAY) cairo_set_operator(cr, CAIRO_OPERATOR_OVERLAY);
+        else cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+
+        if (layer->pixbuf) {
+            gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
+
+            cairo_pattern_t *pat = cairo_get_source(cr);
+            cairo_pattern_set_filter(pat, fast_mode ? CAIRO_FILTER_FAST : CAIRO_FILTER_GOOD);
+
+            if (layer->opacity < 1.0) cairo_paint_with_alpha(cr, layer->opacity);
+            else cairo_paint(cr);
         }
+        cairo_restore(cr);
+    }
 
-        cairo_surface_flush(surf);
-        cairo_destroy(cr);
-        comp = gdk_pixbuf_get_from_surface(surf, 0, 0, w, h);
-        cairo_surface_destroy(surf);
-    } 
+    cairo_surface_flush(surf);
+    cairo_destroy(cr);
 
-    if (cinematic || deep_fry) {
-        GdkPixbuf *tmp = meme_gpu_apply_effects(comp, cinematic, deep_fry);
+    GdkPixbuf *comp = gdk_pixbuf_get_from_surface(surf, 0, 0, render_w, render_h);
+    cairo_surface_destroy(surf);
+
+    if (!fast_mode && (cinematic || deep_fry)) {
+        GdkPixbuf *tmp = meme_core_apply_effects(comp, cinematic, deep_fry);
         if (tmp) {
             g_object_unref(comp);
             comp = tmp;

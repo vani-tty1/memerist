@@ -3,7 +3,6 @@
   <gresource prefix="/io/github/vani_tty1/memerist">
     <file preprocess="xml-stripblanks">meme-window.ui</file>
     <file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
-    <file preprocess="xml-stripblanks">primary-menu.ui</file>
     <file>io.github.vani_tty1.memerist.metainfo.xml</file>
     <file>templates/template1.jpeg</file>
     <file>templates/template2.jpeg</file>
