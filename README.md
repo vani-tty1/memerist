@@ -1,69 +1,70 @@
+<div align="center">
+
+<img src="data/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg" alt="Memerist logo" width="128"/>
+
 # Memerist
 
-<p align="center">
-  <img src="data/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg" alt="GNOME Meme Editor Logo" width="128"/>
-</p>
+**Memes go BRRRRRRRRRRRRR**
 
-<p align="center">
-  <strong>Memes go BRRRRRRRRRRRRR</strong>
-</p>
-
-<p align="center">
-  A modern meme editor built with GTK 4 and Libadwaita.
-</p>
-
-<p align="left">
-  <a href="https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist">
-    <img src="https://img.shields.io/badge/📦_Copr-294172?style=for-the-badge&logo=fedora&logoColor=white" alt="Copr">
-  </a> 
-</p>
+A modern meme editor built with GTK 4 and Libadwaita.
+</div>
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/vaniiiiii/memerist/package/memerist/)
 
-<a href='https://flathub.org/apps/details/io.github.vani_tty1.memerist'>
-    <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
-</a>
+---
+## Installation
 
-<br>
-  
+### Flathub
+
+<a href='https://flathub.org/apps/details/io.github.vani_tty1.memerist'>
+    <img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
+</a>
 
 ## Building from Source
 
-#### Prerequisites
-**NOTE: This is only required if you are planning to build this outside GNOME Builder**
-**Install the required development packages:**
+[GNOME Builder](https://flathub.org/en/apps/org.gnome.Builder) is the recommended way to build this app,
+the IDE handles all dependencies for you via the GNOME SDK, so you can skip the Prerequisites section entirely.
+If you'd rather not use Builder, follow the manual instructions below.
 
-- `gtk4-devel`
-- `libadwaita-devel`
-- `meson`
-- `ninja`
-- `blueprint-compiler`
-- `libepoxy-devel`
-- `ImageMagick`(for exporting GIF's)
+### Prerequisites
 
-<br>
-    
-Distributions often names these packages differently, use your package manager
-to search for this packages or browse your distributions package repo.
+> **Note:** This is only required if you're building outside GNOME Builder.
+
+Install the following development packages:
+
+| Package               | Purpose                          |
+|------------------------|-----------------------------------|
+| `gcc`                  | C compiler                       |
+| `make`                 | Build automation                 |
+| `gtk4-devel`           | Core UI toolkit                  |
+| `libadwaita-devel`     | GNOME design components          |
+| `meson`                | Build system                     |
+| `ninja`                | Build backend                    |
+| `blueprint-compiler`   | UI markup compiler               |
+| `libepoxy-devel`       | OpenGL stuff                     |
+| `ImageMagick`          | GIF export support               |
+| `ImageMagick-devel`    | MagickWand API for image processing libraries  |
+| `pkgconf`              | Provides `pkg-config`            |
+| `glib2-devel`          | Provides `glib-compile-schemas`  |
+| `gettext`              | Provides `msgfmt`, `msginit`, `msgmerge`, `xgettext` for translations    |
 
 
-<br>
 
-#### Build Instructions
-There are two ways to build this from source,
+Optional packages to be installed:
 
-1.  Clone and open this project in GNOME Builder and hit the play button up top.
+ Package                 | Purpose                                         |
+|--------------------------|-----------------------------------------------|
+| `appstream`              | Provides `appstreamcli` to validate the AppStream metadata     |
+| `desktop-file-utils`     | Provides `desktop-file-validate` and `update-desktop-database` |
+| `clang-tools-extra`      | Provides `clang-format`, used by `make fmt`                    |
 
-2.  Manual way below:
 
+### Build Instructions
 
 ```bash
 # Clone the repository and enter the directory
 git clone https://github.com/vani-tty1/memerist.git
 cd memerist
-
-# Check if you have all required dependencies installed
-make check-deps
 
 # Compile a debug build (creates a 'build' directory)
 make all
@@ -72,7 +73,7 @@ make all
 # Use this after making changes to quickly compile and launch
 make run
 
-# Compile an optimized release version (creates 'build-release' directory)
+# Compile an optimized release version (creates a 'build-release' directory)
 make release
 make run-release
 
@@ -81,34 +82,22 @@ make clean
 
 # Remove all compiled build directories
 make clean-all
+
+# View more options:
+make help
 ```
 
----
-
-##  Usage
-
-1. Launch Memerist from your application menu
-2. Click the folder button to browse images using your file browser
-3. Enter your text, you can drag the text anywhere in the photo viewport
-4. Export your meme as PNG
-5. Let it Happen
-
----
 
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
-Note:
-  Please submit your Pull Request against the `unstable` branch (do not submit directly to `main`).
-  
+> **Note:** Please submit pull requests against the `unstable` branch.
+
 ## License
 
-This project is open source. Please check the LICENSE file for details.
+This project is open source. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Built with GTK4 and Libadwaita.
-
-
-
+Built with [GTK4](https://gtk.org/) and [Libadwaita](https://gnome.pages.gitlab.gnome.org/libadwaita/).
