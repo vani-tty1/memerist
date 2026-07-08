@@ -658,12 +658,30 @@ static gint sort_templates_by_mtime(GtkFlowBoxChild *child1, GtkFlowBoxChild *ch
     return 0;
 }
 
+#define MEME_TYPE_THEME_SWITCHER (meme_theme_switcher_get_type())
+G_DECLARE_FINAL_TYPE (MemeThemeSwitcher, meme_theme_switcher, MEME, THEME_SWITCHER, AdwBin)
+
+struct _MemeThemeSwitcher {
+    AdwBin parent_instance;
+};
+
+G_DEFINE_FINAL_TYPE (MemeThemeSwitcher, meme_theme_switcher, ADW_TYPE_BIN)
+
+static void meme_theme_switcher_class_init (MemeThemeSwitcherClass *klass) {
+    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+    gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/theme-switcher.ui");
+}
+
+static void meme_theme_switcher_init (MemeThemeSwitcher *self) {
+    gtk_widget_init_template (GTK_WIDGET (self));
+}
+
 static void meme_window_class_init (MemeWindowClass *klass) {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
     
     object_class->finalize = myapp_window_finalize;
-    
+    g_type_ensure (MEME_TYPE_THEME_SWITCHER);
     gtk_widget_class_set_template_from_resource (widget_class, "/io/github/vani_tty1/memerist/meme-window.ui");
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, export_loading_screen);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_group);

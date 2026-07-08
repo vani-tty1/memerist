@@ -4,6 +4,7 @@ blueprints = custom_target('blueprints',
   input: files(
     'meme-window.blp',
     'shortcuts-dialog.blp',
+	'theme-switcher.blp'
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],

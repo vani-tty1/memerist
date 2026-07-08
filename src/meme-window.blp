@@ -11,25 +11,9 @@ StringList blend_mode_model {
 }
 
 menu primary_menu {
-  submenu {
-    label: _("Theme");
-
+  section {
     item {
-      label: "System Default";
-      action: "app.color-scheme";
-      target: "default";
-    }
-
-    item {
-      label: "Light";
-      action: "app.color-scheme";
-      target: "light";
-    }
-
-    item {
-      label: "Dark";
-      action: "app.color-scheme";
-      target: "dark";
+      custom: "theme-switcher-widget";
     }
   }
 
@@ -109,7 +93,17 @@ template $MemeWindow: Adw.ApplicationWindow {
         MenuButton main_menu_button {
           primary: true;
           icon-name: "open-menu-symbolic";
-          menu-model: primary_menu;
+
+          popover: PopoverMenu {
+            menu-model: primary_menu;
+            [theme-switcher-widget]
+            $MemeThemeSwitcher {
+              margin-top: 6;
+              margin-bottom: 6;
+              margin-start: 6;
+              margin-end: 6;
+            }
+          };
         }
 
         [end]

@@ -1,0 +1,44 @@
+.theme-switcher .check {
+  background: var(--accent-bg-color);
+  color: var(--accent-fg-color);
+  padding: 3px;
+  border-radius: 9999px;
+  margin: 2px;
+}
+
+.theme-switcher checkbutton {
+  outline-offset: 1px;
+  transition: none;
+}
+
+.theme-switcher checkbutton radio {
+  -gtk-icon-source: none;
+  background: none;
+  padding: 12px;
+  min-height: 24px;
+  min-width: 24px;
+  border: none;
+  outline-color: currentColor;
+  transition: none;
+  box-shadow: inset 0 0 0 1px var(--border-color);
+  border-radius: 9999px;
+
+  --light-bg: white;
+  --dark-bg: #242424;
+}
+
+.theme-switcher checkbutton radio:checked {
+  box-shadow: inset 0 0 0 2px var(--accent-bg-color);
+}
+
+.theme-switcher checkbutton.system radio {
+  background: linear-gradient(-45deg, var(--dark-bg) 49.99%, var(--light-bg) 50.01%);
+}
+
+.theme-switcher checkbutton.light radio {
+  background-color: var(--light-bg);
+}
+
+.theme-switcher checkbutton.dark radio {
+  background-color: var(--dark-bg);
+}

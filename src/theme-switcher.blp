@@ -1,0 +1,77 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $MemeThemeSwitcher: Adw.Bin {
+  Box {
+    orientation: horizontal;
+    homogeneous: true;
+    spacing: 18;
+
+    styles ["theme-switcher"]
+
+    Overlay {
+      halign: center;
+
+      CheckButton system_selector {
+        tooltip-text: _("Follow System Style");
+        action-name: "app.color-scheme";
+        action-target: "'default'";
+        styles ["system"]
+      }
+
+      [overlay]
+      Image {
+        visible: bind system_selector.active;
+        icon-name: "object-select-symbolic";
+        pixel-size: 14;
+        halign: end;
+        valign: end;
+        styles ["check"]
+      }
+    }
+
+    Overlay {
+      halign: center;
+
+      CheckButton light_selector {
+        group: system_selector;
+        tooltip-text: _("Light Style");
+        action-name: "app.color-scheme";
+        action-target: "'light'";
+        styles ["light"]
+      }
+
+      [overlay]
+      Image {
+        visible: bind light_selector.active;
+        icon-name: "object-select-symbolic";
+        pixel-size: 14;
+        halign: end;
+        valign: end;
+        styles ["check"]
+      }
+    }
+
+    Overlay {
+      halign: center;
+
+      CheckButton dark_selector {
+        group: system_selector;
+        tooltip-text: _("Dark Style");
+        action-name: "app.color-scheme";
+        action-target: "'dark'";
+        styles ["dark"]
+      }
+
+      [overlay]
+      Image {
+        visible: bind dark_selector.active;
+        icon-name: "object-select-symbolic";
+        pixel-size: 14;
+        halign: end;
+        valign: end;
+        styles ["check"]
+      }
+    }
+  }
+}
