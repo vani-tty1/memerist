@@ -1,6 +1,6 @@
 Name:           memerist
-Version:        0.9.0~upstream
-Release:        2%{?dist}
+Version:        0.9.0
+Release:        3%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -36,10 +36,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
-* Tue Jul 7 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.9.0-2
-- Migrated image filters to MagickWand
-- Fixed tearing and generation loss when adding too many layers on a high res base image
-- Total rewrite of renderer
-- Improve dragging smoothness of image layers on a high res base image
-- Make recently imported templates appear at the top of the list
-- Fixed use-after-free which causes the app to crash when saving a project
+* Thu Jul 9 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.9.0-3
+- add GNOME HIG compliant theme switchers
