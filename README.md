@@ -20,6 +20,10 @@ A modern meme editor built with GTK 4 and Libadwaita.
     <img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
+<br>
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/memerist.svg)](https://repology.org/project/memerist/versions)
+
 ## Building from Source
 
 [GNOME Builder](https://flathub.org/en/apps/org.gnome.Builder) is the recommended way to build this app,
