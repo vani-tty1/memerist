@@ -43,10 +43,10 @@ template $MemeWindow: Adw.ApplicationWindow {
       split_view.show-sidebar: false;
       floating_toolbar.visible: false;
       toolbar_footer_scroll.visible: true;
-      sidebar_toggle.visible: false;
       content_box.margin-start: 16;
       content_box.margin-end: 16;
       content_box.margin-bottom: 5;
+      pill_btn_select_template.visible: true;
     }
   }
 
@@ -489,14 +489,31 @@ template $MemeWindow: Adw.ApplicationWindow {
                         hexpand: true;
                         vexpand: true;
 
-                        Button pill_btn_open_image {
-                          label: _("Select File");
-                          margin-bottom: 12;
+                        Box {
+                          orientation: vertical;
+                          halign: center;
+                          spacing: 8;
 
-                          styles [
-                            "pill",
-                            "suggested-action",
-                          ]
+                          Button pill_btn_open_image {
+                            label: _("Select File");
+                            margin-bottom: 12;
+
+                            styles [
+                              "pill",
+                              "suggested-action",
+                            ]
+                          }
+
+                          Button pill_btn_select_template {
+                            label: _("Select Template");
+                            visible: false;
+
+                            styles [
+                              "pill",
+                            ]
+
+                            clicked => $on_select_template_clicked() swapped;
+                          }
                         }
                       };
                     }

@@ -207,6 +207,10 @@ static void on_exit_text_editing_clicked (MemeWindow *self) {
     render_meme (self);
 }
 
+static void on_select_template_clicked (MemeWindow *self) {
+    adw_overlay_split_view_set_show_sidebar (self->split_view, TRUE);
+}
+
 static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     gboolean active = gtk_toggle_button_get_active (btn);
     gtk_widget_set_visible (GTK_WIDGET (self->transform_group), active);
@@ -780,6 +784,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_169_button);
     gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_cancel_crop_clicked);
+    gtk_widget_class_bind_template_callback (widget_class, on_select_template_clicked);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, save_project_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_project_button);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, main_menu_button);
