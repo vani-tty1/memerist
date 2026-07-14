@@ -136,6 +136,14 @@ static void on_rotate_clicked (GtkWidget *btn, MemeWindow *self) {
     new_pix = gdk_pixbuf_rotate_simple (self->template_image,
     clockwise ? GDK_PIXBUF_ROTATE_CLOCKWISE : GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE);
     update_template_image (self, new_pix);
+    // Rotating swaps width/height, so any in-progress crop selection no
+    // longer refers to the same region of the image. Discard it rather
+    // than silently applying a now-wrong rectangle on the next Apply Crop.
+    if (gtk_toggle_button_get_active (self->crop_mode_button)) {
+        self->crop_x = 0.0; self->crop_y = 0.0;
+        self->crop_w = 1.0; self->crop_h = 1.0;
+        render_meme (self);
+    }
 }
 
 static void on_flip_clicked (GtkWidget *btn, MemeWindow *self) {
@@ -146,6 +154,13 @@ static void on_flip_clicked (GtkWidget *btn, MemeWindow *self) {
                  (btn == GTK_WIDGET (self->footer_flip_h_button));
     new_pix = gdk_pixbuf_flip (self->template_image, horizontal);
     update_template_image (self, new_pix);
+    // Same reasoning as rotate: don't let a stale crop selection carry
+    // over onto the flipped image.
+    if (gtk_toggle_button_get_active (self->crop_mode_button)) {
+        self->crop_x = 0.0; self->crop_y = 0.0;
+        self->crop_w = 1.0; self->crop_h = 1.0;
+        render_meme (self);
+    }
 }
 
 static void on_crop_preset_clicked (GtkWidget *btn, MemeWindow *self) {
@@ -178,6 +193,20 @@ static void on_crop_preset_clicked (GtkWidget *btn, MemeWindow *self) {
     render_meme(self);
 }
 
+static void update_footer_pages (MemeWindow *self) {
+    gboolean crop_active = gtk_toggle_button_get_active (self->crop_mode_button);
+    gboolean is_text = (self->selected_layer != NULL && self->selected_layer->type == LAYER_TYPE_TEXT);
+
+    gtk_widget_set_visible (GTK_WIDGET (self->footer_tools_page), !crop_active && !is_text);
+    gtk_widget_set_visible (GTK_WIDGET (self->footer_text_page), !crop_active && is_text);
+}
+
+static void on_exit_text_editing_clicked (MemeWindow *self) {
+    self->selected_layer = NULL;
+    sync_ui_with_layer (self);
+    render_meme (self);
+}
+
 static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     gboolean active = gtk_toggle_button_get_active (btn);
     gtk_widget_set_visible (GTK_WIDGET (self->transform_group), active);
@@ -187,11 +216,30 @@ static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     if (active) {
     self->crop_x = 0.0; self->crop_y = 0.0;
     self->crop_w = 1.0; self->crop_h = 1.0;
+    g_clear_object (&self->crop_session_template_snapshot);
+    if (self->template_image)
+        self->crop_session_template_snapshot = g_object_ref (self->template_image);
     //adw_overlay_split_view_set_show_sidebar (self->split_view, TRUE);
     } else {
         gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL);
     }
+    update_footer_pages (self);
     render_meme(self);
+}
+
+static void on_cancel_crop_clicked (MemeWindow *self) {
+    // Restore the image exactly as it was when crop mode was entered,
+    // undoing any rotate/flip done mid-session. The undo_stack only
+    // tracks layers, not template_image, so we can't use it here.
+    if (self->crop_session_template_snapshot) {
+        if (self->template_image) g_object_unref (self->template_image);
+        self->template_image = self->crop_session_template_snapshot;
+        self->crop_session_template_snapshot = NULL;
+    }
+    self->crop_x = 0.0; self->crop_y = 0.0;
+    self->crop_w = 1.0; self->crop_h = 1.0;
+    gtk_toggle_button_set_active (self->crop_mode_button, FALSE);
+    render_meme (self);
 }
 
 static void on_apply_crop_clicked (MemeWindow *self) {
@@ -219,6 +267,7 @@ static void on_apply_crop_clicked (MemeWindow *self) {
     update_template_image(self, new_pix); 
     self->crop_x = 0; self->crop_y = 0; self->crop_w = 1; self->crop_h = 1;
     gtk_toggle_button_set_active(self->crop_mode_button, FALSE);
+    g_clear_object (&self->crop_session_template_snapshot);
 }
 
 static void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
@@ -290,6 +339,8 @@ void sync_ui_with_layer(MemeWindow *self) {
         pango_font_description_free (desc);
         g_signal_handlers_unblock_by_func (self->font_choose_btn, on_font_changed, self);
     }
+
+    update_footer_pages (self);
 }
 
 static void on_layer_control_changed (MemeWindow *self) {
@@ -316,6 +367,7 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_stack_set_visible_child_name (self->content_stack, "empty");
     g_clear_object (&self->template_image);
     g_clear_object (&self->final_meme);
+    g_clear_object (&self->crop_session_template_snapshot);
     if (self->layers) { meme_layer_list_free (self->layers); self->layers = NULL; }
     free_history_stack (&self->undo_stack); free_history_stack (&self->redo_stack);
     self->selected_layer = NULL;
@@ -364,6 +416,7 @@ static void myapp_window_finalize (GObject *object) {
     MemeWindow *self = MEME_WINDOW (object);
     g_clear_object (&self->template_image);
     g_clear_object (&self->final_meme);
+    g_clear_object (&self->crop_session_template_snapshot);
     if (self->layers) meme_layer_list_free (self->layers);
     free_history_stack (&self->undo_stack);
     free_history_stack (&self->redo_stack);
@@ -726,6 +779,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_43_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_169_button);
     gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
+    gtk_widget_class_bind_template_callback (widget_class, on_cancel_crop_clicked);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, save_project_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_project_button);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, main_menu_button);
@@ -756,6 +810,18 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_square_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_43_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_169_button);
+
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_tools_page);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_transform_page);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_text_page);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_font_choose_btn);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_text_color_btn);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_stroke_color_btn);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_layer_text_container);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_layer_text_view);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_layer_font_size);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_text_delete_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_exit_text_button);
 }
 
 static void meme_window_init (MemeWindow *self) {
@@ -830,7 +896,10 @@ static void meme_window_init (MemeWindow *self) {
     g_signal_connect (self->footer_crop_square_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
     g_signal_connect (self->footer_crop_43_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
     g_signal_connect (self->footer_crop_169_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
-    
+
+    g_signal_connect_swapped (self->footer_text_delete_button, "clicked", G_CALLBACK (on_delete_layer_clicked), self);
+    g_signal_connect_swapped (self->footer_exit_text_button, "clicked", G_CALLBACK (on_exit_text_editing_clicked), self);
+
     populate_template_gallery (self);
     
     GtkEventController *motion = gtk_event_controller_motion_new ();
@@ -847,4 +916,5 @@ static void meme_window_init (MemeWindow *self) {
     gtk_widget_add_controller(GTK_WIDGET(self->meme_preview), scroll);
 
     gtk_flow_box_set_sort_func (self->template_gallery, sort_templates_by_mtime, NULL, NULL);
+    update_footer_pages (self);
 }

@@ -46,6 +46,7 @@ struct _MemeWindow {
     double drag_obj_start_x, drag_obj_start_y, drag_obj_start_scale, drag_obj_start_h;
     double zoom_level;
     double crop_x, crop_y, crop_w, crop_h;
+    GdkPixbuf *crop_session_template_snapshot;
 
     GdkPixbufAnimation *template_anim;
     GtkBox *export_loading_screen;
@@ -63,6 +64,18 @@ struct _MemeWindow {
     GtkButton *footer_crop_square_button;
     GtkButton *footer_crop_43_button;
     GtkButton *footer_crop_169_button;
+
+    GtkBox *footer_tools_page;
+    GtkBox *footer_transform_page;
+    GtkBox *footer_text_page;
+    GtkFontDialogButton *footer_font_choose_btn;
+    GtkWidget *footer_text_color_btn;
+    GtkWidget *footer_stroke_color_btn;
+    GtkFrame *footer_layer_text_container;
+    GtkTextView *footer_layer_text_view;
+    GtkSpinButton *footer_layer_font_size;
+    GtkButton *footer_text_delete_button;
+    GtkButton *footer_exit_text_button;
 };
 
 void sync_ui_with_layer(MemeWindow *self);

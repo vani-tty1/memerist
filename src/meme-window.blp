@@ -35,23 +35,15 @@ template $MemeWindow: Adw.ApplicationWindow {
   default-width: 1100;
   default-height: 675;
 
-  Adw.Breakpoint {
-    condition ("max-width: 700px")
-
-    setters {
-      split_view.collapsed: true;
-      split_view.show-sidebar: false;
-    }
-  }
-
   Adw.Breakpoint phone_bp {
-    condition ("max-width: 480px")
+    condition ("max-width: 800px")
 
     setters {
       split_view.collapsed: true;
       split_view.show-sidebar: false;
       floating_toolbar.visible: false;
       toolbar_footer_scroll.visible: true;
+      sidebar_toggle.visible: false;
       content_box.margin-start: 16;
       content_box.margin-end: 16;
       content_box.margin-bottom: 5;
@@ -162,7 +154,6 @@ template $MemeWindow: Adw.ApplicationWindow {
             orientation: vertical;
             halign: center;
             spacing: 6;
-            visible: bind crop_mode_button.active inverted;
 
             Box {
               orientation: horizontal;
@@ -348,10 +339,112 @@ template $MemeWindow: Adw.ApplicationWindow {
                 clicked => $on_apply_crop_clicked() swapped;
               }
 
-              ToggleButton footer_exit_crop_button {
+              Button footer_exit_crop_button {
+                icon-name: "window-close-symbolic";
+                tooltip-text: _("Cancel Crop");
+
+                clicked => $on_cancel_crop_clicked() swapped;
+              }
+            }
+          }
+
+          Box footer_text_page {
+            orientation: vertical;
+            halign: center;
+            spacing: 6;
+            visible: false;
+
+            Frame footer_layer_text_container {
+              styles [
+                "card",
+              ]
+
+              ScrolledWindow {
+                height-request: 60;
+                width-request: 280;
+
+                TextView footer_layer_text_view {
+                  wrap-mode: word_char;
+                  left-margin: 8;
+                  right-margin: 8;
+                  top-margin: 4;
+                  bottom-margin: 4;
+                  buffer: bind layer_text_view.buffer;
+                }
+              }
+            }
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              FontDialogButton footer_font_choose_btn {
+                valign: center;
+                tooltip-text: _("Font");
+                dialog: FontDialog {};
+                font-desc: bind font_choose_btn.font-desc bidirectional;
+              }
+
+              ColorDialogButton footer_text_color_btn {
+                valign: center;
+                tooltip-text: _("Text Color");
+
+                dialog: ColorDialog {
+                  with-alpha: true;
+                };
+
+                rgba: bind text_color_btn.rgba bidirectional;
+              }
+
+              ColorDialogButton footer_stroke_color_btn {
+                valign: center;
+                tooltip-text: _("Stroke Color");
+
+                dialog: ColorDialog {
+                  with-alpha: true;
+                };
+
+                rgba: bind stroke_color_btn.rgba bidirectional;
+              }
+            }
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              SpinButton footer_layer_font_size {
+                valign: center;
+                tooltip-text: _("Font Size");
+
+                adjustment: Adjustment {
+                  lower: 10;
+                  upper: 300;
+                  step-increment: 5;
+                };
+
+                value: bind layer_font_size.value bidirectional;
+              }
+
+              Separator {
+                orientation: horizontal;
+              }
+
+              Button footer_text_delete_button {
+                icon-name: "user-trash-symbolic";
+                tooltip-text: _("Delete Text Layer");
+
+                styles [
+                  "destructive-action",
+                ]
+              }
+
+              Button footer_exit_text_button {
                 icon-name: "window-close-symbolic";
                 tooltip-text: _("Done");
-                active: bind crop_mode_button.active bidirectional;
               }
             }
           }
