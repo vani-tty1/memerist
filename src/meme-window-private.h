@@ -50,6 +50,19 @@ struct _MemeWindow {
     GdkPixbufAnimation *template_anim;
     GtkBox *export_loading_screen;
     GtkPopover *file_popover;
+
+    GtkButton *footer_add_image_button, *footer_add_text_button;
+    GtkButton *footer_copy_clipboard_button, *footer_delete_layer_button;
+    GtkButton *footer_zoom_in, *footer_zoom_out, *footer_clear_button;
+    GtkToggleButton *footer_crop_mode_button, *footer_cinematic_button, *footer_deep_fry_button;
+    GtkMenuButton *footer_global_filters_button;
+    GtkButton *footer_rotate_left_button;
+    GtkButton *footer_rotate_right_button;
+    GtkButton *footer_flip_h_button;
+    GtkButton *footer_flip_v_button;
+    GtkButton *footer_crop_square_button;
+    GtkButton *footer_crop_43_button;
+    GtkButton *footer_crop_169_button;
 };
 
 void sync_ui_with_layer(MemeWindow *self);

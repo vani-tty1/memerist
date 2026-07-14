@@ -40,6 +40,21 @@ template $MemeWindow: Adw.ApplicationWindow {
 
     setters {
       split_view.collapsed: true;
+      split_view.show-sidebar: false;
+    }
+  }
+
+  Adw.Breakpoint phone_bp {
+    condition ("max-width: 480px")
+
+    setters {
+      split_view.collapsed: true;
+      split_view.show-sidebar: false;
+      floating_toolbar.visible: false;
+      toolbar_footer_scroll.visible: true;
+      content_box.margin-start: 16;
+      content_box.margin-end: 16;
+      content_box.margin-bottom: 5;
     }
   }
 
@@ -115,7 +130,10 @@ template $MemeWindow: Adw.ApplicationWindow {
 
         [start]
         Button export_button {
-          label: _("Export");
+          child: Adw.ButtonContent {
+            icon-name: "document-send-symbolic";
+            tooltip-text: _("Export");
+          };
           sensitive: false;
 
           styles [
@@ -124,10 +142,225 @@ template $MemeWindow: Adw.ApplicationWindow {
         }
       }
 
+    [bottom]
+      ScrolledWindow toolbar_footer_scroll {
+        visible: false;
+        hscrollbar-policy: automatic;
+        vscrollbar-policy: automatic;
+        propagate-natural-height: true;
+
+        child: Box toolbar_footer {
+          orientation: vertical;
+          halign: center;
+          spacing: 6;
+          margin-top: 6;
+          margin-bottom: 6;
+          margin-start: 12;
+          margin-end: 12;
+
+          Box footer_tools_page {
+            orientation: vertical;
+            halign: center;
+            spacing: 6;
+            visible: bind crop_mode_button.active inverted;
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              Button footer_add_image_button {
+                icon-name: "insert-image-symbolic";
+                tooltip-text: _("Add Overlay Image");
+                sensitive: bind add_image_button.sensitive;
+              }
+
+              ToggleButton footer_crop_mode_button {
+                icon-name: "edit-cut-symbolic";
+                tooltip-text: _("Crop & Rotate");
+                sensitive: bind crop_mode_button.sensitive;
+                active: bind crop_mode_button.active bidirectional;
+              }
+
+              Button footer_add_text_button {
+                icon-name: "format-text-bold-symbolic";
+                tooltip-text: _("Add Text Layer");
+                sensitive: bind add_text_button.sensitive;
+              }
+
+              Button footer_copy_clipboard_button {
+                icon-name: "edit-paste-symbolic";
+                tooltip-text: _("Copy to Clipboard");
+                sensitive: bind copy_clipboard_button.sensitive;
+              }
+
+              MenuButton footer_global_filters_button {
+                icon-name: "applications-graphics-symbolic";
+                tooltip-text: _("Global Filters");
+                sensitive: bind global_filters_button.sensitive;
+                direction: up;
+
+                popover: Popover {
+                  Box {
+                    orientation: horizontal;
+                    spacing: 6;
+                    margin-top: 1;
+                    margin-bottom: 1;
+                    margin-start: 1;
+                    margin-end: 1;
+
+                    ToggleButton footer_cinematic_button {
+                      label: _("Cinematic");
+                      tooltip-text: _("High Contrast");
+                      icon-name: "daytime-sunrise-symbolic";
+                      sensitive: bind cinematic_button.sensitive;
+                      active: bind cinematic_button.active bidirectional;
+                    }
+
+                    ToggleButton footer_deep_fry_button {
+                      label: _("Deep Fry");
+                      tooltip-text: _("Ensh*tify");
+                      icon-name: "emblem-important-symbolic";
+                      sensitive: bind deep_fry_button.sensitive;
+                      active: bind deep_fry_button.active bidirectional;
+
+                      styles [
+                        "destructive-action",
+                      ]
+                    }
+                  }
+                };
+              }
+
+              Button footer_delete_layer_button {
+                icon-name: "user-trash-symbolic";
+                tooltip-text: _("Delete Selected Layer");
+                sensitive: bind delete_layer_button.sensitive;
+
+                styles [
+                  "destructive-action",
+                ]
+              }
+            }
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              Button footer_zoom_in {
+                icon-name: "zoom-in-symbolic";
+                tooltip-text: _("Zoom In");
+                sensitive: bind zoom_in.sensitive;
+              }
+
+              Button footer_zoom_out {
+                icon-name: "zoom-out-symbolic";
+                tooltip-text: _("Zoom Out");
+                sensitive: bind zoom_out.sensitive;
+              }
+
+              Separator {
+                orientation: horizontal;
+              }
+
+              Button footer_clear_button {
+                icon-name: "edit-delete-symbolic";
+                tooltip-text: _("Clear All");
+                sensitive: bind clear_button.sensitive;
+
+                styles [
+                  "destructive-action",
+                ]
+              }
+            }
+          }
+
+          Box footer_transform_page {
+            orientation: vertical;
+            halign: center;
+            spacing: 6;
+            visible: bind crop_mode_button.active;
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              Button footer_rotate_left_button {
+                icon-name: "object-rotate-left-symbolic";
+                tooltip-text: _("Rotate Left");
+              }
+
+              Button footer_rotate_right_button {
+                icon-name: "object-rotate-right-symbolic";
+                tooltip-text: _("Rotate Right");
+              }
+
+              Separator {
+                orientation: horizontal;
+              }
+
+              Button footer_flip_h_button {
+                icon-name: "object-flip-horizontal-symbolic";
+                tooltip-text: _("Flip Horizontal");
+              }
+
+              Button footer_flip_v_button {
+                icon-name: "object-flip-vertical-symbolic";
+                tooltip-text: _("Flip Vertical");
+              }
+            }
+
+            Box {
+              orientation: horizontal;
+              halign: center;
+              spacing: 6;
+              styles [ "toolbar" ]
+
+              Button footer_crop_square_button {
+                label: "1:1";
+              }
+
+              Button footer_crop_43_button {
+                label: "4:3";
+              }
+
+              Button footer_crop_169_button {
+                label: "16:9";
+              }
+
+              Separator {
+                orientation: horizontal;
+              }
+
+              Button footer_apply_crop_button {
+                icon-name: "object-select-symbolic";
+                tooltip-text: _("Apply Crop");
+
+                styles [
+                  "suggested-action",
+                ]
+
+                clicked => $on_apply_crop_clicked() swapped;
+              }
+
+              ToggleButton footer_exit_crop_button {
+                icon-name: "window-close-symbolic";
+                tooltip-text: _("Done");
+                active: bind crop_mode_button.active bidirectional;
+              }
+            }
+          }
+        };
+      }
       content: Overlay {
         child: Adw.OverlaySplitView split_view {
           sidebar-position: end;
-          max-sidebar-width: 320;
+          max-sidebar-width: 360;
           min-sidebar-width: 270;
           collapsed: false;
           show-sidebar: true;
@@ -138,13 +371,13 @@ template $MemeWindow: Adw.ApplicationWindow {
               vexpand: true;
 
               Viewport {
-                Box {
+                Box content_box {
                   halign: center;
                   valign: center;
                   hexpand: true;
                   vexpand: true;
                   margin-top: 24;
-                  margin-bottom: 80;
+                  margin-bottom: 24;
                   margin-start: 80;
                   margin-end: 24;
 
@@ -203,7 +436,7 @@ template $MemeWindow: Adw.ApplicationWindow {
             }
 
             [overlay]
-            Box {
+            Box floating_toolbar {
               halign: start;
               valign: center;
               orientation: vertical;
@@ -286,7 +519,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Separator {
-                orientation: vertical;
+                orientation: horizontal;
               }
 
               Button zoom_in {
@@ -302,7 +535,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Separator {
-                orientation: vertical;
+                orientation: horizontal;
               }
 
               Button clear_button {
@@ -473,7 +706,7 @@ template $MemeWindow: Adw.ApplicationWindow {
                   ]
                 }
 
-                Box {
+                Box template_gallery_box {
                   height-request: 450;
 
                   ScrolledWindow {

@@ -131,7 +131,8 @@ static void on_rotate_clicked (GtkWidget *btn, MemeWindow *self) {
     gboolean clockwise;
     GdkPixbuf *new_pix;
     if (!self->template_image) return;
-    clockwise = (btn == GTK_WIDGET (self->rotate_right_button));
+    clockwise = (btn == GTK_WIDGET (self->rotate_right_button)) ||
+                (btn == GTK_WIDGET (self->footer_rotate_right_button));
     new_pix = gdk_pixbuf_rotate_simple (self->template_image,
     clockwise ? GDK_PIXBUF_ROTATE_CLOCKWISE : GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE);
     update_template_image (self, new_pix);
@@ -141,7 +142,8 @@ static void on_flip_clicked (GtkWidget *btn, MemeWindow *self) {
     gboolean horizontal;
     GdkPixbuf *new_pix;
     if (!self->template_image) return;
-    horizontal = (btn == GTK_WIDGET (self->flip_h_button));
+    horizontal = (btn == GTK_WIDGET (self->flip_h_button)) ||
+                 (btn == GTK_WIDGET (self->footer_flip_h_button));
     new_pix = gdk_pixbuf_flip (self->template_image, horizontal);
     update_template_image (self, new_pix);
 }
@@ -155,9 +157,12 @@ static void on_crop_preset_clicked (GtkWidget *btn, MemeWindow *self) {
     h = gdk_pixbuf_get_height (self->template_image);
     current_ratio = (double)w / (double)h;
 
-    if (btn == GTK_WIDGET (self->crop_square_button)) target_ratio = 1.0;
-    else if (btn == GTK_WIDGET (self->crop_43_button)) target_ratio = 4.0/3.0;
-    else if (btn == GTK_WIDGET (self->crop_169_button)) target_ratio = 16.0/9.0;
+    if (btn == GTK_WIDGET (self->crop_square_button) || btn == GTK_WIDGET (self->footer_crop_square_button))
+        target_ratio = 1.0;
+    else if (btn == GTK_WIDGET (self->crop_43_button) || btn == GTK_WIDGET (self->footer_crop_43_button))
+        target_ratio = 4.0/3.0;
+    else if (btn == GTK_WIDGET (self->crop_169_button) || btn == GTK_WIDGET (self->footer_crop_169_button))
+        target_ratio = 16.0/9.0;
 
     if (current_ratio > target_ratio) {
         self->crop_h = 1.0;
@@ -182,7 +187,7 @@ static void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     if (active) {
     self->crop_x = 0.0; self->crop_y = 0.0;
     self->crop_w = 1.0; self->crop_h = 1.0;
-    adw_overlay_split_view_set_show_sidebar (self->split_view, TRUE);
+    //adw_overlay_split_view_set_show_sidebar (self->split_view, TRUE);
     } else {
         gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL);
     }
@@ -731,6 +736,26 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, text_color_btn);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, stroke_color_btn);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, file_popover);
+
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_image_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_mode_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_text_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_copy_clipboard_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_global_filters_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_cinematic_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_deep_fry_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_delete_layer_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_zoom_in);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_zoom_out);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_clear_button);
+
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_rotate_left_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_rotate_right_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_flip_h_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_flip_v_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_square_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_43_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_169_button);
 }
 
 static void meme_window_init (MemeWindow *self) {
@@ -785,6 +810,26 @@ static void meme_window_init (MemeWindow *self) {
     self->zoom_level = 1.0;
     g_signal_connect_swapped (self->zoom_in, "clicked", G_CALLBACK (on_zoom_in_clicked), self);
     g_signal_connect_swapped (self->zoom_out, "clicked", G_CALLBACK (on_zoom_out_clicked), self);
+
+
+    g_signal_connect_swapped (self->footer_add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
+    g_signal_connect (self->footer_crop_mode_button, "toggled", G_CALLBACK (on_crop_mode_toggled), self);
+    g_signal_connect_swapped (self->footer_add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
+    g_signal_connect_swapped (self->footer_copy_clipboard_button, "clicked", G_CALLBACK (on_copy_clipboard_clicked), self);
+    g_signal_connect (self->footer_deep_fry_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
+    g_signal_connect_swapped (self->footer_cinematic_button, "toggled", G_CALLBACK (on_text_changed), self);
+    g_signal_connect_swapped (self->footer_delete_layer_button, "clicked", G_CALLBACK (on_delete_layer_clicked), self);
+    g_signal_connect_swapped (self->footer_zoom_in, "clicked", G_CALLBACK (on_zoom_in_clicked), self);
+    g_signal_connect_swapped (self->footer_zoom_out, "clicked", G_CALLBACK (on_zoom_out_clicked), self);
+    g_signal_connect_swapped (self->footer_clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
+
+    g_signal_connect (self->footer_rotate_left_button, "clicked", G_CALLBACK (on_rotate_clicked), self);
+    g_signal_connect (self->footer_rotate_right_button, "clicked", G_CALLBACK (on_rotate_clicked), self);
+    g_signal_connect (self->footer_flip_h_button, "clicked", G_CALLBACK (on_flip_clicked), self);
+    g_signal_connect (self->footer_flip_v_button, "clicked", G_CALLBACK (on_flip_clicked), self);
+    g_signal_connect (self->footer_crop_square_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
+    g_signal_connect (self->footer_crop_43_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
+    g_signal_connect (self->footer_crop_169_button, "clicked", G_CALLBACK (on_crop_preset_clicked), self);
     
     populate_template_gallery (self);
     
