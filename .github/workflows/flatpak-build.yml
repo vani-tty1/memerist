@@ -9,34 +9,6 @@ on:
       - ".copr"
 name: CI Build Flatpak
 jobs:
-  validate:
-    name: "Validate metadata"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install tools
-        run: |
-          sudo apt update
-          sudo apt install -y appstream desktop-file-utils gettext
-
-      - name: Generate metainfo.xml
-        run: |
-          msgfmt --xml --template=data/io.github.vani_tty1.memerist.metainfo.xml.in \
-            -d po -o data/io.github.vani_tty1.memerist.metainfo.xml
-
-      - name: Validate metainfo.xml
-        run: |
-          appstreamcli validate --no-net --explain data/io.github.vani_tty1.memerist.metainfo.xml
-
-      - name: Generate .desktop file
-        run: |
-          msgfmt --desktop --template=data/io.github.vani_tty1.memerist.desktop.in \
-            -d po -o data/io.github.vani_tty1.memerist.desktop
-
-      - name: Validate .desktop file
-        run: |
-          desktop-file-validate data/io.github.vani_tty1.memerist.desktop
-
   flatpak:
     name: "Flatpak"
     needs: validate
@@ -61,4 +33,5 @@ jobs:
         manifest-path: build-aux/io.github.vani_tty1.memerist.Devel.yml
         cache-key: flatpak-builder-${{ github.sha }}
         arch: ${{ matrix.variant.arch }}
+        run-tests: true
         verbose: true
