@@ -28,6 +28,10 @@
     <url type="help">https://github.com/vani-tty1/memerist/discussions</url>
     <url type="contact">https://github.com/vani-tty1</url>
 
+    <requires>
+        <display_length compare="ge">360</display_length>
+    </requires>
+
     <supports>
         <control>pointing</control>
         <control>keyboard</control>
@@ -68,9 +72,35 @@
             <caption>Crop</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot3.png</image>
         </screenshot>
+        <screenshot>
+            <caption>Memerist in Narrow Window</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot4.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Crop in Narrow Window</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot5.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Text Layers in Narrow Window</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/uploads/screenshot6.png</image>
+        </screenshot>
     </screenshots>
 
 	<releases>
+
+	    <release version="0.10.0" date="2026-07-15">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>This is a stable release with the following changes:</p>
+				<ul>
+            <li>Better support for small screens such as phones and small window sizes.</li>
+            <li>New GNOME HIG compliant theme switchers.</li>
+            <li>Added Cancel Crop Button, automatically reverts image to before crop.</li>
+				    <li>Minor UI Adjustments</li>
+            <li>Update ImageMagick to latest upstream.</li>
+				</ul>
+			</description>
+		  </release>
 
 	    <release version="0.9.0" date="2026-07-07">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
@@ -415,3 +445,4 @@
         </release>
     </releases>
 </component>
+
