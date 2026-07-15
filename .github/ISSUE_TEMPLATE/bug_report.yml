@@ -1,6 +1,6 @@
-name: New Issue
+name: File a Bug Report
 description: File a bug report
-title: "[Issue]: "
+title: "[Bug]: "
 body:
   - type: markdown
     attributes:
@@ -30,7 +30,7 @@ body:
     attributes:
       label: Environment & OS
       description: What OS are you using?  Wayland or X11?
-      placeholder: e.g., Fedora Workstation 44
+      placeholder: e.g., Fedora Workstation 44(Wayland)
     validations:
       required: true
   - type: input

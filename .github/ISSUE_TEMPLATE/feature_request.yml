@@ -1,0 +1,39 @@
+name: Feature Request
+description: Suggest an idea or enhancement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an idea! Please fill out as much as you can.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear description of what the problem is.
+      placeholder: e.g., I'm always frustrated when...
+    validations:
+      required: false
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+      placeholder: What should Memerist do instead?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: Any alternative solutions or features you've thought about.
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Mockups, screenshots, or examples from other apps are welcome here.
+    validations:
+      required: false
