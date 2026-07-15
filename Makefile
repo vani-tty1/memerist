@@ -12,7 +12,6 @@ LIBS := gtk4 libadwaita-1 cairo epoxy gio-2.0
 
 all: check-deps $(BUILD)/build.ninja
 	meson compile -C $(BUILD)
-	./$(BUILD)/src/$(PROJECT) $(ARGS)
 	
 
 release: check-deps $(REL)/build.ninja
