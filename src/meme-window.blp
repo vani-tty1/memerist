@@ -893,8 +893,6 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Adw.ActionRow {
-                title: _("Crop");
-
                 Box {
                   spacing: 6;
 
@@ -925,8 +923,6 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Adw.ActionRow {
-                title: _("Apply Changes");
-
                 Button apply_crop_button {
                   label: _("Apply Crop");
                   valign: center;
@@ -936,6 +932,16 @@ template $MemeWindow: Adw.ApplicationWindow {
                   ]
 
                   clicked => $on_apply_crop_clicked() swapped;
+                }
+                Button cancel_crop_button {
+                  label: _("Cancel");
+                  valign: center;
+
+                  styles [
+                    "destructive-action",
+                  ]
+
+                  clicked => $on_cancel_crop_clicked() swapped;
                 }
               }
             }
