@@ -1,11 +1,11 @@
 Name:           memerist
 Version:        0.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
-Source0:        memerist-%{version}.tar.gz
-BuildRequires:  meson gcc pkgconfig(gtk4) pkgconfig(libadwaita-1) pkgconfig(cairo)
+Source0:        %{url}/archive/refs/tags/v%{version}/%{name}-%{version}.tar.gz
+BuildRequires:  meson gcc pkgconfig(gtk4) pkgconfig(libadwaita-1) pkgconfig(cairo) appstream
 BuildRequires:  desktop-file-utils blueprint-compiler libepoxy-devel ImageMagick ImageMagick-devel
 Requires:       gtk4 libadwaita ImageMagick
 %description
@@ -36,7 +36,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
-* Fri Jul 17 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.10.0-1
+* Fri Jul 17 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.10.0-2
 - Better support for small screens such as phones and small window sizes.
 - New GNOME HIG compliant theme switchers.
 - Added Cancel Crop Button, automatically reverts image to before crop.

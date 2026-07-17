@@ -4,7 +4,7 @@
 # which means current build does not reflect final released build.
 [package]
 version = "0.10.0"
-release = "1"
+rebuilds = "2"
 description = "trigger rebuild"
 
 
