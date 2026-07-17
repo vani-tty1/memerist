@@ -443,8 +443,9 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Button footer_exit_text_button {
-                icon-name: "window-close-symbolic";
+                icon-name: "object-select-symbolic";
                 tooltip-text: _("Done");
+                styles ["suggested-action"]
               }
             }
           }
@@ -473,6 +474,7 @@ template $MemeWindow: Adw.ApplicationWindow {
                   margin-bottom: 24;
                   margin-start: 80;
                   margin-end: 24;
+                  styles ["flat"]
 
                   Stack content_stack {
                     hexpand: true;
@@ -894,8 +896,9 @@ template $MemeWindow: Adw.ApplicationWindow {
 
               Adw.ActionRow {
                 Box {
-                  spacing: 6;
-
+                  halign: center;
+                  hexpand: true;
+                  spacing: 12;
                   Button crop_square_button {
                     label: "1:1";
 
@@ -923,6 +926,8 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Adw.ActionRow {
+                halign: center;
+                hexpand: true;
                 Button apply_crop_button {
                   label: _("Apply Crop");
                   valign: center;

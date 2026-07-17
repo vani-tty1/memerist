@@ -16,6 +16,7 @@ config_h.set_quoted('APP_ID', app_id)
 config_h.set_quoted('PACKAGE_VERSION', meson.project_version())
 config_h.set_quoted('GETTEXT_PACKAGE', 'memerist')
 config_h.set_quoted('LOCALEDIR', get_option('prefix') / get_option('localedir'))
+config_h.set_quoted('PROFILE', get_option('profile'))
 configure_file(output: 'config.h', configuration: config_h)
 
 add_project_arguments(['-I' + meson.project_build_root()], language: 'c')

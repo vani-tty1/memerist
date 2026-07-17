@@ -27,6 +27,7 @@
 #include "keyboard-shortcuts.h"
 #include <glib/gstdio.h>
 #include <stdio.h>
+#include "config.h"
 
 G_DEFINE_FINAL_TYPE (MemeWindow, meme_window, ADW_TYPE_APPLICATION_WINDOW)
 
@@ -831,6 +832,10 @@ static void meme_window_class_init (MemeWindowClass *klass) {
 
 static void meme_window_init (MemeWindow *self) {
     gtk_widget_init_template (GTK_WIDGET (self));
+    #ifdef PROFILE
+        if (g_strcmp0 (PROFILE, "development") == 0)
+            gtk_widget_add_css_class (GTK_WIDGET (self), "devel");
+    #endif
     self->layers = NULL; self->undo_stack = NULL; self->redo_stack = NULL;
     g_signal_connect (self->text_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
     g_signal_connect (self->stroke_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
