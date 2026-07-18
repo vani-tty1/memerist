@@ -24,7 +24,7 @@ struct _MemeWindow {
     GtkButton *export_button, *copy_clipboard_button, *zoom_in, *zoom_out;
     GtkButton *load_image_button, *pill_btn_open_image, *clear_button, *add_image_button;
     GtkButton *import_template_button, *delete_template_button;
-    GtkToggleButton *deep_fry_button, *cinematic_button, *crop_mode_button;
+    GtkToggleButton *deep_fry_button, *cinematic_button, *crop_mode_button, *bw_button;
     GtkFlowBox *template_gallery;
     GtkMenuButton *global_filters_button;
     GtkScale *layer_opacity_scale, *layer_rotation_scale;
@@ -56,7 +56,7 @@ struct _MemeWindow {
     GtkButton *footer_add_image_button, *footer_add_text_button;
     GtkButton *footer_copy_clipboard_button, *footer_delete_layer_button;
     GtkButton *footer_zoom_in, *footer_zoom_out, *footer_clear_button;
-    GtkToggleButton *footer_crop_mode_button, *footer_cinematic_button, *footer_deep_fry_button;
+    GtkToggleButton *footer_crop_mode_button, *footer_cinematic_button, *footer_deep_fry_button, *footer_bw_button;
     GtkMenuButton *footer_global_filters_button;
     GtkButton *footer_rotate_left_button;
     GtkButton *footer_rotate_right_button;

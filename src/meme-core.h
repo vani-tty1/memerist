@@ -65,3 +65,4 @@ void meme_layer_list_free (GList *list);
 GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gboolean deep_fry);
 GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, double contrast);
 GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src);
+GdkPixbuf *meme_core_apply_black_and_white (GdkPixbuf *src);

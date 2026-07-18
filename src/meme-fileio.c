@@ -11,6 +11,7 @@ typedef struct {
     GList *layers_copy;
     gboolean cinematic;
     gboolean deepfry;
+    gboolean bw;
 } GifExportData;
 // async gif handling functions, fucking hell why is it so hard to do async
 // work
@@ -81,7 +82,7 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
         }
 
         delay_ms = MAX((int)MagickGetImageDelay(coalesced) * 10, 10);
-        comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, FALSE);
+        comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, ctx->bw, FALSE);
         w = gdk_pixbuf_get_width(comp);
         h = gdk_pixbuf_get_height(comp);
         channels = gdk_pixbuf_get_n_channels(comp);
@@ -346,6 +347,7 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
                 gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
+                gtk_widget_set_sensitive(GTK_WIDGET(self->bw_button), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
                 gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
@@ -403,6 +405,7 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
             gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->deep_fry_button), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->cinematic_button), TRUE);
+            gtk_widget_set_sensitive(GTK_WIDGET(self->bw_button), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
             gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
@@ -488,6 +491,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
         data->layers_copy = meme_layer_list_copy(self->layers);
         data->cinematic = gtk_toggle_button_get_active(self->cinematic_button);
         data->deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
+        data->bw = gtk_toggle_button_get_active(self->bw_button);
 
         task = g_task_new(self, NULL, on_gif_export_ready, self);
         g_task_set_task_data(task, data, gif_export_data_free);

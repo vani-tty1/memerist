@@ -217,7 +217,10 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     pango_font_description_free(desc);
 }
 
-GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean fast_mode) {
+GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers,
+                                gboolean cinematic,
+                                gboolean deep_fry, gboolean bw,
+                                gboolean fast_mode) {
     GdkPixbuf *comp;
     int render_w;
     int render_h;
@@ -290,6 +293,12 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
 
     comp = gdk_pixbuf_get_from_surface(surf, 0, 0, render_w, render_h);
     cairo_surface_destroy(surf);
+
+    if (bw) {
+        GdkPixbuf *tmp = meme_core_apply_black_and_white(comp);
+        g_object_unref(comp);
+        comp = tmp;
+    }
 
     if (!fast_mode && (cinematic || deep_fry)) {
         GdkPixbuf *tmp = meme_core_apply_effects(comp, cinematic, deep_fry);

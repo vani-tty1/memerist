@@ -8,7 +8,7 @@ GdkPixbuf *meme_apply_saturation_contrast (GdkPixbuf *src, double sat, double co
 GdkPixbuf *meme_apply_deep_fry (GdkPixbuf *src);
 
 
-GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean fast_mode);
+GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean bw, gboolean fast_mode);
 
 GdkTexture *meme_render_editor_overlay (GdkPixbuf *composite, 
                                         GList *layers, 

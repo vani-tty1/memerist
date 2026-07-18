@@ -113,6 +113,24 @@ GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
     return out;
 }
 
+
+GdkPixbuf *
+meme_core_apply_black_and_white(GdkPixbuf *src)
+{
+    MagickWand *wand;
+    GdkPixbuf *out;
+
+    MagickWandGenesis();
+    wand = pixbuf_to_wand(src);
+    MagickModulateImage(wand, 100.0, 0.0, 100.0);
+    out = wand_to_pixbuf(wand);
+    DestroyMagickWand(wand);
+    MagickWandTerminus();
+
+    return out;
+}
+
+
 GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gboolean deep_fry) {
     GdkPixbuf *result;
     gboolean own;
