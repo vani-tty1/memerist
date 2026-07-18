@@ -34,13 +34,16 @@ G_DEFINE_FINAL_TYPE (MemeWindow, meme_window, ADW_TYPE_APPLICATION_WINDOW)
 static void populate_template_gallery (MemeWindow *self);
 
 void render_meme (MemeWindow *self) {
+    gboolean is_dragging, is_crop_drag, cinematic, deepfry;
+    GdkTexture *tex;
+
     if (!self->template_image) return;
     
-    gboolean is_dragging = (self->drag_type != DRAG_TYPE_NONE);
-    gboolean is_crop_drag = (self->drag_type == DRAG_TYPE_CROP_MOVE || 
+    is_dragging = (self->drag_type != DRAG_TYPE_NONE);
+    is_crop_drag = (self->drag_type == DRAG_TYPE_CROP_MOVE ||
                              self->drag_type == DRAG_TYPE_CROP_RESIZE);
-    gboolean cinematic = gtk_toggle_button_get_active(self->cinematic_button);
-    gboolean deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
+    cinematic = gtk_toggle_button_get_active(self->cinematic_button);
+    deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
 
     if (!self->final_meme || !is_crop_drag) {
         if (self->final_meme) g_object_unref(self->final_meme);
@@ -51,9 +54,6 @@ void render_meme (MemeWindow *self) {
                                                 is_dragging);
     }
     gtk_widget_queue_draw(GTK_WIDGET(self->meme_preview));
-    // why did I even write this in C?
-    // am I actually stupid?
-    GdkTexture *tex; 
     if (is_dragging && !is_crop_drag) {
         // FAST PATH: Skip the expensive blue overlay handles while dragging layers.
         tex = gdk_texture_new_for_pixbuf(self->final_meme);
@@ -91,10 +91,11 @@ static void on_deep_fry_toggled (GtkToggleButton *btn, MemeWindow *self) { rende
 
 static void on_layer_text_changed (MemeWindow *self) {
     if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
-        g_free (self->selected_layer->text);
-      
-        GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+        GtkTextBuffer *buffer;
         GtkTextIter start, end;
+
+        g_free (self->selected_layer->text);
+        buffer = gtk_text_view_get_buffer (self->layer_text_view);
         gtk_text_buffer_get_bounds (buffer, &start, &end);
         
         self->selected_layer->text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
@@ -106,8 +107,10 @@ static void on_layer_text_changed (MemeWindow *self) {
 }
 
 static void on_add_text_clicked (MemeWindow *self) {
+    ImageLayer *new_layer;
+
     push_undo (self);
-    ImageLayer *new_layer = g_new0 (ImageLayer, 1);
+    new_layer = g_new0 (ImageLayer, 1);
     new_layer->type = LAYER_TYPE_TEXT;
     new_layer->text = g_strdup ("Text");
     new_layer->font_size = 60.0;
@@ -248,17 +251,22 @@ static void on_cancel_crop_clicked (MemeWindow *self) {
 }
 
 static void on_apply_crop_clicked (MemeWindow *self) {
+    GdkPixbuf *sub;
+    GdkPixbuf *new_pix;
+    int iw, ih, x, y, w, h;
+    GList *l;
+
     if (!self->template_image) return;
-    int iw = gdk_pixbuf_get_width(self->template_image);
-    int ih = gdk_pixbuf_get_height(self->template_image);
-    int x = self->crop_x * iw;
-    int y = self->crop_y * ih;
-    int w = self->crop_w * iw;
-    int h = self->crop_h * ih;
+    iw = gdk_pixbuf_get_width(self->template_image);
+    ih = gdk_pixbuf_get_height(self->template_image);
+    x = self->crop_x * iw;
+    y = self->crop_y * ih;
+    w = self->crop_w * iw;
+    h = self->crop_h * ih;
     if (w <= 0 || h <= 0) return;
 
     push_undo(self);
-    GList *l;
+
     for (l = self->layers; l != NULL; l = l->next) {
         ImageLayer *layer = (ImageLayer *)l->data;
         double abs_x = layer->x * iw;
@@ -266,8 +274,8 @@ static void on_apply_crop_clicked (MemeWindow *self) {
         layer->x = (abs_x - x) / (double)w;
         layer->y = (abs_y - y) / (double)h;
     }
-    GdkPixbuf *sub = gdk_pixbuf_new_subpixbuf(self->template_image, x, y, w, h);
-    GdkPixbuf *new_pix = gdk_pixbuf_copy(sub);
+    sub = gdk_pixbuf_new_subpixbuf(self->template_image, x, y, w, h);
+    new_pix = gdk_pixbuf_copy(sub);
     g_object_unref(sub);
     update_template_image(self, new_pix); 
     self->crop_x = 0; self->crop_y = 0; self->crop_w = 1; self->crop_h = 1;
@@ -289,6 +297,8 @@ static void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *sel
 }
 
 void sync_ui_with_layer(MemeWindow *self) {
+    GtkTextBuffer *buffer;
+
     gboolean sensitive = (self->selected_layer != NULL);
     gboolean is_text = (sensitive && self->selected_layer->type == LAYER_TYPE_TEXT);
     gboolean is_crop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->crop_mode_button));    
@@ -296,7 +306,7 @@ void sync_ui_with_layer(MemeWindow *self) {
 
     g_signal_handlers_block_by_func(self->layer_opacity_scale, on_text_changed, self);
     g_signal_handlers_block_by_func(self->layer_rotation_scale, on_text_changed, self);
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+    buffer = gtk_text_view_get_buffer (self->layer_text_view);
     g_signal_handlers_block_by_func(buffer, on_layer_text_changed, self);
     g_signal_handlers_block_by_func(self->layer_font_size, on_layer_text_changed, self);
 
@@ -338,8 +348,10 @@ void sync_ui_with_layer(MemeWindow *self) {
     g_signal_handlers_unblock_by_func(self->stroke_color_btn, on_color_changed, self);
     
     if (is_text && self->selected_layer->font_family) {
+        PangoFontDescription *desc;
+
         g_signal_handlers_block_by_func (self->font_choose_btn, on_font_changed, self);
-        PangoFontDescription *desc = pango_font_description_from_string (self->selected_layer->font_family);
+        desc = pango_font_description_from_string (self->selected_layer->font_family);
         gtk_font_dialog_button_set_font_desc (self->font_choose_btn, desc);
         pango_font_description_free (desc);
         g_signal_handlers_unblock_by_func (self->font_choose_btn, on_font_changed, self);
@@ -395,10 +407,15 @@ void on_clear_clicked (MemeWindow *self) {
 }
 
 void on_copy_clipboard_clicked (MemeWindow *self) {
+    AdwToast *pill_toast;
+    GdkClipboard *clipboard;
+    GdkPixbuf *save;
+    GdkTexture *texture;
+
     if (!self->final_meme) return;
 
-    GdkClipboard *clipboard = gtk_widget_get_clipboard (GTK_WIDGET (self));
-    GdkPixbuf *save = self->final_meme;
+    clipboard = gtk_widget_get_clipboard (GTK_WIDGET (self));
+    save = self->final_meme;
 
     if (gtk_toggle_button_get_active(self->crop_mode_button)) {
         int iw = gdk_pixbuf_get_width(save); 
@@ -408,12 +425,11 @@ void on_copy_clipboard_clicked (MemeWindow *self) {
         g_object_ref(save);
     }
 
-    GdkTexture *texture = gdk_texture_new_for_pixbuf (save);
+    texture = gdk_texture_new_for_pixbuf (save);
     gdk_clipboard_set_texture (clipboard, texture);
-
     g_object_unref (texture);
     g_object_unref (save);
-    AdwToast *pill_toast = adw_toast_new("Copied to Clipboard");
+    pill_toast = adw_toast_new("Copied to Clipboard");
     adw_toast_overlay_add_toast(self->copy_clip_feedback, pill_toast);
 }
 
@@ -445,9 +461,9 @@ static void add_file_to_gallery (MemeWindow *self, const char *full_path) {
         picture = gtk_picture_new_for_resource (full_path + 11);
         *mtime = 0; // Built-in resources are technically the "oldest"
     } else {
+        GStatBuf stat_buf;
         picture = gtk_picture_new_for_filename (full_path);
 
-        GStatBuf stat_buf;
         if (g_stat(full_path, &stat_buf) == 0) {
             *mtime = stat_buf.st_mtime;
         }
@@ -673,15 +689,17 @@ static void on_delete_template_clicked (MemeWindow *self) {
 }
 
 void apply_zoom(MemeWindow *self) {
-    if (!self->template_image) return;
-    int img_w = gdk_pixbuf_get_width(self->template_image);
-    int img_h = gdk_pixbuf_get_height(self->template_image);
+    int img_w, img_h, win_w, win_h;
+    double fit_scale, final_scale;
 
-    int win_w = gtk_widget_get_width(GTK_WIDGET(self)) - 320;
-    int win_h = gtk_widget_get_height(GTK_WIDGET(self)) - 60;
-    
-    double fit_scale = MIN((double)win_w / img_w, (double)win_h / img_h) * 0.6;
-    double final_scale = fit_scale * self->zoom_level;
+    if (!self->template_image) return;
+    img_w = gdk_pixbuf_get_width(self->template_image);
+    img_h = gdk_pixbuf_get_height(self->template_image);
+    win_w = gtk_widget_get_width(GTK_WIDGET(self)) - 320;
+    win_h = gtk_widget_get_height(GTK_WIDGET(self)) - 60;
+
+    fit_scale = MIN((double)win_w / img_w, (double)win_h / img_h) * 0.6;
+    final_scale = fit_scale * self->zoom_level;
 
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), (int)(img_w * final_scale), (int)(img_h * final_scale));
 }
@@ -831,6 +849,11 @@ static void meme_window_class_init (MemeWindowClass *klass) {
 }
 
 static void meme_window_init (MemeWindow *self) {
+    GtkEventController *scroll;
+    GtkEventController *key_controller;
+    GtkEventController *motion;
+    GtkTextBuffer *buffer;
+
     gtk_widget_init_template (GTK_WIDGET (self));
     #ifdef PROFILE
         if (g_strcmp0 (PROFILE, "development") == 0)
@@ -851,7 +874,7 @@ static void meme_window_init (MemeWindow *self) {
     
     g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
     g_signal_connect (self->font_choose_btn, "notify::font-desc", G_CALLBACK (on_font_changed), self);
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer (self->layer_text_view);
+    buffer = gtk_text_view_get_buffer (self->layer_text_view);
     g_signal_connect_swapped (buffer, "changed", G_CALLBACK (on_layer_text_changed), self);
     g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
     
@@ -912,16 +935,16 @@ static void meme_window_init (MemeWindow *self) {
 
     populate_template_gallery (self);
     
-    GtkEventController *motion = gtk_event_controller_motion_new ();
+    motion = gtk_event_controller_motion_new ();
     gtk_widget_add_controller (GTK_WIDGET (self->meme_preview), motion);
     g_signal_connect (motion, "motion", G_CALLBACK (on_mouse_move), self);
     
-    GtkEventController *key_controller = gtk_event_controller_key_new ();
+    key_controller = gtk_event_controller_key_new ();
     g_signal_connect (key_controller, "key-pressed", G_CALLBACK (on_window_key_pressed), self);
     gtk_widget_add_controller (GTK_WIDGET (self), key_controller);
     
     
-    GtkEventController *scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
+    scroll = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
     g_signal_connect(scroll, "scroll", G_CALLBACK(on_canvas_scroll), self);
     gtk_widget_add_controller(GTK_WIDGET(self->meme_preview), scroll);
 

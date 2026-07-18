@@ -25,24 +25,34 @@ static void gif_export_data_free(gpointer data) {
 }
 
 static void export_gif_thread(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
-    GifExportData *ctx = (GifExportData *)task_data;
+    MagickWand *optimized, *wand;
+    char *dest_path;
+    GdkPixbufAnimationIter *iter;
+    int frame_count;
+    GdkPixbuf *first_frame;
 
+    GifExportData *ctx = (GifExportData *)task_data;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     GTimeVal fake_time;
     g_get_current_time(&fake_time);
-    GdkPixbufAnimationIter *iter = gdk_pixbuf_animation_get_iter(ctx->anim, &fake_time);
+    iter = gdk_pixbuf_animation_get_iter(ctx->anim, &fake_time);
 #pragma GCC diagnostic pop
 
-    int frame_count = 0;
-    GdkPixbuf *first_frame = NULL;
+    frame_count = 0;
+    first_frame = NULL;
 
     MagickWandGenesis();
-    MagickWand *wand = NewMagickWand();
+    wand = NewMagickWand();
 
     do {
-        GdkPixbuf *frame = gdk_pixbuf_animation_iter_get_pixbuf(iter);
+        int delay_ms, w, h, channels;
+        GdkPixbuf *comp;
+        const guchar *pixels;
+        MagickWand *frame_wand;
+        GdkPixbuf *frame;
 
+        frame = gdk_pixbuf_animation_iter_get_pixbuf(iter);
         if (frame_count > 0 && frame == first_frame) {
             break;
         }
@@ -50,16 +60,14 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
             first_frame = frame;
         }
 
-        int delay_ms = MAX(gdk_pixbuf_animation_iter_get_delay_time(iter), 10);
+        delay_ms = MAX(gdk_pixbuf_animation_iter_get_delay_time(iter), 10);
+        comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, FALSE);
+        w = gdk_pixbuf_get_width(comp);
+        h = gdk_pixbuf_get_height(comp);
+        channels = gdk_pixbuf_get_n_channels(comp);
+        pixels = gdk_pixbuf_read_pixels(comp);
 
-        GdkPixbuf *comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, FALSE);
-
-        int w = gdk_pixbuf_get_width(comp);
-        int h = gdk_pixbuf_get_height(comp);
-        int channels = gdk_pixbuf_get_n_channels(comp);
-        const guchar *pixels = gdk_pixbuf_read_pixels(comp);
-
-        MagickWand *frame_wand = NewMagickWand();
+        frame_wand = NewMagickWand();
         MagickConstituteImage(frame_wand, w, h, channels == 4 ? "RGBA" : "RGB", CharPixel, pixels);
 
         MagickSetImageDelay(frame_wand, delay_ms / 10);
@@ -83,8 +91,8 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
     } while (gdk_pixbuf_animation_iter_advance(iter, &fake_time) && frame_count < 200);
 #pragma GCC diagnostic pop
 
-    MagickWand *optimized = MagickOptimizeImageLayers(wand);
-    char *dest_path = g_file_get_path(ctx->dest_file);
+    optimized = MagickOptimizeImageLayers(wand);
+    dest_path = g_file_get_path(ctx->dest_file);
     MagickWriteImages(optimized ? optimized : wand, dest_path, MagickTrue);
 
     if (optimized) DestroyMagickWand(optimized);
@@ -115,12 +123,17 @@ static void on_gif_export_ready(GObject *source_object, GAsyncResult *res, gpoin
 }
 
 static GdkPixbuf *base64_to_pixbuf(const gchar *base64) {
+    GInputStream *stream;
+    GdkPixbuf *pixbuf;
+    gsize out_len;
+    guchar *decoded;
+
     if (!base64) return NULL;
-    gsize out_len = 0;
-    guchar *decoded = g_base64_decode(base64, &out_len);
+    out_len = 0;
+    decoded = g_base64_decode(base64, &out_len);
     if (!decoded) return NULL;
-    GInputStream *stream = g_memory_input_stream_new_from_data(decoded, out_len, g_free);
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream(stream, NULL, NULL);
+    stream = g_memory_input_stream_new_from_data(decoded, out_len, g_free);
+    pixbuf = gdk_pixbuf_new_from_stream(stream, NULL, NULL);
     g_object_unref(stream); return pixbuf;
 }
 
@@ -154,6 +167,7 @@ on_base64_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
     EncodeCtx *ctx = user_data;
     GError *error = NULL;
     gchar *base64 = g_task_propagate_pointer (G_TASK (res), &error);
+    SaveCtx *save_ctx;
 
     if (base64) {
         g_key_file_set_string (ctx->save_ctx->keyfile, ctx->group, ctx->key, base64);
@@ -163,7 +177,7 @@ on_base64_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
         g_clear_error (&error);
     }
 
-    SaveCtx *save_ctx = ctx->save_ctx;
+    save_ctx = ctx->save_ctx;
 
     g_free (ctx->group);
     g_free (ctx->key);
@@ -181,22 +195,27 @@ on_base64_ready (GObject *source_object, GAsyncResult *res, gpointer user_data)
 }
 
 static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
+    int i;
+    SaveCtx *save_ctx;
+    GKeyFile *keyfile;
+    int encode_count;
+
     GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
     MemeWindow *self = MEME_WINDOW (d);
     GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
     if (!file) return;
 
-    GKeyFile *keyfile = g_key_file_new ();
+    keyfile = g_key_file_new ();
 
     // Count async encodes needed upfront
-    int encode_count = (self->template_image != NULL) ? 1 : 0;
+    encode_count = (self->template_image != NULL) ? 1 : 0;
     for (GList *l = self->layers; l != NULL; l = l->next) {
         ImageLayer *layer = l->data;
         if (layer->type == LAYER_TYPE_IMAGE && layer->pixbuf)
             encode_count++;
     }
 
-    SaveCtx *save_ctx = g_new0 (SaveCtx, 1);
+    save_ctx = g_new0 (SaveCtx, 1);
     save_ctx->file    = file;
     save_ctx->keyfile = keyfile;
     save_ctx->pending = encode_count;
@@ -204,7 +223,7 @@ static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
     g_key_file_set_boolean (keyfile, "Project", "deep_fry",  gtk_toggle_button_get_active (self->deep_fry_button));
     g_key_file_set_boolean (keyfile, "Project", "cinematic", gtk_toggle_button_get_active (self->cinematic_button));
 
-    int i = 0;
+    i = 0;
     for (GList *l = self->layers; l != NULL; l = l->next, i++) {
         ImageLayer *layer = l->data;
         gchar group[32];
@@ -250,11 +269,13 @@ static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
 }
 
 void myapp_window_save_project(MemeWindow *self) {
+    GListStore *filters;
+
     GtkFileDialog *dialog = gtk_file_dialog_new();
     GtkFileFilter *filter = gtk_file_filter_new();
     gtk_file_filter_set_name(filter, "Memerist Project");
     gtk_file_filter_add_pattern(filter, "*.meme");
-    GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+    filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
     g_list_store_append(filters, filter);
     gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
     gtk_file_dialog_set_initial_name(dialog, "project.meme");
@@ -271,17 +292,20 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
     if(g_file_load_contents_finish(file, res, &contents, &length, NULL, &error)){
         GKeyFile *keyfile = g_key_file_new();
         if(g_key_file_load_from_data(keyfile, contents, length, G_KEY_FILE_NONE, &error)){
+            int count;
+            gchar *b64_template;
+
             on_clear_clicked(self);
-            gchar *b64_template = g_key_file_get_string(keyfile, "Project", "template", NULL);
+            b64_template = g_key_file_get_string(keyfile, "Project", "template", NULL);
             if(b64_template){ self->template_image = base64_to_pixbuf(b64_template); g_free(b64_template); }
 
             gtk_toggle_button_set_active(self->deep_fry_button, g_key_file_get_boolean(keyfile, "Project", "deep_fry", NULL));
             gtk_toggle_button_set_active(self->cinematic_button, g_key_file_get_boolean(keyfile, "Project", "cinematic", NULL));
-
-            int count = g_key_file_get_integer(keyfile, "Project", "layer_count", NULL);
+            count = g_key_file_get_integer(keyfile, "Project", "layer_count", NULL);
             for(int i = 0; i < count; i++){
+                ImageLayer *layer;
                 gchar group[32]; g_snprintf(group, sizeof(group), "Layer%d", i);
-                ImageLayer *layer = g_new0(ImageLayer, 1);
+                layer = g_new0(ImageLayer, 1);
                 layer->type = g_key_file_get_integer(keyfile, group, "type", NULL);
                 layer->x = g_key_file_get_double(keyfile, group, "x", NULL);
                 layer->y = g_key_file_get_double(keyfile, group, "y", NULL);
@@ -332,11 +356,13 @@ static void on_load_project_response(GObject *s, GAsyncResult *r, gpointer d) {
 }
 
 void on_load_project_clicked(MemeWindow *self) {
+    GListStore *filters;
+
     GtkFileDialog *dialog = gtk_file_dialog_new();
     GtkFileFilter *filter = gtk_file_filter_new();
     gtk_file_filter_set_name(filter, "Memerist Project");
     gtk_file_filter_add_pattern(filter, "*.meme");
-    GListStore *filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
+    filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
     g_list_store_append(filters, filter);
     gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_project_response, self);
@@ -418,15 +444,22 @@ void on_add_image_clicked(MemeWindow *self) {
 }
 
 static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
+    const char *format;
+
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
     if (!file) return;
 
-    const char *format = g_object_get_data(G_OBJECT(dialog), "export-format");
+    format = g_object_get_data(G_OBJECT(dialog), "export-format");
     if (!format) format = "png";
 
-    if (g_strcmp0(format, "gif") == 0 && self->template_anim) {
+    if (g_strcmp0(format, "gif") == 0 && self->template_anim) {\
+        GTask *task;
+        AdwToast *starting_toast;
+        GifExportData *data;
+
+
 		gchar *magick_path = g_find_program_in_path("magick");
         if (!magick_path) {
             AdwToast *toast = adw_toast_new("ImageMagick is required to export GIFs.");
@@ -437,10 +470,10 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
         g_free(magick_path);
         gtk_widget_set_visible(GTK_WIDGET(self->export_loading_screen), TRUE);
 
-        GifExportData *data = g_new0(GifExportData, 1);
+        data = g_new0(GifExportData, 1);
         data->dest_file = g_object_ref(file);
 
-        AdwToast *starting_toast = adw_toast_new("Exporting GIF... This may take a moment.");
+        starting_toast = adw_toast_new("Exporting GIF... This may take a moment.");
         adw_toast_set_timeout(starting_toast, 3);
         adw_toast_overlay_add_toast(self->copy_clip_feedback, starting_toast);
 
@@ -450,7 +483,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
         data->cinematic = gtk_toggle_button_get_active(self->cinematic_button);
         data->deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
 
-        GTask *task = g_task_new(self, NULL, on_gif_export_ready, self);
+        task = g_task_new(self, NULL, on_gif_export_ready, self);
         g_task_set_task_data(task, data, gif_export_data_free);
 
         g_task_run_in_thread(task, export_gif_thread);
@@ -461,6 +494,9 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     }
 
     if (self->final_meme) {
+        GError *error;
+        GFileOutputStream *stream;
+
         GdkPixbuf *save = self->final_meme;
         if (gtk_toggle_button_get_active(self->crop_mode_button)) {
             int iw = gdk_pixbuf_get_width(save); int ih = gdk_pixbuf_get_height(save);
@@ -480,8 +516,8 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
             save = flat;
         }
 
-        GError *error = NULL;
-        GFileOutputStream *stream = g_file_replace(file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
+        error = NULL;
+        stream = g_file_replace(file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
         if (stream) {
             if (g_strcmp0(format, "jpeg") == 0) {
                 gdk_pixbuf_save_to_stream(save, G_OUTPUT_STREAM(stream), format, NULL, &error, "quality", "100", NULL);
@@ -496,21 +532,23 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     g_object_unref(file);
 }
 
-static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
+static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {\
+    char *filename;
+    GtkFileDialog *dialog;
+    const char *ext;
     AdwAlertDialog *alert = ADW_ALERT_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
     const char *choice = adw_alert_dialog_choose_finish(alert, r);
 
     if (g_strcmp0(choice, "cancel") == 0 || !choice) return;
 
-    const char *ext = ".png";
+    ext = ".png";
     if (g_strcmp0(choice, "jpeg") == 0) ext = ".jpg";
     else if (g_strcmp0(choice, "webp") == 0) ext = ".webp";
     else if (g_strcmp0(choice, "gif") == 0) ext = ".gif";
 
-    char *filename = g_strdup_printf("meme%s", ext);
-
-    GtkFileDialog *dialog = gtk_file_dialog_new();
+    filename = g_strdup_printf("meme%s", ext);
+    dialog = gtk_file_dialog_new();
     gtk_file_dialog_set_initial_name(dialog, filename);
 
     g_object_set_data(G_OBJECT(dialog), "export-format", (gpointer)choice);
@@ -522,9 +560,10 @@ static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
 }
 
 void on_export_clicked(MemeWindow *self) {
-    if (!self->final_meme) return;
+    AdwAlertDialog *dialog;
 
-    AdwAlertDialog *dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Export Format", "Choose an image format."));
+    if (!self->final_meme) return;
+    dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Export Format", "Choose an image format."));
     adw_alert_dialog_add_responses(dialog,
         "cancel", "Cancel",
         "png", "PNG",

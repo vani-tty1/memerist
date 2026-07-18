@@ -65,6 +65,10 @@ GdkPixbuf *meme_apply_saturation_contrast(GdkPixbuf *src, double sat, double con
     GdkPixbuf *copy;
     int w, h, stride, n_channels, x, y;
     guchar *pixels, *row_ptr, *p;
+    int sat_fixed;
+    int inv_sat_fixed;
+    guchar contrast_lut[256];
+
 
     if (!src)
         return NULL;
@@ -75,26 +79,28 @@ GdkPixbuf *meme_apply_saturation_contrast(GdkPixbuf *src, double sat, double con
     n_channels = gdk_pixbuf_get_n_channels(copy);
     pixels = gdk_pixbuf_get_pixels(copy);
 
-    guchar contrast_lut[256];
     for (int i = 0; i < 256; i++) {
         double val = ((double)i - 128.0) * contrast + 128.0;
         contrast_lut[i] = CLAMP_U8((int)val);
     }
 
-    int sat_fixed = (int)(sat * 1024.0);
-    int inv_sat_fixed = (int)((1.0 - sat) * 1024.0);
+    sat_fixed = (int)(sat * 1024.0);
+    inv_sat_fixed = (int)((1.0 - sat) * 1024.0);
 
     for (y = 0; y < h; y++) {
         row_ptr = pixels + (y * stride);
         for (x = 0; x < w; x++) {
+            int r, g, b;
+            int gray;
+            int rs, gs, bs;
             p = row_ptr + (x * n_channels);
 
-            int r = p[0], g = p[1], b = p[2];
-            int gray = (r * 306 + g * 601 + b * 117) >> 10;
+            r = p[0], g = p[1], b = p[2];
+            gray = (r * 306 + g * 601 + b * 117) >> 10;
 
-            int rs = (gray * inv_sat_fixed + r * sat_fixed) >> 10;
-            int gs = (gray * inv_sat_fixed + g * sat_fixed) >> 10;
-            int bs = (gray * inv_sat_fixed + b * sat_fixed) >> 10;
+            rs = (gray * inv_sat_fixed + r * sat_fixed) >> 10;
+            gs = (gray * inv_sat_fixed + g * sat_fixed) >> 10;
+            bs = (gray * inv_sat_fixed + b * sat_fixed) >> 10;
 
             p[0] = contrast_lut[CLAMP_U8(rs)];
             p[1] = contrast_lut[CLAMP_U8(gs)];
@@ -140,27 +146,39 @@ GdkPixbuf *meme_apply_deep_fry(GdkPixbuf *src) {
 }
 
 static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
+    PangoLayout *layout;
+    PangoLayout *layout2;
+    cairo_surface_t *surf;
+    cairo_t *cr;
+    cairo_surface_t *surf_m;
+    cairo_t *cr_m;
+    int tw;
+    int th;
+    PangoRectangle ink_rect;
+    PangoFontDescription *desc;
+    double max_width;
+
+
     if (layer->type != LAYER_TYPE_TEXT || !layer->text || layer->pixbuf) return;
 
-    cairo_surface_t *surf_m = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
-    cairo_t *cr_m = cairo_create(surf_m);
-    PangoLayout *layout = pango_cairo_create_layout(cr_m);
+    surf_m = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
+    cr_m = cairo_create(surf_m);
+    layout = pango_cairo_create_layout(cr_m);
     pango_layout_set_text(layout, layer->text, -1);
-    double max_width = (bg_width * 0.9) / layer->scale;
+    max_width = (bg_width * 0.9) / layer->scale;
     pango_layout_set_width(layout, max_width * PANGO_SCALE);
     pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
     pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
     
-    PangoFontDescription *desc = layer->font_family
+    desc = layer->font_family
                                      ? pango_font_description_from_string(layer->font_family)
                                      : pango_font_description_from_string("Sans Bold");
     pango_font_description_set_absolute_size(desc, layer->font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout, desc);
 
-    PangoRectangle ink_rect;
     pango_layout_get_pixel_extents(layout, &ink_rect, NULL);
-    int tw = ink_rect.width;
-    int th = ink_rect.height;
+    tw = ink_rect.width;
+    th = ink_rect.height;
     layer->width = tw + 10;
     layer->height = th + 10;
     
@@ -168,13 +186,13 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     cairo_destroy(cr_m);
     cairo_surface_destroy(surf_m);
 
-    cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, tw + 10, th + 10);
-    cairo_t *cr = cairo_create(surf);
+    surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, tw + 10, th + 10);
+    cr = cairo_create(surf);
     cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
     cairo_paint(cr);
     cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 
-    PangoLayout *layout2 = pango_cairo_create_layout(cr);
+    layout2 = pango_cairo_create_layout(cr);
     pango_layout_set_text(layout2, layer->text, -1);
     pango_layout_set_width(layout2, max_width * PANGO_SCALE);
     pango_layout_set_wrap(layout2, PANGO_WRAP_WORD_CHAR);
@@ -200,24 +218,33 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
 }
 
 GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean fast_mode) {
+    GdkPixbuf *comp;
+    int render_w;
+    int render_h;
+    cairo_surface_t *surf;
+    cairo_t *cr;
+    double scale = 1.0;
+    int orig_w;
+    int orig_h;
     if (!bg) return NULL;
-    int orig_w = gdk_pixbuf_get_width(bg);
-    int orig_h = gdk_pixbuf_get_height(bg);
+
+
+    orig_w = gdk_pixbuf_get_width(bg);
+    orig_h  = gdk_pixbuf_get_height(bg);
 
     for (GList *l = layers; l != NULL; l = l->next) {
         meme_layer_ensure_text_pixbuf((ImageLayer *)l->data, orig_w);
     }
 
-    double scale = 1.0;
+
     if (fast_mode && orig_w > 800) {
         scale = 800.0 / (double)orig_w;
     }
 
-    int render_w = orig_w * scale;
-    int render_h = orig_h * scale;
-
-    cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, render_w, render_h);
-    cairo_t *cr = cairo_create(surf);
+    render_w = orig_w * scale;
+    render_h = orig_h * scale;
+    surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, render_w, render_h);
+    cr = cairo_create(surf);
 
     if (scale < 1.0) {
         GdkPixbuf *scaled_bg = gdk_pixbuf_scale_simple(bg, render_w, render_h, GDK_INTERP_NEAREST);
@@ -245,9 +272,11 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
         else cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 
         if (layer->pixbuf) {
+            cairo_pattern_t *pat;
+
             gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
 
-            cairo_pattern_t *pat = cairo_get_source(cr);
+            pat = cairo_get_source(cr);
             cairo_pattern_set_filter(pat, fast_mode ? CAIRO_FILTER_FAST : CAIRO_FILTER_GOOD);
 
             if (layer->opacity < 1.0) cairo_paint_with_alpha(cr, layer->opacity);
@@ -259,7 +288,7 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
     cairo_surface_flush(surf);
     cairo_destroy(cr);
 
-    GdkPixbuf *comp = gdk_pixbuf_get_from_surface(surf, 0, 0, render_w, render_h);
+    comp = gdk_pixbuf_get_from_surface(surf, 0, 0, render_w, render_h);
     cairo_surface_destroy(surf);
 
     if (!fast_mode && (cinematic || deep_fry)) {
@@ -273,13 +302,20 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinemati
 }
 
 GdkTexture *meme_render_editor_overlay(GdkPixbuf *composite, GList *layers, ImageLayer *selected, gboolean crop_active, double cx, double cy, double cw, double ch) {
+    GdkPixbuf *res;
+    GdkTexture *tex;
+    int w;
+    int h;
+    cairo_surface_t *surf;
+    cairo_t *cr;
+
     if (!composite)
         return NULL;
-    int w = gdk_pixbuf_get_width(composite);
-    int h = gdk_pixbuf_get_height(composite);
 
-    cairo_surface_t *surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
-    cairo_t *cr = cairo_create(surf);
+    w = gdk_pixbuf_get_width(composite);
+    h = gdk_pixbuf_get_height(composite);
+    surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+    cr = cairo_create(surf);
 
     gdk_cairo_set_source_pixbuf(cr, composite, 0, 0);
     cairo_paint(cr);
@@ -289,6 +325,7 @@ GdkTexture *meme_render_editor_overlay(GdkPixbuf *composite, GList *layers, Imag
         double abs_y = cy * h;
         double abs_w = cw * w;
         double abs_h = ch * h;
+        double hr = 5.0;
 
         cairo_set_source_rgba(cr, 0, 0, 0, 0.6);
         if (abs_y > 0) {
@@ -325,7 +362,6 @@ GdkTexture *meme_render_editor_overlay(GdkPixbuf *composite, GList *layers, Imag
         cairo_line_to(cr, abs_x + abs_w, abs_y + 2 * abs_h / 3.0);
         cairo_stroke(cr);
 
-        double hr = 5.0;
         cairo_set_source_rgba(cr, 1, 1, 1, 1);
         cairo_arc(cr, abs_x, abs_y, hr, 0, 2 * M_PI);
         cairo_fill(cr);
@@ -374,10 +410,10 @@ GdkTexture *meme_render_editor_overlay(GdkPixbuf *composite, GList *layers, Imag
     }
 
     cairo_destroy(cr);
-    GdkPixbuf *res = gdk_pixbuf_get_from_surface(surf, 0, 0, w, h);
+    res = gdk_pixbuf_get_from_surface(surf, 0, 0, w, h);
     cairo_surface_destroy(surf);
 
-    GdkTexture *tex = gdk_texture_new_for_pixbuf(res);
+    tex = gdk_texture_new_for_pixbuf(res);
     g_object_unref(res);
     return tex;
 }

@@ -3,6 +3,8 @@
 #include <math.h>
 
 void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MemeWindow *self) {
+    GList *l;
+    gboolean found;
     double ix, iy, img_w, img_h;
     if (!self->template_image) { gtk_widget_set_cursor (GTK_WIDGET (self->meme_preview), NULL); return; }
     
@@ -11,13 +13,14 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, Me
     img_h = gdk_pixbuf_get_height(self->template_image);
     
     if (gtk_toggle_button_get_active(self->crop_mode_button)) {
+        const char *cursor;
         double ww = gtk_widget_get_width(GTK_WIDGET(self->meme_preview));
         double wh = gtk_widget_get_height(GTK_WIDGET(self->meme_preview));
         double scale = (ww / img_w < wh / img_h) ? (ww / img_w) : (wh / img_h);
         double rx = 15.0 / (img_w * scale);
         double ry = 15.0 / (img_h * scale);
         ResizeHandle h = meme_get_crop_handle_at_position(ix, iy, self->crop_x, self->crop_y, self->crop_w, self->crop_h, rx, ry);
-        const char *cursor = NULL;
+        cursor = NULL;
         switch (h) {
             case HANDLE_TOP_LEFT: cursor = "nw-resize"; break;
             case HANDLE_TOP_RIGHT: cursor = "ne-resize"; break;
@@ -35,8 +38,8 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, Me
         return;
   }
 
-  GList *l;
-  gboolean found = FALSE;
+
+  found = FALSE;
   for (l = g_list_last(self->layers); l != NULL; l = l->prev) {
       ImageLayer *layer = (ImageLayer *)l->data;
       double hw = (layer->width * layer->scale) / (2.0 * img_w);
@@ -60,6 +63,7 @@ void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, Me
 }
 
 void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *self) {
+    GList *l;
     double ix, iy, img_w, img_h;
     if (!self->template_image) return;
     meme_get_image_coordinates(GTK_WIDGET(self->meme_preview), self->template_image, x, y, &ix, &iy);
@@ -83,7 +87,7 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *sel
         return;
     }
 
-    GList *l;
+
     for (l = g_list_last(self->layers); l != NULL; l = l->prev) {
         ImageLayer *layer = (ImageLayer *)l->data;
         double hw = (layer->width * layer->scale) / (2.0 * img_w);

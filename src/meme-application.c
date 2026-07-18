@@ -71,10 +71,19 @@ meme_application_about_action (GSimpleAction *action,
     const char *vendor = "Unknown";
     const char *renderer = "Unknown";
     const char *version = "Unknown";
-
-    GdkDisplay *display = gdk_display_get_default();
+    GdkDisplay *display;
     GError *err = NULL;
-    GdkGLContext *ctx = gdk_display_create_gl_context(display, &err);
+    GdkGLContext *ctx;
+    g_autofree char *debug_info = NULL;
+    g_autofree char *os_release_content = NULL;
+    g_autoptr(GError) error = NULL;
+    g_autofree char *debug_text = NULL;
+    AdwDialog *dialog;
+    static const char *developers[] = {"vani-tty1", NULL};
+    static const char *designers[] = {"vani-tty1", NULL};
+
+    display = gdk_display_get_default();
+    ctx = gdk_display_create_gl_context(display, &err);
 
     if (ctx && gdk_gl_context_realize(ctx, &err)) {
         gdk_gl_context_make_current(ctx);
@@ -85,25 +94,22 @@ meme_application_about_action (GSimpleAction *action,
         if (err) g_clear_error(&err);
     }
 
-    g_autofree char *debug_info = g_strdup_printf("GPU Vendor: %s\nGPU Renderer: %s\nOpenGL Version: %s",
-                                       vendor ? vendor : "Unknown",
-                                       renderer ? renderer : "Unknown",
-                                       version ? version : "Unknown");
+    debug_info = g_strdup_printf("GPU Vendor: %s\nGPU Renderer: %s\nOpenGL Version: %s",
+                                  vendor ? vendor : "Unknown",
+                                  renderer ? renderer : "Unknown",
+                                  version ? version : "Unknown");
 
     if (ctx) {
         gdk_gl_context_clear_current();
         g_object_unref(ctx);
     }
-    
-    g_autofree char *os_release_content = NULL;
-    g_autoptr(GError) error = NULL;
-    
+
     if (!g_file_get_contents("/etc/os-release", &os_release_content, NULL, &error)) {
         os_release_content = g_strdup("Could not read /etc/os-release");
         g_clear_error(&error);
     }
-        
-    g_autofree char *debug_text = g_strdup_printf (
+
+    debug_text = g_strdup_printf (
         "Memerist %s\n"
         "GTK version: %d.%d.%d\n"
         "--- GPU Info ---\n"
@@ -117,21 +123,18 @@ meme_application_about_action (GSimpleAction *action,
         debug_info,
         os_release_content
     );
-    
-    AdwDialog *dialog = adw_about_dialog_new_from_appdata(
-        "/io/github/vani_tty1/memerist/io.github.vani_tty1.memerist.metainfo.xml", 
+
+    dialog = adw_about_dialog_new_from_appdata(
+        "/io/github/vani_tty1/memerist/io.github.vani_tty1.memerist.metainfo.xml",
         PACKAGE_VERSION
     );
-    
-    static const char *developers[] = {"vani-tty1", NULL};
-    static const char *designers[] = {"vani-tty1", NULL};
-    
+
     adw_about_dialog_set_developers(ADW_ABOUT_DIALOG(dialog), developers);
     adw_about_dialog_set_designers(ADW_ABOUT_DIALOG(dialog), designers);
     adw_about_dialog_set_version(ADW_ABOUT_DIALOG(dialog), PACKAGE_VERSION);
     adw_about_dialog_set_debug_info(ADW_ABOUT_DIALOG(dialog), debug_text);
     adw_about_dialog_set_debug_info_filename(ADW_ABOUT_DIALOG(dialog), "meme-debug.txt");
-    
+
     adw_dialog_present(dialog, GTK_WIDGET(window));
 }
 

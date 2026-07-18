@@ -2,12 +2,12 @@
 #include <MagickWand/MagickWand.h>
 
 ImageLayer * meme_layer_copy (const ImageLayer *src) {
-  ImageLayer *dst = g_new0 (ImageLayer, 1);
-  *dst = *src;
-  if (src->pixbuf) g_object_ref (src->pixbuf);
-  if (src->text) dst->text = g_strdup (src->text);
-  if (src->font_family) dst->font_family = g_strdup(src->font_family);
-  return dst;
+    ImageLayer *dst = g_new0 (ImageLayer, 1);
+    *dst = *src;
+    if (src->pixbuf) g_object_ref (src->pixbuf);
+    if (src->text) dst->text = g_strdup (src->text);
+    if (src->font_family) dst->font_family = g_strdup(src->font_family);
+    return dst;
 }
 
 void meme_layer_free (gpointer data) {
@@ -21,12 +21,12 @@ void meme_layer_free (gpointer data) {
 }
 
 GList * meme_layer_list_copy (GList *src) {
-  GList *dst = NULL;
-  GList *l;
-  for (l = src; l != NULL; l = l->next) {
-    dst = g_list_append (dst, meme_layer_copy ((ImageLayer *)l->data));
-  }
-  return dst;
+    GList *dst = NULL;
+    GList *l;
+    for (l = src; l != NULL; l = l->next) {
+        dst = g_list_append (dst, meme_layer_copy ((ImageLayer *)l->data));
+    }
+    return dst;
 }
 
 void meme_layer_list_free (GList *list) {
@@ -75,25 +75,30 @@ static GdkPixbuf *wand_to_pixbuf(MagickWand *wand) {
 }
 
 GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, double contrast) {
-    MagickWandGenesis();
-    MagickWand *wand = pixbuf_to_wand(src);
+    MagickWand *wand;
+    GdkPixbuf *out;
 
+    MagickWandGenesis();
+    wand = pixbuf_to_wand(src);
     MagickModulateImage(wand, 100.0, sat * 100.0, 100.0);
     if (contrast != 1.0) {
         MagickBrightnessContrastImage(wand, 0.0, (contrast - 1.0) * 50.0);
     }
-
-    GdkPixbuf *out = wand_to_pixbuf(wand);
+    out = wand_to_pixbuf(wand);
     DestroyMagickWand(wand);
     MagickWandTerminus();
     return out;
 }
 
 GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
+    MagickWand *wand;
+    int w, h;
+    GdkPixbuf *out;
+
     MagickWandGenesis();
-    MagickWand *wand = pixbuf_to_wand(src);
-    int w = MagickGetImageWidth(wand);
-    int h = MagickGetImageHeight(wand);
+    wand = pixbuf_to_wand(src);
+    w = MagickGetImageWidth(wand);
+    h = MagickGetImageHeight(wand);
 
     MagickResizeImage(wand, MAX(w / 4, 1), MAX(h / 4, 1), PointFilter);
     MagickResizeImage(wand, w, h, PointFilter);
@@ -102,20 +107,23 @@ GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
     MagickModulateImage(wand, 100.0, 300.0, 100.0);
     MagickBrightnessContrastImage(wand, 0.0, 80.0);
 
-    GdkPixbuf *out = wand_to_pixbuf(wand);
+    out = wand_to_pixbuf(wand);
     DestroyMagickWand(wand);
     MagickWandTerminus();
     return out;
 }
 
 GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gboolean deep_fry) {
+    GdkPixbuf *result;
+    gboolean own;
+
     if (!cinematic && !deep_fry) {
         g_object_ref(composite);
         return composite;
     }
 
-    GdkPixbuf *result = composite;
-    gboolean own = FALSE;
+    result = composite;
+    own = FALSE;
 
     if (cinematic) {
         GdkPixbuf *tmp = meme_core_apply_saturation_contrast(result, 1.15, 1.05);
