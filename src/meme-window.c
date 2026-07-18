@@ -34,7 +34,7 @@ G_DEFINE_FINAL_TYPE (MemeWindow, meme_window, ADW_TYPE_APPLICATION_WINDOW)
 static void populate_template_gallery (MemeWindow *self);
 
 void render_meme (MemeWindow *self) {
-    gboolean is_dragging, is_crop_drag, cinematic, deepfry;
+    gboolean is_dragging, is_crop_drag, cinematic, deepfry, bw_button;
     GdkTexture *tex;
 
     if (!self->template_image) return;
@@ -44,14 +44,16 @@ void render_meme (MemeWindow *self) {
                              self->drag_type == DRAG_TYPE_CROP_RESIZE);
     cinematic = gtk_toggle_button_get_active(self->cinematic_button);
     deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
+    bw_button = gtk_toggle_button_get_active(self->bw_button);
 
     if (!self->final_meme || !is_crop_drag) {
         if (self->final_meme) g_object_unref(self->final_meme);
         self->final_meme = meme_render_composite(self->template_image,
-                                                self->layers,
-                                                cinematic,
-                                                deepfry,
-                                                is_dragging);
+                                        self->layers,
+                                        cinematic,
+                                        deepfry,
+                                        bw_button,
+                                        is_dragging);
     }
     gtk_widget_queue_draw(GTK_WIDGET(self->meme_preview));
     if (is_dragging && !is_crop_drag) {
@@ -402,6 +404,8 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), FALSE);
+    gtk_toggle_button_set_active (self->bw_button, FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(self->bw_button), FALSE);
     self->zoom_level = 1.0;
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
 }
@@ -604,6 +608,7 @@ static void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, M
         gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (self->deep_fry_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->bw_button), TRUE);
         gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
         gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
         gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
@@ -790,6 +795,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, deep_fry_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, template_gallery);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, cinematic_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, bw_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_opacity_scale);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_rotation_scale);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, blend_mode_row);
@@ -847,6 +853,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_layer_font_size);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_text_delete_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_exit_text_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_bw_button);
 }
 
 static void meme_window_init (MemeWindow *self) {
@@ -933,7 +940,8 @@ static void meme_window_init (MemeWindow *self) {
 
     g_signal_connect_swapped (self->footer_text_delete_button, "clicked", G_CALLBACK (on_delete_layer_clicked), self);
     g_signal_connect_swapped (self->footer_exit_text_button, "clicked", G_CALLBACK (on_exit_text_editing_clicked), self);
-
+    g_signal_connect (self->bw_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
+    g_signal_connect (self->footer_bw_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
     populate_template_gallery (self);
     
     motion = gtk_event_controller_motion_new ();

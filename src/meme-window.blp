@@ -220,6 +220,14 @@ template $MemeWindow: Adw.ApplicationWindow {
                         "destructive-action",
                       ]
                     }
+
+                    ToggleButton footer_bw_button {
+                      label: _("Black & White");
+                      tooltip-text: _("Make it old school");
+                      icon-name: "preferences-color-symbolic";
+                      sensitive: bind bw_button.sensitive;
+                      active: bind bw_button.active bidirectional;
+                    }
                   }
                 };
               }
@@ -615,6 +623,13 @@ template $MemeWindow: Adw.ApplicationWindow {
                       styles [
                         "destructive-action",
                       ]
+                    }
+
+                    ToggleButton bw_button {
+                      label: _("Black & White");
+                      tooltip-text: _("Black and White");
+                      icon-name: "preferences-color-symbolic";
+                      sensitive: false;
                     }
                   }
                 };
