@@ -542,26 +542,39 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     g_object_unref(file);
 }
 
-static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {\
+static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
     char *filename;
     GtkFileDialog *dialog;
     const char *ext;
+    const char *format;
+    GtkDropDown *format_dropdown;
+    guint selected;
     AdwAlertDialog *alert = ADW_ALERT_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
     const char *choice = adw_alert_dialog_choose_finish(alert, r);
 
-    if (g_strcmp0(choice, "cancel") == 0 || !choice) return;
+    if (g_strcmp0(choice, "export") != 0) return;
+
+    format_dropdown = GTK_DROP_DOWN(g_object_get_data(G_OBJECT(alert), "format-dropdown"));
+    selected = gtk_drop_down_get_selected(format_dropdown);
+
+    switch (selected) {
+        case 1:  format = "jpeg"; break;
+        case 2:  format = "webp"; break;
+        case 3:  format = "gif";  break;
+        default: format = "png";  break;
+    }
 
     ext = ".png";
-    if (g_strcmp0(choice, "jpeg") == 0) ext = ".jpg";
-    else if (g_strcmp0(choice, "webp") == 0) ext = ".webp";
-    else if (g_strcmp0(choice, "gif") == 0) ext = ".gif";
+    if (g_strcmp0(format, "jpeg") == 0) ext = ".jpg";
+    else if (g_strcmp0(format, "webp") == 0) ext = ".webp";
+    else if (g_strcmp0(format, "gif") == 0) ext = ".gif";
 
     filename = g_strdup_printf("meme%s", ext);
     dialog = gtk_file_dialog_new();
     gtk_file_dialog_set_initial_name(dialog, filename);
 
-    g_object_set_data(G_OBJECT(dialog), "export-format", (gpointer)choice);
+    g_object_set_data(G_OBJECT(dialog), "export-format", (gpointer)format);
 
     gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_export_file_response, self);
 
@@ -571,19 +584,29 @@ static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {\
 
 void on_export_clicked(MemeWindow *self) {
     AdwAlertDialog *dialog;
+    GtkWidget *format_dropdown;
+    GtkStringList *model;
+    static const char *format_labels[] = { "PNG", "JPG", "WebP", "GIF", NULL };
 
     if (!self->final_meme) return;
+
+    model = gtk_string_list_new(format_labels);
+    format_dropdown = gtk_drop_down_new(G_LIST_MODEL(model), NULL);
+    gtk_drop_down_set_selected(GTK_DROP_DOWN(format_dropdown), 0);
+
     dialog = ADW_ALERT_DIALOG(adw_alert_dialog_new("Export Format", "Choose an image format."));
+    adw_alert_dialog_set_extra_child(dialog, format_dropdown);
+    g_object_set_data(G_OBJECT(dialog), "format-dropdown", format_dropdown);
+
     adw_alert_dialog_add_responses(dialog,
         "cancel", "Cancel",
-        "png", "PNG",
-        "gif", "GIF",
-        "jpeg", "JPG",
-        "webp", "WebP",
+        "export", "Export",
         NULL);
 
-    adw_alert_dialog_set_response_appearance(dialog, "png", ADW_RESPONSE_SUGGESTED);
+    adw_alert_dialog_set_response_appearance(dialog, "export", ADW_RESPONSE_SUGGESTED);
     adw_alert_dialog_set_response_appearance(dialog, "cancel", ADW_RESPONSE_DESTRUCTIVE);
+    adw_alert_dialog_set_default_response(dialog, "export");
+    adw_alert_dialog_set_close_response(dialog, "cancel");
 
     adw_alert_dialog_choose(dialog, GTK_WIDGET(self), NULL, on_format_chosen, self);
 }
