@@ -48,7 +48,8 @@ struct _MemeWindow {
     double crop_x, crop_y, crop_w, crop_h;
     GdkPixbuf *crop_session_template_snapshot;
 
-    GdkPixbufAnimation *template_anim;
+    gboolean  template_is_gif;
+    gchar    *template_gif_path;
     GtkBox *export_loading_screen;
     GtkPopover *file_popover;
 

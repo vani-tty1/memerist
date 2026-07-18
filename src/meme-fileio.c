@@ -7,7 +7,7 @@
 
 typedef struct {
     GFile *dest_file;
-    GdkPixbufAnimation *anim;
+    char *source_path;
     GList *layers_copy;
     gboolean cinematic;
     gboolean deepfry;
@@ -17,50 +17,70 @@ typedef struct {
 static void gif_export_data_free(gpointer data) {
     GifExportData *ctx = (GifExportData *)data;
     g_clear_object(&ctx->dest_file);
-    g_clear_object(&ctx->anim);
+    g_free(ctx->source_path);
     if (ctx->layers_copy) {
         meme_layer_list_free(ctx->layers_copy);
     }
     g_free(ctx);
 }
 
+static GdkPixbuf *
+magick_frame_to_pixbuf(MagickWand *wand)
+{
+    gsize w, h;
+    gboolean has_alpha;
+    guchar *buf;
+    MagickBooleanType ok;
+
+    w = MagickGetImageWidth(wand);
+    h = MagickGetImageHeight(wand);
+    has_alpha = MagickGetImageAlphaChannel(wand);
+
+    buf = g_malloc(w * h * (has_alpha ? 4 : 3));
+    ok = MagickExportImagePixels(wand, 0, 0, w, h,
+                                  has_alpha ? "RGBA" : "RGB",
+                                  CharPixel, buf);
+    if (ok != MagickTrue) {
+        g_free(buf);
+        return NULL;
+    }
+
+    return gdk_pixbuf_new_from_data(buf, GDK_COLORSPACE_RGB, has_alpha, 8,
+                                     w, h, w * (has_alpha ? 4 : 3),
+                                     (GdkPixbufDestroyNotify) g_free, NULL);
+}
+
 static void export_gif_thread(GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable) {
     MagickWand *optimized, *wand;
+    MagickWand *source_wand, *coalesced;
     char *dest_path;
-    GdkPixbufAnimationIter *iter;
     int frame_count;
-    GdkPixbuf *first_frame;
 
     GifExportData *ctx = (GifExportData *)task_data;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    GTimeVal fake_time;
-    g_get_current_time(&fake_time);
-    iter = gdk_pixbuf_animation_get_iter(ctx->anim, &fake_time);
-#pragma GCC diagnostic pop
-
-    frame_count = 0;
-    first_frame = NULL;
 
     MagickWandGenesis();
-    wand = NewMagickWand();
+    source_wand = NewMagickWand();
+    MagickReadImage(source_wand, ctx->source_path);
+    coalesced = MagickCoalesceImages(source_wand);
+    DestroyMagickWand(source_wand);
 
-    do {
+    wand = NewMagickWand();
+    frame_count = 0;
+
+    MagickResetIterator(coalesced);
+    while (MagickNextImage(coalesced) != MagickFalse && frame_count < 200) {
         int delay_ms, w, h, channels;
         GdkPixbuf *comp;
         const guchar *pixels;
         MagickWand *frame_wand;
         GdkPixbuf *frame;
 
-        frame = gdk_pixbuf_animation_iter_get_pixbuf(iter);
-        if (frame_count > 0 && frame == first_frame) {
-            break;
-        }
-        if (frame_count == 0) {
-            first_frame = frame;
+        frame = magick_frame_to_pixbuf(coalesced);
+        if (!frame) {
+            continue;
         }
 
-        delay_ms = MAX(gdk_pixbuf_animation_iter_get_delay_time(iter), 10);
+        delay_ms = MAX((int)MagickGetImageDelay(coalesced) * 10, 10);
         comp = meme_render_composite(frame, ctx->layers_copy, ctx->cinematic, ctx->deepfry, FALSE);
         w = gdk_pixbuf_get_width(comp);
         h = gdk_pixbuf_get_height(comp);
@@ -75,21 +95,11 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
         MagickAddImage(wand, frame_wand);
         DestroyMagickWand(frame_wand);
         g_object_unref(comp);
+        g_object_unref(frame);
 
         frame_count++;
-
-        // curse you barbosa you stupid ass whimsy pirate,
-        // jack is better than you
-        fake_time.tv_usec += delay_ms * 1000;
-        if (fake_time.tv_usec >= 1000000) {
-            fake_time.tv_sec += fake_time.tv_usec / 1000000;
-            fake_time.tv_usec %= 1000000;
-        }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    } while (gdk_pixbuf_animation_iter_advance(iter, &fake_time) && frame_count < 200);
-#pragma GCC diagnostic pop
+    }
+    DestroyMagickWand(coalesced);
 
     optimized = MagickOptimizeImageLayers(wand);
     dest_path = g_file_get_path(ctx->dest_file);
@@ -99,7 +109,6 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
     DestroyMagickWand(wand);
     MagickWandTerminus();
     g_free(dest_path);
-    g_object_unref(iter);
 
     g_task_return_boolean(task, TRUE);
 }
@@ -376,17 +385,14 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if (file) {
         char *path = g_file_get_path(file);
+        g_clear_pointer(&self->template_gif_path, g_free);
         if (g_str_has_suffix(path, ".gif")) {
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            self->template_anim = gdk_pixbuf_animation_new_from_file(path, NULL);
-            self->template_image = gdk_pixbuf_animation_get_static_image(self->template_anim);
-            #pragma GCC diagnostic pop
-            g_object_ref(self->template_image);
+            self->template_is_gif = TRUE;
+            self->template_gif_path = g_strdup(path);
         } else {
-            g_clear_object(&self->template_anim);
-            self->template_image = gdk_pixbuf_new_from_file(path, NULL);
+            self->template_is_gif = FALSE;
         }
+        self->template_image = gdk_pixbuf_new_from_file(path, NULL);
         if (self->layers) { meme_layer_list_free(self->layers); self->layers = NULL; self->selected_layer = NULL; }
         free_history_stack(&self->undo_stack); free_history_stack(&self->redo_stack);
         if (self->template_image) {
@@ -454,7 +460,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
     format = g_object_get_data(G_OBJECT(dialog), "export-format");
     if (!format) format = "png";
 
-    if (g_strcmp0(format, "gif") == 0 && self->template_anim) {\
+    if (g_strcmp0(format, "gif") == 0 && self->template_is_gif) {
         GTask *task;
         AdwToast *starting_toast;
         GifExportData *data;
@@ -478,7 +484,7 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
         adw_toast_overlay_add_toast(self->copy_clip_feedback, starting_toast);
 
         data->dest_file = g_object_ref(file);
-        data->anim = g_object_ref(self->template_anim);
+        data->source_path = g_strdup(self->template_gif_path);
         data->layers_copy = meme_layer_list_copy(self->layers);
         data->cinematic = gtk_toggle_button_get_active(self->cinematic_button);
         data->deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
