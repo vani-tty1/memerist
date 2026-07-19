@@ -88,6 +88,20 @@
 
 	<releases>
 
+      <release version="0.11.0" date="2026-07-19">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>This is a stable release with the following changes:</p>
+				<ul>
+				    <li>New Black and White filter.</li>
+				    <li>Replace deprecated GdkPixbufAnimation with MagicWand.</li>
+				    <li>Reworked Export dialog.</li>
+            <li>Plug leaks.</li>
+				    <li>UI Adjustments</li>
+				</ul>
+			</description>
+		  </release>
+
 	    <release version="0.10.0" date="2026-07-15">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>

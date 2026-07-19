@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [unstable]
+    branches: [unstable, main]
     paths-ignore:
       - "**.md"
       - ".copr"
@@ -18,9 +18,9 @@ jobs:
       matrix:
         variant:
           - arch: x86_64
-            runner: ubuntu-latest
+            runner: ubuntu-26.04
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-26.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
     - uses: actions/checkout@v6
