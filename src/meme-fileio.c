@@ -25,6 +25,54 @@ static void gif_export_data_free(gpointer data) {
     g_free(ctx);
 }
 
+void
+meme_window_open_file (MemeWindow *self, GFile *file)
+{
+    char *path = g_file_get_path (file);
+    if (!path)
+        return;
+
+    g_clear_pointer (&self->template_gif_path, g_free);
+    if (g_str_has_suffix (path, ".gif")) {
+        self->template_is_gif = TRUE;
+        self->template_gif_path = g_strdup (path);
+    } else {
+        self->template_is_gif = FALSE;
+    }
+
+    self->template_image = gdk_pixbuf_new_from_file (path, NULL);
+
+    if (self->layers) {
+        meme_layer_list_free (self->layers);
+        self->layers = NULL;
+        self->selected_layer = NULL;
+    }
+    free_history_stack (&self->undo_stack);
+    free_history_stack (&self->redo_stack);
+
+    if (self->template_image) {
+        gtk_stack_set_visible_child_name (self->content_stack, "content");
+        gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->deep_fry_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->cinematic_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->bw_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->crop_mode_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->save_project_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->global_filters_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->zoom_in), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->zoom_out), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->copy_clipboard_button), TRUE);
+        self->zoom_level = 1.0;
+        apply_zoom (self);
+        render_meme (self);
+    }
+
+    g_free (path);
+}
+
 static GdkPixbuf *
 magick_frame_to_pixbuf(MagickWand *wand)
 {
@@ -386,35 +434,8 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     MemeWindow *self = MEME_WINDOW(d);
     GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if (file) {
-        char *path = g_file_get_path(file);
-        g_clear_pointer(&self->template_gif_path, g_free);
-        if (g_str_has_suffix(path, ".gif")) {
-            self->template_is_gif = TRUE;
-            self->template_gif_path = g_strdup(path);
-        } else {
-            self->template_is_gif = FALSE;
-        }
-        self->template_image = gdk_pixbuf_new_from_file(path, NULL);
-        if (self->layers) { meme_layer_list_free(self->layers); self->layers = NULL; self->selected_layer = NULL; }
-        free_history_stack(&self->undo_stack); free_history_stack(&self->redo_stack);
-        if (self->template_image) {
-            gtk_stack_set_visible_child_name(self->content_stack, "content");
-            gtk_widget_set_sensitive(GTK_WIDGET(self->add_text_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->export_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->clear_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->deep_fry_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->cinematic_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->bw_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->save_project_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_in), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->zoom_out), TRUE);
-            gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), TRUE);
-            self->zoom_level = 1.0; apply_zoom(self); render_meme(self);
-        }
-        g_free(path); g_object_unref(file);
+        meme_window_open_file (self, file);
+        g_object_unref (file);
     }
 }
 
