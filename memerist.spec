@@ -22,7 +22,7 @@ Create memes with custom text overlays using a native GNOME interface.
 %meson_install
 
 %check
-%meson_check
+%meson_test
 
 
 %files
