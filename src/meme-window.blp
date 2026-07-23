@@ -561,6 +561,14 @@ template $MemeWindow: Adw.ApplicationWindow {
           Adw.HeaderBar {
             show-end-title-buttons: false;
 
+            [start]
+            Button sidebar_back_button {
+              icon-name: "go-previous-symbolic";
+              tooltip-text: _("Back");
+              visible: bind split_view.collapsed;
+              action-name: "win.toggle-sidebar";
+            }
+
             [end]
             MenuButton {
               primary: true;
