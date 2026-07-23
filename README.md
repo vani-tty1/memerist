@@ -56,7 +56,7 @@ Install the following development packages:
 
 Optional packages to be installed:
 
- Package                 | Purpose                                         |
+| Package                 | Purpose                                         |
 |--------------------------|-----------------------------------------------|
 | `appstream`              | Provides `appstreamcli` to validate the AppStream metadata     |
 | `desktop-file-utils`     | Provides `desktop-file-validate` and `update-desktop-database` |
@@ -70,22 +70,9 @@ Optional packages to be installed:
 git clone https://github.com/vani-tty1/memerist.git
 cd memerist
 
-# Compile a debug build (creates a 'build' directory)
-make all
+# Compile and run:
+make
 
-# Rebuild and run the application
-# Use this after making changes to quickly compile and launch
-make run
-
-# Compile an optimized release version (creates a 'build-release' directory)
-make release
-make run-release
-
-# Remove the debug build directory
-make clean
-
-# Remove all compiled build directories
-make clean-all
 
 # View more options:
 make help

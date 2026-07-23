@@ -322,9 +322,6 @@ void sync_ui_with_layer(MemeWindow *self) {
         }
     }
     gtk_widget_set_visible(GTK_WIDGET(self->layer_group), sensitive && !is_crop);
-    // if (self->transform_group) {
-    //         gtk_widget_set_visible(GTK_WIDGET(self->transform_group), sensitive && !is_text);
-    // }
     gtk_widget_set_visible(GTK_WIDGET(self->layer_text_container), is_text);
     gtk_widget_set_visible(GTK_WIDGET(self->layer_font_size_row), is_text);
     gtk_widget_set_sensitive(GTK_WIDGET(self->layer_opacity_scale), sensitive);
@@ -406,6 +403,7 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_widget_set_sensitive(GTK_WIDGET(self->copy_clipboard_button), FALSE);
     gtk_toggle_button_set_active (self->bw_button, FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->bw_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(self->clear_button), FALSE);
     self->zoom_level = 1.0;
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
 }
@@ -763,6 +761,15 @@ static void meme_theme_switcher_init (MemeThemeSwitcher *self) {
     gtk_widget_init_template (GTK_WIDGET (self));
 }
 
+static void
+meme_window_toggle_sidebar (GtkWidget  *widget,
+                             const char *action_name,
+                             GVariant   *parameter) {
+    MemeWindow *self = MEME_WINDOW (widget);
+    gboolean visible = adw_overlay_split_view_get_show_sidebar (self->split_view);
+    adw_overlay_split_view_set_show_sidebar (self->split_view, !visible);
+}
+
 static void meme_window_class_init (MemeWindowClass *klass) {
     GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
     GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -854,6 +861,10 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_text_delete_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_exit_text_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_bw_button);
+    gtk_widget_class_install_action (widget_class, "win.toggle-sidebar", NULL,
+                                      meme_window_toggle_sidebar);
+    gtk_widget_class_add_binding_action (widget_class, GDK_KEY_F9, 0,
+                                          "win.toggle-sidebar", NULL);
 }
 
 static void meme_window_init (MemeWindow *self) {
