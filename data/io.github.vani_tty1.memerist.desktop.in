@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Memerist
 Comment=Create memes with custom text overlays
-Exec=memerist
+Exec=memerist %U
 Icon=io.github.vani_tty1.memerist
 Terminal=false
 Type=Application

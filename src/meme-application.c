@@ -222,12 +222,33 @@ meme_application_shutdown (GApplication *app)
 }
 
 static void
+meme_application_open (GApplication  *app,
+                        GFile        **files,
+                        int            n_files,
+                        const char    *hint)
+{
+  GtkWindow *window;
+
+  g_assert (MEME_IS_APPLICATION (app));
+
+  window = gtk_application_get_active_window (GTK_APPLICATION (app));
+  if (window == NULL)
+    window = g_object_new (MEME_TYPE_WINDOW, "application", app, NULL);
+
+  gtk_window_present (window);
+
+  if (n_files > 0)
+    meme_window_open_file (MEME_WINDOW (window), files[0]);
+}
+
+static void
 meme_application_class_init (MemeApplicationClass *klass)
 {
   GApplicationClass *app_class = G_APPLICATION_CLASS (klass);
 
   app_class->startup  = meme_application_startup;
   app_class->activate = meme_application_activate;
+  app_class->open     = meme_application_open;
   app_class->shutdown = meme_application_shutdown;
 }
 

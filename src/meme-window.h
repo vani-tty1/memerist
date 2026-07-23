@@ -34,3 +34,4 @@ void myapp_window_perform_undo (MemeWindow *self);
 void myapp_window_perform_redo (MemeWindow *self);
 void myapp_window_save_project (MemeWindow *self);
 void on_copy_clipboard_clicked (MemeWindow *self);
+void meme_window_open_file (MemeWindow *self, GFile *file);
