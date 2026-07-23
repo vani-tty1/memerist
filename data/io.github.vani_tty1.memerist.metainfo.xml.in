@@ -88,6 +88,22 @@
 
 	<releases>
 
+      <release version="1.0.0" date="2026-07-23">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>We reached version 1.0.0 yehey🥳!</p>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>UI Overhaul. The UI is greatly overhauled to make it more organized.</li>
+				    <li>UI now adapts better to different screen sizes/devices.</li>
+				    <li>Fixed a bug where you cannot exit template selection on narrow window mode.</li>
+				    <li>Support for opening files from the File Manager(e.g., Nautilus, Thunar, Dolphin) using the "Open With" option.</li>
+				</ul>
+			</description>
+		  </release>
+
       <release version="0.11.0" date="2026-07-19">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>

@@ -36,7 +36,7 @@ template $MemeWindow: Adw.ApplicationWindow {
   default-height: 700;
 
   Adw.Breakpoint phone_bp {
-    condition ("max-width: 800px")
+    condition ("max-width: 900px")
 
     setters {
       split_view.collapsed: true;
@@ -46,6 +46,7 @@ template $MemeWindow: Adw.ApplicationWindow {
       content_box.margin-end: 16;
       content_box.margin-bottom: 5;
       pill_btn_select_template.visible: true;
+      sidebar_toolbar_group.visible: false;
     }
   }
 
@@ -476,10 +477,10 @@ template $MemeWindow: Adw.ApplicationWindow {
                   valign: center;
                   hexpand: true;
                   vexpand: true;
-                  margin-top: 24;
-                  margin-bottom: 24;
-                  margin-start: 80;
-                  margin-end: 24;
+                  margin-top: 12;
+                  margin-bottom: 12;
+                  margin-start: 12;
+                  margin-end: 12;
                   styles ["flat"]
 
                   Stack content_stack {
