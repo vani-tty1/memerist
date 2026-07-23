@@ -1,6 +1,6 @@
 Name:           memerist
-Version:        0.10.0
-Release:        2%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        Meme generator with text overlays
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -36,9 +36,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
-* Fri Jul 17 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 0.10.0-2
-- Better support for small screens such as phones and small window sizes.
-- New GNOME HIG compliant theme switchers.
-- Added Cancel Crop Button, automatically reverts image to before crop.
-- Minor UI Adjustments
-- Update ImageMagick to latest upstream.
+* Thu Jul 23 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 1.0.0-1
+- UI Overhaul. The UI is greatly overhauled to make it more organized.
+- UI now adapts better to different screen sizes/devices.
+- Fixed a bug where you cannot exit template selection on narrow window mode.
+- Support for opening files from the File Manager(e.g., Nautilus, Thunar, Dolphin) using the "Open With" option
