@@ -1058,6 +1058,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_cancel_crop_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_open_template_window_clicked);
+    gtk_widget_class_bind_template_callback (widget_class, meme_window_paste_from_clipboard);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, save_project_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_project_button);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, main_menu_button);

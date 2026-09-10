@@ -593,6 +593,17 @@ template $MemeWindow: Adw.ApplicationWindow {
                             ]
                           }
 
+                          Button pill_btn_paste_clipboard {
+                            label: _("Paste from Clipboard");
+                            margin-bottom: 12;
+
+                            styles [
+                              "pill",
+                            ]
+
+                            clicked => $meme_window_paste_from_clipboard() swapped;
+                          }
+
                           Button pill_btn_select_template {
                             label: _("Select Template");
                             visible: false;
