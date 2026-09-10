@@ -349,6 +349,12 @@ gboolean on_window_key_pressed (GtkEventControllerKey *controller,
         on_export_clicked (self);
         return TRUE;
     }
+    
+    if (is_exact_mods (state, GDK_SHIFT_MASK) &&
+        keyval == GDK_KEY_Delete) {
+        on_clear_clicked (self);
+        return TRUE;
+    }
 
 
     if (!editing_text &&
