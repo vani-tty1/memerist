@@ -1,5 +1,5 @@
 Name:           memerist
-Version:        2.2.0
+Version:        2.3.1
 Release:        1%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
@@ -10,7 +10,7 @@ BuildRequires:  desktop-file-utils blueprint-compiler libepoxy-devel ImageMagick
 Requires:       gtk4 libadwaita ImageMagick libepoxy 
 
 %description
-Simple meme editor for Linux 
+A simple meme editor for Linux 
 
 %prep
 %autosetup -n memerist-%{version}
@@ -36,11 +36,5 @@ Simple meme editor for Linux
 
 
 %changelog
-* Tue Sep 09 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.1.0-1
-- Markup can no longer be selected as layers
-- New Redo and Undo buttons
-- Update to latest ImageMagick
-- Improve screen size adaptability
-- Fixed signal block leak
-- Fixed stale text/color preview
-- Fixed silent file loading errors
+* Sat Sep 19 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.3.1-1
+- Update to latest GNOME runtime
