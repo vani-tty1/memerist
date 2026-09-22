@@ -1,60 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="128.00002" height="127.99999" viewBox="0 0 33.866671 33.866665" version="1.1" id="svg1" xmlns="http://www.w3.org/2000/svg">
-  <defs id="defs1">
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-      <feOffset dx="0" dy="4" result="offsetblur"/>
-      <feComponentTransfer>
-        <feFuncA type="linear" slope="0.3"/>
-      </feComponentTransfer>
-      <feMerge>
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+<svg height="128px" viewBox="0 0 128 128" width="128px" xmlns="http://www.w3.org/2000/svg">
+  <defs>
     <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0" style="stop-color:#f9f06b;stop-opacity:1"/>
       <stop offset="1" style="stop-color:#e5a50a;stop-opacity:1"/>
     </linearGradient>
-    <radialGradient gradientUnits="userSpaceOnUse" cx="23.413" cy="63.829" r="73.411" id="gradient-0" gradientTransform="matrix(-0.015548, 0.846116, -0.999832, -0.018373, 128.286263, 25.701401)">
-      <stop offset="0" style="stop-opacity: 1; stop-color: rgb(72, 138, 221);"/>
-      <stop offset="1" style="stop-opacity: 1; stop-color: rgb(35, 94, 167);"/>
-    </radialGradient>
-    <linearGradient id="linearGradient56" gradientUnits="userSpaceOnUse" x1="-148.80418" y1="278.21121" x2="-76.804184" y2="278.21121" href="#linearGradient1" gradientTransform="matrix(2.035446, 0, 0, 1.305846, 292.129074, -257.857697)"/>
-    <linearGradient id="linearGradient1">
-      <stop style="stop-color:#9a9996;stop-opacity:1;" offset="0" id="stop4"/>
-      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.064" id="stop8"/>
-      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.148" id="stop9"/>
-      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.863" id="stop7"/>
-      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.895" id="stop6"/>
-      <stop style="stop-opacity: 1; stop-color: rgb(61, 56, 71);" offset="0.949" id="stop10"/>
-      <stop style="stop-color:#dbdbdb;stop-opacity:1;" offset="1" id="stop5"/>
-    </linearGradient>
   </defs>
-  <g id="layer1" transform="translate(-32.279167,-138.64166)"/>
-  <g style="" transform="matrix(0.181034, 0, 0, 0.181034, 5.508938, 5.324891)">
-    <rect x="-10.625" y="12.447" width="146.306" height="124.286" rx="8" ry="8" style="fill-rule: evenodd; paint-order: stroke markers; fill: rgb(61, 56, 70);"/>
-    <rect rx="7.733" ry="7.733" y="74.102" x="-10.741" style="display: inline; fill: url(&quot;#linearGradient56&quot;); fill-opacity: 1; stroke-width: 0.818182;" width="146.552" height="62.681" id="rect41"/>
-    <rect x="-10.677" y="-8.176" width="146.381" height="135.183" rx="8" ry="8" style="fill: url(&quot;#gradient-0&quot;);"/>
-    <g transform="matrix(2.382862, 0, 0, 2.28726, 64, 64)" style="">
-      <circle r="12" style="stroke-width: 1.28476px;" fill="url(#sunGradient)"/>
-      <path d="M -9 -2 H 9 V 1 A 3 3 0 0 1 6 4 H 1 V 1 H -1 V 4 H -6 A 3 3 0 0 1 -9 1 Z" fill="#241f31"/>
-      <path d="M -9 -2 L -11 -3 V -1 L -9 0 Z" fill="#241f31"/>
-      <path d="M 8.953 -2 L 10.953 -3 L 10.953 -1 L 8.953 0 L 8.953 -2 Z" fill="#241f31"/>
-      <path d="M -3.376 6.319 C -1.376 8.319 1.972 8.033 5.305 5.366" stroke-width="1.5" stroke-linecap="round" stroke="#241f31" fill="none"/>
+  <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="11.999989" x2="115.999989" y1="64" y2="64">
+    <stop offset="0" stop-color="#3d3846"/>
+    <stop offset="0.05" stop-color="#77767b"/>
+    <stop offset="0.1" stop-color="#5e5c64"/>
+    <stop offset="0.9" stop-color="#504e56"/>
+    <stop offset="0.95" stop-color="#77767b"/>
+    <stop offset="1" stop-color="#3d3846"/>
+  </linearGradient>
+  <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="12" x2="112.041023" y1="60" y2="80.988281">
+    <stop offset="0" stop-color="#77767b"/>
+    <stop offset="0.3844" stop-color="#9a9996"/>
+    <stop offset="0.7206" stop-color="#77767b"/>
+    <stop offset="1" stop-color="#68666f"/>
+  </linearGradient>
+  <path d="m 20 22 h 88 c 4.417969 0 8 3.582031 8 8 v 78 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -78 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#a)"/>
+  <path d="m 20 12 h 88 c 4.417969 0 8 3.582031 8 8 v 80 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -80 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#b)"/>
+  <path d="m 20 14 h 88 c 3.3125 0 6 2.6875 6 6 v 80 c 0 3.3125 -2.6875 6 -6 6 h -88 c -3.3125 0 -6 -2.6875 -6 -6 v -80 c 0 -3.3125 2.6875 -6 6 -6 z m 0 0" style="fill: rgb(41, 101, 176);"/>
+  <g id="svg1" transform="matrix(1, 0, 0, 1, 95.882858, -2.344286)">
+    <g id="layer1" transform="matrix(1, 0, 0, 1, 25.637362, -85.620529)"/>
+    <g style="" transform="matrix(0.144827, 0, 0, 0.142241, 33.697994, 40.276604)">
+      <g transform="matrix(12.888924, 0, 0, 12.888924, -450.06012, 169.203568)" style="">
+        <circle r="12" style="stroke-width: 1.28476px;" fill="url(#sunGradient)" transform="matrix(0.982143, 0, 0, 1, -0.214286, 0)"/>
+        <path d="M -9 -2 H 9 V 1 A 3 3 0 0 1 6 4 H 1 V 1 H -1 V 4 H -6 A 3 3 0 0 1 -9 1 Z" fill="#241f31"/>
+        <path d="M -9 -2 L -11 -3 V -1 L -9 0 Z" fill="#241f31"/>
+        <path d="M 8.953 -2 L 10.953 -3 L 10.953 -1 L 8.953 0 L 8.953 -2 Z" fill="#241f31"/>
+        <path d="M -3.376 6.319 C -1.376 8.319 1.972 8.033 5.305 5.366" stroke-width="1.5" stroke-linecap="round" stroke="#241f31" fill="none"/>
+      </g>
     </g>
-  </g>
-  <g style="" transform="matrix(0.220333, 0, 0, 0.199255, 2.746493, 3.219199)">
-    <rect x="7.574" y="7.065" width="113.679" height="116.207" fill="none" stroke="#99c1f1" stroke-width="2" stroke-dasharray="8 4" rx="4.181" ry="4.181" style=""/>
-  </g>
-  <g id="svg11300" style="" transform="matrix(0.271662, 0, 0, 0.244248, 17.823923, 16.194525)">
-    <title id="title4162">Adwaita Icon Template</title>
-    <g transform="matrix(1, 0, 0, 1, 526.086975, -183.839844)" id="g49" style="display:inline;enable-background:new">
-      <g style="stroke-width:0.904534" transform="matrix(1.2222219,0,0,1,-268.12825,-10.211197)" id="g43"/>
-      <g id="g48" transform="translate(0,2)">
-        <g id="g44" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
-        <g id="g45" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
-        <g style="fill:#c0bfbc;stroke-width:1.25" transform="matrix(0.8,0,0,0.8,-457.2,28.4)" id="g47"/>
+    <g style="" transform="matrix(0.822505, 0, 0, 0.733861, -85.025688, 14.954055)">
+      <rect x="7.574" y="7.065" width="113.679" height="116.207" fill="none" stroke="#99c1f1" stroke-width="2" stroke-dasharray="8 4" rx="4.181" ry="4.181" style=""/>
+    </g>
+    <g id="svg11300" style="" transform="matrix(0.271662, 0, 0, 0.244248, 75.740456, 69.21566)">
+      <title id="title4162">Adwaita Icon Template</title>
+      <g transform="matrix(1, 0, 0, 1, 526.086975, -183.839844)" id="g49" style="display:inline;enable-background:new">
+        <g style="stroke-width:0.904534" transform="matrix(1.2222219,0,0,1,-268.12825,-10.211197)" id="g43"/>
+        <g id="g48" transform="translate(0,2)">
+          <g id="g44" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+          <g id="g45" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+          <g style="fill:#c0bfbc;stroke-width:1.25" transform="matrix(0.8,0,0,0.8,-457.2,28.4)" id="g47"/>
+        </g>
       </g>
     </g>
   </g>

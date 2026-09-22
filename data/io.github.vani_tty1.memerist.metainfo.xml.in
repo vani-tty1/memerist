@@ -4,10 +4,10 @@
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
     <name>Memerist</name>
-    <summary>Create, edit, and export memes with ease</summary>
+    <summary>A simple and modern meme editor</summary>
     <description>
         <p>
-        A simple and modern meme editor.
+        A lightweight photo editor focused entirely on editing memes. Yes, just memes, nothing more, nothing less.
         </p>
         <p>Features:</p>
         <ul>
@@ -63,11 +63,7 @@
 
     <screenshots>
         <screenshot type="default">
-            <caption>Main window</caption>
-            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc1.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Live Preview</caption>
+            <caption>Main Window</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc2.png</image>
         </screenshot>
         <screenshot>
@@ -84,10 +80,6 @@
         </screenshot>
         <screenshot>
             <caption>Narrow Window</caption>
-            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc6.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Template Narrow Window</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc7.png</image>
         </screenshot>
         <screenshot>
