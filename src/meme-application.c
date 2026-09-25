@@ -23,6 +23,7 @@
 #include "adwaita.h"
 #include "meme-window.h"
 #include "meme-welcome-dialog.h"
+#include "meme-preferences-dialog.h"
 #include "config.h"
 #include <epoxy/gl.h>
 #include "gdk/gdk.h"
@@ -211,11 +212,24 @@ meme_application_welcome_action (GSimpleAction *action,
     meme_show_welcome_dialog (parent);
 }
 
+static void
+meme_application_preferences_action (GSimpleAction *action,
+                                      GVariant      *parameter,
+                                      gpointer       user_data)
+{
+  MemeApplication *self = user_data;
+  GtkWindow *parent = gtk_application_get_active_window (GTK_APPLICATION (self));
+
+  if (parent)
+    meme_show_preferences_dialog (parent);
+}
+
 static const GActionEntry app_actions[] = {
   { "quit", meme_application_quit_action },
   { "about", meme_application_about_action },
   { "shortcuts", meme_application_shortcuts_action },
   { "welcome", meme_application_welcome_action },
+  { "preferences", meme_application_preferences_action },
   { "color-scheme", meme_application_color_scheme_action, "s", "'default'", NULL },
 };
 
@@ -236,6 +250,9 @@ meme_application_startup (GApplication *app)
   gtk_application_set_accels_for_action (GTK_APPLICATION (app),
                                          "app.shortcuts",
                                          (const char *[]) { "<Control>question", NULL });
+  gtk_application_set_accels_for_action (GTK_APPLICATION (app),
+                                         "app.preferences",
+                                         (const char *[]) { "<Control>comma", NULL });
 }
 
 static void

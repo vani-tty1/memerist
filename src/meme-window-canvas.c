@@ -25,6 +25,7 @@
 
 void render_meme (MemeWindow *self) {
     gboolean is_dragging, is_crop_drag, crop_active, cinematic, deepfry, bw_button;
+    gboolean reduce_quality_on_drag, use_fast_preview;
     GdkTexture *tex;
 
     if (!self->template_image) return;
@@ -37,6 +38,9 @@ void render_meme (MemeWindow *self) {
     deepfry = gtk_toggle_button_get_active(self->deep_fry_button);
     bw_button = gtk_toggle_button_get_active(self->bw_button);
 
+    reduce_quality_on_drag = g_settings_get_boolean (self->template_settings, "reduce-quality-on-drag");
+    use_fast_preview = is_dragging && reduce_quality_on_drag;
+
     if (!self->final_meme || !is_crop_drag) {
         if (self->final_meme) g_object_unref(self->final_meme);
         self->final_meme = meme_render_composite(self->template_image,
@@ -44,7 +48,7 @@ void render_meme (MemeWindow *self) {
                                         cinematic,
                                         deepfry,
                                         bw_button,
-                                        is_dragging);
+                                        use_fast_preview);
     }
     gtk_widget_queue_draw(GTK_WIDGET(self->meme_preview));
 

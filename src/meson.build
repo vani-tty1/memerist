@@ -6,7 +6,8 @@ blueprints = custom_target('blueprints',
     'shortcuts-dialog.blp',
     'theme-switcher.blp',
     'template-window.blp',
-    'welcome-dialog.blp'
+    'welcome-dialog.blp',
+    'preferences-dialog.blp'
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
@@ -26,6 +27,7 @@ myapp_sources = [
   'meme-fileio.c',
   'meme-renderer.c',
   'meme-welcome-dialog.c',
+  'meme-preferences-dialog.c',
 ]
 
 myapp_deps = [
