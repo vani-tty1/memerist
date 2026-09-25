@@ -1,5 +1,5 @@
 Name:           memerist
-Version:        2.3.1
+Version:        2.4.0
 Release:        1%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
@@ -36,5 +36,9 @@ A simple meme editor for Linux
 
 
 %changelog
-* Sat Sep 19 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.3.1-1
-- Update to latest GNOME runtime
+* Sat Sep 25 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.4.0-1
+- Added Italian Translation
+- Redesigned app icon
+- New snap align feature
+- Emoji;s can be used and inserted as a layer
+- New preferences option in main menu
