@@ -46,6 +46,11 @@ void draw_crop_overlay (GtkDrawingArea *area, cairo_t *cr, int width, int height
     } else if (self->drag_type == DRAG_TYPE_DRAW_STROKE && self->draw_points) {
         meme_draw_stroke_preview (cr, self->draw_points, img_w, img_h, scale,
                                    off_x, off_y, self->draw_line_width, &self->draw_color);
+    } else if (self->drag_type == DRAG_TYPE_IMAGE_MOVE &&
+               (self->snap_guide_v_active || self->snap_guide_h_active)) {
+        meme_draw_alignment_guides (cr, off_x, off_y, img_w * scale, img_h * scale,
+                                     self->snap_guide_v_active, self->snap_guide_v_x,
+                                     self->snap_guide_h_active, self->snap_guide_h_y);
     }
 }
 

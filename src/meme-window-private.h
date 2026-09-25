@@ -64,6 +64,10 @@ struct _MemeWindow {
     double zoom_level;
     double crop_x, crop_y, crop_w, crop_h;
     GdkPixbuf *crop_session_template_snapshot;
+    gboolean snap_guide_v_active, snap_guide_h_active;
+    double   snap_guide_v_x, snap_guide_h_y;
+
+    GtkButton *add_emoji_button, *footer_add_emoji_button;
 
     GArray *draw_points;
     GdkRGBA draw_color;
@@ -126,6 +130,7 @@ void on_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *self);
 void on_text_changed (MemeWindow *self);
 void on_layer_text_changed (MemeWindow *self);
 void on_add_text_clicked (MemeWindow *self);
+void on_add_emoji_clicked (GtkWidget *btn, MemeWindow *self);
 void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self);
 void on_layer_control_changed (MemeWindow *self);
 void on_delete_layer_clicked (MemeWindow *self);

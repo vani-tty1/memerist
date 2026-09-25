@@ -20,6 +20,12 @@ GdkTexture *meme_render_editor_overlay (GdkPixbuf *composite,
 void meme_draw_crop_chrome (cairo_t *cr, double w, double h,
                              double abs_x, double abs_y, double abs_w, double abs_h);
 
+
+void meme_draw_alignment_guides (cairo_t *cr, double off_x, double off_y,
+                                  double draw_w, double draw_h,
+                                  gboolean v_active, double v_x,
+                                  gboolean h_active, double h_y);
+
 GdkPixbuf *meme_bake_stroke_pixbuf (GArray *points, int img_w, int img_h,
                                      double line_width, const GdkRGBA *color,
                                      double *out_cx, double *out_cy,

@@ -43,8 +43,8 @@ menu primary_menu {
 
 template $MemeWindow: Adw.ApplicationWindow {
   title: _("Memerist");
-  default-width: 1100;
-  default-height: 700;
+  default-width: 1250;
+  default-height: 750;
 
   Adw.Breakpoint phone_bp {
     condition ("max-width: 900px")
@@ -204,6 +204,12 @@ template $MemeWindow: Adw.ApplicationWindow {
                 icon-name: "format-text-bold-symbolic";
                 tooltip-text: _("Add Text Layer");
                 sensitive: bind add_text_button.sensitive;
+              }
+
+              Button footer_add_emoji_button {
+                icon-name: "face-smile-symbolic";
+                tooltip-text: _("Add Emoji Layer");
+                sensitive: bind add_emoji_button.sensitive;
               }
 
               Button footer_copy_clipboard_button {
@@ -730,6 +736,12 @@ template $MemeWindow: Adw.ApplicationWindow {
                   Button add_text_button {
                     icon-name: "format-text-bold-symbolic";
                     tooltip-text: _("Add Text Layer");
+                    sensitive: false;
+                  }
+
+                  Button add_emoji_button {
+                    icon-name: "face-smile-symbolic";
+                    tooltip-text: _("Add Emoji Layer");
                     sensitive: false;
                   }
 

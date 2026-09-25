@@ -41,7 +41,8 @@ typedef enum {
 
 typedef enum {
   LAYER_TYPE_IMAGE,
-  LAYER_TYPE_TEXT
+  LAYER_TYPE_TEXT,
+  LAYER_TYPE_EMOJI
 } LayerType;
 
 typedef struct {

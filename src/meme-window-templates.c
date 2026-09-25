@@ -257,6 +257,7 @@ void on_template_selected (GtkFlowBox *flowbox, GtkFlowBoxChild *child, MemeWind
     if (self->template_image) {
         gtk_stack_set_visible_child_name (self->content_stack, "content");
         gtk_widget_set_sensitive (GTK_WIDGET (self->add_text_button), TRUE);
+        gtk_widget_set_sensitive (GTK_WIDGET (self->add_emoji_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (self->export_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (self->clear_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (self->add_image_button), TRUE);

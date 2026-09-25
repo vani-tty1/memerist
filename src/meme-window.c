@@ -51,6 +51,7 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_widget_set_sensitive(GTK_WIDGET(self->export_button), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->global_filters_button), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->add_text_button), FALSE);
+    gtk_widget_set_sensitive(GTK_WIDGET(self->add_emoji_button), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->add_image_button), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->crop_mode_button), FALSE);
     gtk_widget_set_sensitive(GTK_WIDGET(self->draw_mode_button), FALSE);
@@ -138,6 +139,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, content_stack);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, split_view);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, add_text_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, add_emoji_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, font_choose_row);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, font_choose_btn);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_text_container);
@@ -185,6 +187,7 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_image_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_mode_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_text_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_emoji_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_copy_clipboard_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_global_filters_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_cinematic_button);
@@ -287,6 +290,7 @@ static void meme_window_init (MemeWindow *self) {
     g_signal_connect_swapped (self->draw_width_scale, "value-changed", G_CALLBACK (on_draw_width_changed), self);
     
     g_signal_connect_swapped (self->add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
+    g_signal_connect (self->add_emoji_button, "clicked", G_CALLBACK (on_add_emoji_clicked), self);
     g_signal_connect (self->font_choose_btn, "notify::font-desc", G_CALLBACK (on_font_changed), self);
     buffer = gtk_text_view_get_buffer (self->layer_text_view);
     g_signal_connect_swapped (buffer, "changed", G_CALLBACK (on_layer_text_changed), self);
@@ -365,6 +369,7 @@ static void meme_window_init (MemeWindow *self) {
     g_signal_connect (self->footer_crop_mode_button, "toggled", G_CALLBACK (on_crop_mode_toggled), self);
     g_signal_connect (self->footer_draw_mode_button, "toggled", G_CALLBACK (on_draw_mode_toggled), self);
     g_signal_connect_swapped (self->footer_add_text_button, "clicked", G_CALLBACK (on_add_text_clicked), self);
+    g_signal_connect (self->footer_add_emoji_button, "clicked", G_CALLBACK (on_add_emoji_clicked), self);
     g_signal_connect_swapped (self->footer_copy_clipboard_button, "clicked", G_CALLBACK (on_copy_clipboard_clicked), self);
     g_signal_connect (self->footer_deep_fry_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
     g_signal_connect_swapped (self->footer_cinematic_button, "toggled", G_CALLBACK (on_text_changed), self);

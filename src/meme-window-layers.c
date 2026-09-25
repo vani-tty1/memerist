@@ -72,6 +72,40 @@ void on_add_text_clicked (MemeWindow *self) {
     render_meme (self);
 }   
 
+static void on_emoji_chooser_closed (GtkPopover *chooser, gpointer user_data) {
+    gtk_widget_unparent (GTK_WIDGET (chooser));
+}
+
+static void on_emoji_picked (GtkEmojiChooser *chooser, const char *text, MemeWindow *self) {
+    ImageLayer *new_layer;
+
+    push_undo (self);
+    new_layer = g_new0 (ImageLayer, 1);
+    new_layer->type = LAYER_TYPE_EMOJI;
+    new_layer->text = g_strdup (text);
+    new_layer->font_size = 96.0;
+    new_layer->x = 0.5; new_layer->y = 0.5;
+    new_layer->scale = 1.0; new_layer->opacity = 1.0;
+    new_layer->blend_mode = BLEND_NORMAL;
+    self->layers = g_list_append (self->layers, new_layer);
+    self->selected_layer = new_layer;
+    sync_ui_with_layer (self);
+    render_meme (self);
+}
+
+
+void on_add_emoji_clicked (GtkWidget *btn, MemeWindow *self) {
+    GtkWidget *chooser;
+
+    if (!self->template_image) return;
+
+    chooser = gtk_emoji_chooser_new ();
+    gtk_widget_set_parent (chooser, btn);
+    g_signal_connect (chooser, "emoji-picked", G_CALLBACK (on_emoji_picked), self);
+    g_signal_connect (chooser, "closed", G_CALLBACK (on_emoji_chooser_closed), NULL);
+    gtk_popover_popup (GTK_POPOVER (chooser));
+}
+
 void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
     if (self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
         PangoFontDescription *desc = gtk_font_dialog_button_get_font_desc (self->font_choose_btn);

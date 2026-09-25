@@ -159,7 +159,10 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     double max_width;
 
 
-    if (layer->type != LAYER_TYPE_TEXT || !layer->text || layer->pixbuf) return;
+    gboolean is_emoji;
+
+    if ((layer->type != LAYER_TYPE_TEXT && layer->type != LAYER_TYPE_EMOJI) || !layer->text || layer->pixbuf) return;
+    is_emoji = (layer->type == LAYER_TYPE_EMOJI);
 
     surf_m = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 1, 1);
     cr_m = cairo_create(surf_m);
@@ -169,10 +172,13 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     pango_layout_set_width(layout, max_width * PANGO_SCALE);
     pango_layout_set_wrap(layout, PANGO_WRAP_WORD_CHAR);
     pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
-    
-    desc = layer->font_family
+
+
+    desc = is_emoji
+                                     ? pango_font_description_from_string("Noto Color Emoji")
+                                     : (layer->font_family
                                      ? pango_font_description_from_string(layer->font_family)
-                                     : pango_font_description_from_string("Sans Bold");
+                                     : pango_font_description_from_string("Sans Bold"));
     pango_font_description_set_absolute_size(desc, layer->font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout, desc);
 
@@ -200,13 +206,18 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     pango_layout_set_font_description(layout2, desc);
 
     cairo_move_to(cr, 5.0 - ink_rect.x, 5.0 - ink_rect.y);
-    pango_cairo_layout_path(cr, layout2);
-    
-    cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, 1.0);
-    cairo_set_line_width(cr, layer->font_size * 0.08);
-    cairo_stroke_preserve(cr);
-    cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, 1.0);
-    cairo_fill(cr);
+
+    if (is_emoji) {
+        pango_cairo_show_layout(cr, layout2);
+    } else {
+        pango_cairo_layout_path(cr, layout2);
+
+        cairo_set_source_rgba(cr, layer->stroke_color.red, layer->stroke_color.green, layer->stroke_color.blue, 1.0);
+        cairo_set_line_width(cr, layer->font_size * 0.08);
+        cairo_stroke_preserve(cr);
+        cairo_set_source_rgba(cr, layer->text_color.red, layer->text_color.green, layer->text_color.blue, 1.0);
+        cairo_fill(cr);
+    }
     cairo_surface_flush(surf);
 
     layer->pixbuf = gdk_pixbuf_get_from_surface(surf, 0, 0, tw + 10, th + 10);
@@ -425,6 +436,31 @@ void meme_draw_crop_chrome (cairo_t *cr, double w, double h,
     }
 
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_BUTT);
+}
+
+void meme_draw_alignment_guides (cairo_t *cr, double off_x, double off_y,
+                                  double draw_w, double draw_h,
+                                  gboolean v_active, double v_x,
+                                  gboolean h_active, double h_y) {
+    if (!v_active && !h_active) return;
+
+    cairo_save (cr);
+    cairo_set_line_width (cr, 1.0);
+    cairo_set_dash (cr, (double[]){ 4.0, 3.0 }, 2, 0.0);
+    cairo_set_source_rgba (cr, 0.976, 0.204, 0.573, 0.95);
+
+    if (v_active) {
+        double x = off_x + v_x * draw_w;
+        cairo_move_to (cr, x, off_y);
+        cairo_line_to (cr, x, off_y + draw_h);
+    }
+    if (h_active) {
+        double y = off_y + h_y * draw_h;
+        cairo_move_to (cr, off_x, y);
+        cairo_line_to (cr, off_x + draw_w, y);
+    }
+    cairo_stroke (cr);
+    cairo_restore (cr);
 }
 
 GdkPixbuf *meme_bake_stroke_pixbuf (GArray *points, int img_w, int img_h,
