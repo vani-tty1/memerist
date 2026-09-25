@@ -24,7 +24,7 @@ check-deps:
 		if command -v $$bin >/dev/null 2>&1; then \
 			printf "  %-25s \033[32m[OK]\033[0m\n" "$$bin"; \
 		else \
-			printf "  %-25s \033[31m[FAILED]\033[0m\n" "$$bin"; \
+			printf "  %-25s \033[31m[ERROR]\033[0m\n" "$$bin"; \
 			failed=1; \
 		fi; \
 	done; \
@@ -38,12 +38,12 @@ check-deps:
 		fi; \
 	done; \
 	if [ $$failed -ne 0 ]; then \
-		printf "\n\033[31mError: Missing dependencies. Please install the failed items.\033[0m\n"; \
+		printf "\n\033[31mError: Missing dependencies. Please install required items.\033[0m\n"; \
 		exit 1; \
 	fi
 
 $(BUILD)/build.ninja:
-	meson setup $(BUILD)
+	meson setup $(BUILD) -Dprofile=development -Dapp_id_suffix=.Devel
 
 $(REL)/build.ninja:
 	meson setup --buildtype=release $(REL)
