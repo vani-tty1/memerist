@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: memerist\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-19 10:25+0800\n"
+"POT-Creation-Date: 2026-09-25 17:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/io.github.vani_tty1.memerist.desktop.in:2 src/meme-window.blp:45
+#: data/io.github.vani_tty1.memerist.desktop.in:2 src/meme-window.blp:50
 msgid "Memerist"
 msgstr ""
 
@@ -86,6 +86,16 @@ msgid ""
 "Whether the first-run welcome dialog has already been shown and dismissed"
 msgstr ""
 
+#: data/io.github.vani_tty1.memerist.gschema.xml:48
+msgid "Reduce preview quality while dragging"
+msgstr ""
+
+#: data/io.github.vani_tty1.memerist.gschema.xml:49
+msgid ""
+"Whether to temporarily render the canvas at a lower resolution while moving, "
+"resizing, or cropping a layer, to keep the preview responsive on large images"
+msgstr ""
+
 #: src/meme-welcome-dialog.c:16
 msgid "Welcome to Memerist"
 msgstr ""
@@ -131,259 +141,284 @@ msgid "Next"
 msgstr ""
 
 #: src/meme-window.blp:22
-msgid "_Keyboard Shortcuts"
+msgid "_Preferences"
 msgstr ""
 
 #: src/meme-window.blp:27
-msgid "_Show Welcome Dialog"
+msgid "_Keyboard Shortcuts"
 msgstr ""
 
 #: src/meme-window.blp:32
+msgid "_Show Welcome Dialog"
+msgstr ""
+
+#: src/meme-window.blp:37
 msgid "_About Memerist"
 msgstr ""
 
-#: src/meme-window.blp:38
+#: src/meme-window.blp:43
 msgid "Quit"
 msgstr ""
 
-#: src/meme-window.blp:85
+#: src/meme-window.blp:90
 msgid "Toggle Sidebar (F9)"
 msgstr ""
 
-#: src/meme-window.blp:91
+#: src/meme-window.blp:96
 msgid "File Options"
 msgstr ""
 
-#: src/meme-window.blp:103
+#: src/meme-window.blp:108
 msgid "Open Base Image"
 msgstr ""
 
-#: src/meme-window.blp:110
+#: src/meme-window.blp:115
 msgid "Load Project"
 msgstr ""
 
-#: src/meme-window.blp:118
+#: src/meme-window.blp:123
 msgid "Save Project"
 msgstr ""
 
-#: src/meme-window.blp:149
+#: src/meme-window.blp:154
 msgid "Export"
 msgstr ""
 
-#: src/meme-window.blp:185 src/meme-window.blp:714
+#: src/meme-window.blp:190 src/meme-window.blp:725
 msgid "Add Overlay Image"
 msgstr ""
 
-#: src/meme-window.blp:191 src/meme-window.blp:720
+#: src/meme-window.blp:196 src/meme-window.blp:731
 msgid "Crop & Rotate"
 msgstr ""
 
-#: src/meme-window.blp:198 src/meme-window.blp:726 src/meme-window.blp:1102
+#: src/meme-window.blp:203 src/meme-window.blp:737 src/meme-window.blp:1119
 msgid "Draw"
 msgstr ""
 
-#: src/meme-window.blp:205 src/meme-window.blp:732
+#: src/meme-window.blp:210 src/meme-window.blp:743
 msgid "Add Text Layer"
 msgstr ""
 
-#: src/meme-window.blp:211 src/meme-window.blp:738
+#: src/meme-window.blp:216 src/meme-window.blp:749
+msgid "Add Emoji Layer"
+msgstr ""
+
+#: src/meme-window.blp:222 src/meme-window.blp:755
 msgid "Copy to Clipboard"
 msgstr ""
 
-#: src/meme-window.blp:217 src/meme-window.blp:744
+#: src/meme-window.blp:228 src/meme-window.blp:761
 msgid "Global Filters"
 msgstr ""
 
-#: src/meme-window.blp:231 src/meme-window.blp:758
+#: src/meme-window.blp:242 src/meme-window.blp:775
 msgid "Cinematic"
 msgstr ""
 
-#: src/meme-window.blp:232 src/meme-window.blp:759
+#: src/meme-window.blp:243 src/meme-window.blp:776
 msgid "High Contrast"
 msgstr ""
 
-#: src/meme-window.blp:239 src/meme-window.blp:765
+#: src/meme-window.blp:250 src/meme-window.blp:782
 msgid "Deep Fry"
 msgstr ""
 
-#: src/meme-window.blp:240 src/meme-window.blp:766
+#: src/meme-window.blp:251 src/meme-window.blp:783
 msgid "Ensh*tify"
 msgstr ""
 
-#: src/meme-window.blp:251 src/meme-window.blp:776
+#: src/meme-window.blp:262 src/meme-window.blp:793
 msgid "Black & White"
 msgstr ""
 
-#: src/meme-window.blp:252
+#: src/meme-window.blp:263
 msgid "Make it old school"
 msgstr ""
 
-#: src/meme-window.blp:263 src/meme-window.blp:787
+#: src/meme-window.blp:274 src/meme-window.blp:804
 msgid "Delete Selected Layer"
 msgstr ""
 
-#: src/meme-window.blp:280 src/meme-window.blp:803
+#: src/meme-window.blp:291 src/meme-window.blp:820
 msgid "Undo (Ctrl+Z)"
 msgstr ""
 
-#: src/meme-window.blp:286 src/meme-window.blp:809
+#: src/meme-window.blp:297 src/meme-window.blp:826
 msgid "Redo (Ctrl+Y)"
 msgstr ""
 
-#: src/meme-window.blp:291 src/meme-window.blp:815
+#: src/meme-window.blp:302 src/meme-window.blp:832
 msgid "Zoom In"
 msgstr ""
 
-#: src/meme-window.blp:297 src/meme-window.blp:821
+#: src/meme-window.blp:308 src/meme-window.blp:838
 msgid "Zoom Out"
 msgstr ""
 
-#: src/meme-window.blp:307 src/meme-window.blp:827
+#: src/meme-window.blp:318 src/meme-window.blp:844
 msgid "Clear All"
 msgstr ""
 
-#: src/meme-window.blp:331 src/meme-window.blp:999
+#: src/meme-window.blp:342 src/meme-window.blp:1016
 msgid "Rotate Left"
 msgstr ""
 
-#: src/meme-window.blp:336 src/meme-window.blp:1008
+#: src/meme-window.blp:347 src/meme-window.blp:1025
 msgid "Rotate Right"
 msgstr ""
 
-#: src/meme-window.blp:345 src/meme-window.blp:1026
+#: src/meme-window.blp:356 src/meme-window.blp:1043
 msgid "Flip Horizontal"
 msgstr ""
 
-#: src/meme-window.blp:350 src/meme-window.blp:1035
+#: src/meme-window.blp:361 src/meme-window.blp:1052
 msgid "Flip Vertical"
 msgstr ""
 
-#: src/meme-window.blp:378 src/meme-window.blp:1079
+#: src/meme-window.blp:389 src/meme-window.blp:1096
 msgid "Apply Crop"
 msgstr ""
 
-#: src/meme-window.blp:389
+#: src/meme-window.blp:400
 msgid "Cancel Crop"
 msgstr ""
 
-#: src/meme-window.blp:410 src/meme-window.blp:1106
+#: src/meme-window.blp:421 src/meme-window.blp:1123
 msgid "Pen Color"
 msgstr ""
 
-#: src/meme-window.blp:421 src/meme-window.blp:1119
+#: src/meme-window.blp:432 src/meme-window.blp:1136
 msgid "Pen Width"
 msgstr ""
 
-#: src/meme-window.blp:440 src/meme-window.blp:543
+#: src/meme-window.blp:451 src/meme-window.blp:554
 msgid "Done"
 msgstr ""
 
-#: src/meme-window.blp:481 src/meme-window.blp:864
+#: src/meme-window.blp:492 src/meme-window.blp:881
 msgid "Font"
 msgstr ""
 
-#: src/meme-window.blp:488 src/meme-window.blp:892
+#: src/meme-window.blp:499 src/meme-window.blp:909
 msgid "Text Color"
 msgstr ""
 
-#: src/meme-window.blp:499 src/meme-window.blp:906
+#: src/meme-window.blp:510 src/meme-window.blp:923
 msgid "Stroke Color"
 msgstr ""
 
-#: src/meme-window.blp:517
+#: src/meme-window.blp:528
 msgid "Font Size"
 msgstr ""
 
-#: src/meme-window.blp:534
+#: src/meme-window.blp:545
 msgid "Delete Text Layer"
 msgstr ""
 
-#: src/meme-window.blp:577
+#: src/meme-window.blp:588
 msgid "Nothing Loaded"
 msgstr ""
 
-#: src/meme-window.blp:578
+#: src/meme-window.blp:589
 msgid "Open a file to start editing "
 msgstr ""
 
-#: src/meme-window.blp:588
+#: src/meme-window.blp:599
 msgid "Select File"
 msgstr ""
 
-#: src/meme-window.blp:598
+#: src/meme-window.blp:609
 msgid "Paste from Clipboard"
 msgstr ""
 
-#: src/meme-window.blp:609
+#: src/meme-window.blp:620
 msgid "Select Template"
 msgstr ""
 
-#: src/meme-window.blp:669
+#: src/meme-window.blp:680
 msgid "Back"
 msgstr ""
 
-#: src/meme-window.blp:695
+#: src/meme-window.blp:706
 msgid "Tools"
 msgstr ""
 
-#: src/meme-window.blp:777
+#: src/meme-window.blp:794
 msgid "Black and White"
 msgstr ""
 
-#: src/meme-window.blp:839
+#: src/meme-window.blp:856
 msgid "Selected Layer"
 msgstr ""
 
-#: src/meme-window.blp:920
+#: src/meme-window.blp:937
 msgid "Blend Mode"
 msgstr ""
 
-#: src/meme-window.blp:926
+#: src/meme-window.blp:943
 msgid "Opacity"
 msgstr ""
 
-#: src/meme-window.blp:946
+#: src/meme-window.blp:963
 msgid "Rotation"
 msgstr ""
 
-#: src/meme-window.blp:967
+#: src/meme-window.blp:984
 msgid "Resources"
 msgstr ""
 
-#: src/meme-window.blp:969 src/template-window.blp:21
+#: src/meme-window.blp:986 src/template-window.blp:21
 msgid "Templates"
 msgstr ""
 
-#: src/meme-window.blp:970
+#: src/meme-window.blp:987
 msgid "Browse and choose a template image"
 msgstr ""
 
-#: src/meme-window.blp:987
+#: src/meme-window.blp:1004
 msgid "Transform"
 msgstr ""
 
-#: src/meme-window.blp:991
+#: src/meme-window.blp:1008
 msgid "Rotate"
 msgstr ""
 
-#: src/meme-window.blp:1018
+#: src/meme-window.blp:1035
 msgid "Flip"
 msgstr ""
 
-#: src/meme-window.blp:1089
+#: src/meme-window.blp:1106
 msgid "Cancel"
 msgstr ""
 
-#: src/meme-window.blp:1160
+#: src/meme-window.blp:1177
 msgid "Exporting GIF.."
 msgstr ""
 
-#: src/meme-window.blp:1165
+#: src/meme-window.blp:1182
 msgid "Processing frames, please wait."
 msgstr ""
 
-#: src/shortcuts-dialog.blp:7
+#: src/preferences-dialog.blp:5
+msgid "Preferences"
+msgstr ""
+
+#: src/preferences-dialog.blp:10 src/shortcuts-dialog.blp:7
 msgid "General"
+msgstr ""
+
+#: src/preferences-dialog.blp:14
+msgid "Performance"
+msgstr ""
+
+#: src/preferences-dialog.blp:18
+msgid "Reduce Quality While Dragging"
+msgstr ""
+
+#: src/preferences-dialog.blp:19
+msgid ""
+"Temporarily render at a lower resolution while moving, resizing, or cropping."
 msgstr ""
 
 #: src/shortcuts-dialog.blp:10
