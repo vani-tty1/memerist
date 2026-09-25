@@ -1,16 +1,16 @@
 Name:           memerist
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
 Source0:        %{url}/archive/refs/tags/v%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  meson ninja-build gcc gtk4-devel libadwaita-devel appstream
 BuildRequires:  desktop-file-utils blueprint-compiler libepoxy-devel ImageMagick ImageMagick-devel
-Requires:       gtk4 libadwaita ImageMagick libepoxy 
+Requires:       gtk4 libadwaita ImageMagick libepoxy
 
 %description
-A simple meme editor for Linux 
+A simple meme editor for Linux
 
 %prep
 %autosetup -n memerist-%{version}
@@ -21,12 +21,12 @@ A simple meme editor for Linux
 
 %install
 %meson_install
+%find_lang %{name}
 
 %check
 %meson_test
 
-
-%files
+%files -f %{name}.lang
 %{_bindir}/memerist
 %{_datadir}/applications/io.github.vani_tty1.memerist.desktop
 %{_datadir}/glib-2.0/schemas/io.github.vani_tty1.memerist.gschema.xml
@@ -36,7 +36,7 @@ A simple meme editor for Linux
 
 
 %changelog
-* Sat Sep 25 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.4.0-1
+* Fri Sep 25 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.4.0-1
 - Added Italian Translation
 - Redesigned app icon
 - New snap align feature
