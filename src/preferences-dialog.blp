@@ -1,0 +1,27 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.PreferencesDialog preferences_dialog {
+  title: _("Preferences");
+  content-width: 580;
+  content-height: 620;
+
+  Adw.PreferencesPage {
+    title: _("General");
+    icon-name: "preferences-system-symbolic";
+
+    Adw.PreferencesGroup {
+      title: _("Performance");
+      
+      
+      Adw.SwitchRow reduce_quality_row {
+        title: _("Reduce Quality While Dragging");
+        subtitle: _("Temporarily render at a lower resolution while moving, resizing, or cropping.");
+      }
+
+      //TODO: add more performance related settings
+    }
+
+    // TODO: Add more Adw.PreferencesGroup blocks here for other settings categories
+  }
+}
