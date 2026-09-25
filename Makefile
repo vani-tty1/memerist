@@ -63,7 +63,7 @@ install: release
 	meson install -C $(REL)
 
 dist: $(REL)/build.ninja
-	meson dist -C $(REL)
+	meson dist -C $(REL) --allow-dirty
 
 clean:
 	rm -rf $(BUILD) $(REL) meson-dist/
