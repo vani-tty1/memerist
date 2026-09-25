@@ -2,8 +2,8 @@
 <svg height="128px" viewBox="0 0 128 128" width="128px" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <defs>
     <radialGradient gradientUnits="userSpaceOnUse" cx="64" cy="60" r="50" id="gradient-2" gradientTransform="matrix(0.887471, 0.004686, -0.00528, 0.999986, 7.518615, -0.299049)">
-      <stop offset="0" style="stop-color: rgb(14, 94, 187);"/>
-      <stop offset="1" style="stop-color: rgb(0, 58, 119);"/>
+      <stop offset="0" style="stop-color: rgb(55, 128, 212);"/>
+      <stop offset="1" style="stop-color: rgb(5, 77, 150);"/>
     </radialGradient>
     <linearGradient gradientUnits="userSpaceOnUse" x1="0" y1="-2.267" x2="0" y2="3.733" id="gradient-0" gradientTransform="matrix(-0.009142, 0.887232, -2.560409, -0.02077, 2.285055, -0.667464)" spreadMethod="pad">
       <stop offset="0" style="stop-color: rgb(11, 26, 78);"/>

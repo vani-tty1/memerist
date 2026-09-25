@@ -1,5 +1,5 @@
 project('memerist', 'c',
-          version: '2.3.1',
+          version: '2.4.0',
     meson_version: '>= 1.0.0',
   default_options: [ 'warning_level=2', 'werror=false', 'c_std=gnu11', ],
 )

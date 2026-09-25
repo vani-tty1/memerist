@@ -64,31 +64,38 @@
     <screenshots>
         <screenshot type="default">
             <caption>Main Window</caption>
+            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc1.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Templates</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc2.png</image>
         </screenshot>
         <screenshot>
-            <caption>Crop</caption>
+            <caption>Narrow Window</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc3.png</image>
         </screenshot>
         <screenshot>
-            <caption>Draw</caption>
+            <caption>Crop in Narrow Window</caption>
             <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc4.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Built in Templates</caption>
-            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc5.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Narrow Window</caption>
-            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc7.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Crop Narrow Window</caption>
-            <image>https://raw.githubusercontent.com/vani-tty1/vani-tty1.github.io/main/public/ssc8.png</image>
         </screenshot>
     </screenshots>
 
 	<releases>
+
+	    <release version="2.4.0" date="2026-09-25">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>Added Italian translation</li>
+				    <li>Redesigned app icon</li>
+				    <li>New snap align feature</li>
+				    <li>Emoji's can now be used and inserted as layers</li>
+				</ul>
+			</description>
+		  </release>
 
 	    	<release version="2.3.1" date="2026-09-19">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
