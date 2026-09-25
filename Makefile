@@ -8,7 +8,7 @@ BINS := meson ninja msgfmt appstreamcli \
 		xgettext gtk4-update-icon-cache update-desktop-database magick
 LIBS := gtk4 libadwaita-1 cairo epoxy gio-2.0
 
-.PHONY: all release run test install dist clean clean-all reconfigure check-deps help
+.PHONY: all release run test install dist clean reconfigure check-deps help
 
 all: check-deps $(BUILD)/build.ninja
 	meson compile -C $(BUILD)
@@ -62,18 +62,15 @@ test: all
 install: release
 	meson install -C $(REL)
 
-dist: $(BUILD)/build.ninja
-	meson dist -C $(BUILD)
+dist: $(REL)/build.ninja
+	meson dist -C $(REL)
 
 clean:
-	rm -rf $(BUILD)
-
-clean-all:
 	rm -rf $(BUILD) $(REL) meson-dist/
 
 reconfigure:
 	meson setup --reconfigure $(BUILD)
 
 help:
-	@echo "Targets: all (debug), release, run, run-release, test, install, dist, clean, clean-all, reconfigure, fmt, check-deps"
+	@echo "Targets: all (debug), release, run, run-release, test, install, dist, clean, reconfigure, check-deps"
 	@echo "Usage:   make run ARGS='--my-flag'"
