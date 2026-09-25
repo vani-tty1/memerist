@@ -2,6 +2,77 @@
 #include "meme-core.h"
 #include <math.h>
 
+#define SNAP_PIXELS 8.0
+#define MAX_SNAP_CANDIDATES 256
+
+typedef struct {
+    double center;
+    double line;
+} SnapCandidate;
+
+static int collect_snap_candidates (MemeWindow *self, gboolean is_x,
+                                     double img_w, double img_h,
+                                     double half_extent, SnapCandidate *out) {
+    GList *l;
+    int n = 0;
+
+    out[n].center = 0.5; out[n].line = 0.5; n++;
+    out[n].center = half_extent; out[n].line = 0.0; n++;
+    out[n].center = 1.0 - half_extent; out[n].line = 1.0; n++;
+
+    for (l = self->layers; l != NULL && n < MAX_SNAP_CANDIDATES - 3; l = l->next) {
+        ImageLayer *o = (ImageLayer *)l->data;
+        double o_center, o_half;
+
+        if (o == self->selected_layer) continue;
+
+        if (is_x) {
+            o_center = o->x;
+            o_half = (o->width * o->scale) / (2.0 * img_w);
+        } else {
+            o_center = o->y;
+            o_half = (o->height * o->scale) / (2.0 * img_h);
+        }
+
+        out[n].center = o_center; out[n].line = o_center; n++;
+        out[n].center = o_center - o_half + half_extent; out[n].line = o_center - o_half; n++;
+        out[n].center = o_center + o_half - half_extent; out[n].line = o_center + o_half; n++;
+    }
+    return n;
+}
+
+static double apply_axis_snap (MemeWindow *self, gboolean is_x, double img_w, double img_h,
+                                double proposed, double threshold,
+                                gboolean *out_active, double *out_line) {
+    SnapCandidate candidates[MAX_SNAP_CANDIDATES];
+    double half_extent, best_diff;
+    int n, i, best;
+
+    if (!self->selected_layer) { *out_active = FALSE; return proposed; }
+
+    half_extent = is_x
+        ? (self->selected_layer->width * self->selected_layer->scale) / (2.0 * img_w)
+        : (self->selected_layer->height * self->selected_layer->scale) / (2.0 * img_h);
+
+    n = collect_snap_candidates (self, is_x, img_w, img_h, half_extent, candidates);
+
+    best = -1;
+    best_diff = G_MAXDOUBLE;
+    for (i = 0; i < n; i++) {
+        double diff = fabs (proposed - candidates[i].center);
+        if (diff < best_diff) { best_diff = diff; best = i; }
+    }
+
+    if (best >= 0 && best_diff < threshold) {
+        *out_active = TRUE;
+        *out_line = candidates[best].line;
+        return candidates[best].center;
+    }
+
+    *out_active = FALSE;
+    return proposed;
+}
+
 void on_mouse_move (GtkEventControllerMotion *controller, double x, double y, MemeWindow *self) {
     GList *l;
     gboolean found;
@@ -135,6 +206,7 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *sel
             self->selected_layer = layer;
             self->drag_obj_start_x = layer->x; self->drag_obj_start_y = layer->y;
             self->drag_start_x = ix; self->drag_start_y = iy;
+            self->snap_guide_v_active = FALSE; self->snap_guide_h_active = FALSE;
             sync_ui_with_layer(self); render_meme(self); return;
         }
     }
@@ -174,8 +246,15 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
         }
         self->crop_x = nx; self->crop_y = ny; self->crop_w = nw; self->crop_h = nh;
     } else if (self->drag_type == DRAG_TYPE_IMAGE_MOVE && self->selected_layer) {
-        self->selected_layer->x = CLAMP(self->drag_obj_start_x + dx, 0.0, 1.0);
-        self->selected_layer->y = CLAMP(self->drag_obj_start_y + dy, 0.0, 1.0);
+        double px = CLAMP(self->drag_obj_start_x + dx, 0.0, 1.0);
+        double py = CLAMP(self->drag_obj_start_y + dy, 0.0, 1.0);
+        double thresh_x = SNAP_PIXELS / (img_w * s);
+        double thresh_y = SNAP_PIXELS / (img_h * s);
+
+        self->selected_layer->x = apply_axis_snap (self, TRUE, img_w, img_h, px, thresh_x,
+                                                     &self->snap_guide_v_active, &self->snap_guide_v_x);
+        self->selected_layer->y = apply_axis_snap (self, FALSE, img_w, img_h, py, thresh_y,
+                                                     &self->snap_guide_h_active, &self->snap_guide_h_y);
     } else if (self->drag_type == DRAG_TYPE_IMAGE_RESIZE && self->selected_layer) {
         double cx = self->selected_layer->x * img_w, cy = self->selected_layer->y * img_h;
         double sdx = self->drag_start_x - cx, sdy = self->drag_start_y - cy;
@@ -202,10 +281,17 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
         gtk_widget_queue_draw(GTK_WIDGET(self->crop_overlay_area));
     } else {
         render_meme(self);
+        if (self->drag_type == DRAG_TYPE_IMAGE_MOVE)
+            gtk_widget_queue_draw(GTK_WIDGET(self->crop_overlay_area));
     }
 }
 
 void on_drag_end (GtkGestureDrag *g, double x, double y, MemeWindow *self) {
+    if (self->snap_guide_v_active || self->snap_guide_h_active) {
+        self->snap_guide_v_active = FALSE;
+        self->snap_guide_h_active = FALSE;
+        gtk_widget_queue_draw(GTK_WIDGET(self->crop_overlay_area));
+    }
     if (self->drag_type == DRAG_TYPE_DRAW_STROKE && self->draw_points) {
         if (self->draw_points->len > 0 && self->template_image) {
             int img_w = gdk_pixbuf_get_width (self->template_image);
