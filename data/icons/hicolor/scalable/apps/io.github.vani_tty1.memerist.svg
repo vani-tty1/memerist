@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg height="128px" viewBox="0 0 128 128" width="128px" xmlns="http://www.w3.org/2000/svg">
+<svg height="128px" viewBox="0 0 128 128" width="128px" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <defs>
-    <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0" style="stop-color:#f9f06b;stop-opacity:1"/>
-      <stop offset="1" style="stop-color:#e5a50a;stop-opacity:1"/>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="64" cy="60" r="50" id="gradient-2" gradientTransform="matrix(0.887471, 0.004686, -0.00528, 0.999986, 7.518615, -0.299049)">
+      <stop offset="0" style="stop-color: rgb(14, 94, 187);"/>
+      <stop offset="1" style="stop-color: rgb(0, 58, 119);"/>
+    </radialGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="0" y1="-2.267" x2="0" y2="3.733" id="gradient-0" gradientTransform="matrix(-0.009142, 0.887232, -2.560409, -0.02077, 2.285055, -0.667464)" spreadMethod="pad">
+      <stop offset="0" style="stop-color: rgb(11, 26, 78);"/>
+      <stop offset="1" style="stop-color: rgb(2.2842% 5.9819% 17.582%)"/>
     </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="0" y1="-2" x2="0" y2="4" id="gradient-3" gradientTransform="matrix(0.000755, -0.887267, 1.942026, 0.0013, -1.38541, 0.438924)">
+      <stop offset="0" style="stop-color: rgb(194, 176, 105);"/>
+      <stop offset="1" style="stop-color: rgb(227, 182, 47);"/>
+    </linearGradient>
+    <radialGradient gradientUnits="userSpaceOnUse" cx="145.435" cy="57.514" r="5.5" id="gradient-1" gradientTransform="matrix(1.454546, 0, 0, 1.454546, -119.43859, -33.384014)">
+      <stop offset="0" style="stop-color: rgb(255, 255, 255);"/>
+      <stop offset="1" style="stop-color: rgb(255, 255, 255);"/>
+    </radialGradient>
   </defs>
   <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="11.999989" x2="115.999989" y1="64" y2="64">
     <stop offset="0" stop-color="#3d3846"/>
     <stop offset="0.05" stop-color="#77767b"/>
-    <stop offset="0.1" stop-color="#5e5c64"/>
-    <stop offset="0.9" stop-color="#504e56"/>
+    <stop offset="0.1" style="stop-color: rgb(28, 36, 62);"/>
+    <stop offset="0.9" style="stop-color: rgb(24, 33, 60);"/>
     <stop offset="0.95" stop-color="#77767b"/>
     <stop offset="1" stop-color="#3d3846"/>
   </linearGradient>
   <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="12" x2="112.041023" y1="60" y2="80.988281">
-    <stop offset="0" stop-color="#77767b"/>
-    <stop offset="0.3844" stop-color="#9a9996"/>
-    <stop offset="0.7206" stop-color="#77767b"/>
-    <stop offset="1" stop-color="#68666f"/>
+    <stop offset="0" style="stop-color: rgb(26, 34, 61);"/>
+    <stop offset="0.384" style="stop-color: rgb(27, 35, 62);"/>
+    <stop offset="0.721" style="stop-color: rgb(25, 34, 60);"/>
+    <stop offset="1" style="stop-color: rgb(24, 33, 60);"/>
   </linearGradient>
   <path d="m 20 22 h 88 c 4.417969 0 8 3.582031 8 8 v 78 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -78 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#a)"/>
   <path d="m 20 12 h 88 c 4.417969 0 8 3.582031 8 8 v 80 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -80 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#b)"/>
-  <path d="m 20 14 h 88 c 3.3125 0 6 2.6875 6 6 v 80 c 0 3.3125 -2.6875 6 -6 6 h -88 c -3.3125 0 -6 -2.6875 -6 -6 v -80 c 0 -3.3125 2.6875 -6 6 -6 z m 0 0" style="fill: rgb(41, 101, 176);"/>
-  <g id="svg1" transform="matrix(1, 0, 0, 1, 95.882858, -2.344286)">
+  <path d="m 20 14 h 88 c 3.3125 0 6 2.6875 6 6 v 80 c 0 3.3125 -2.6875 6 -6 6 h -88 c -3.3125 0 -6 -2.6875 -6 -6 v -80 c 0 -3.3125 2.6875 -6 6 -6 z m 0 0" style="paint-order: stroke; fill: url(&quot;#gradient-2&quot;);"/>
+  <g id="svg1" transform="matrix(1.781442, 0, 0, 2.044286, 120.084885, -71.569771)" style="">
     <g id="layer1" transform="matrix(1, 0, 0, 1, 25.637362, -85.620529)"/>
     <g style="" transform="matrix(0.144827, 0, 0, 0.142241, 33.697994, 40.276604)">
       <g transform="matrix(12.888924, 0, 0, 12.888924, -450.06012, 169.203568)" style="">
-        <circle r="12" style="stroke-width: 1.28476px;" fill="url(#sunGradient)" transform="matrix(0.982143, 0, 0, 1, -0.214286, 0)"/>
-        <path d="M -9 -2 H 9 V 1 A 3 3 0 0 1 6 4 H 1 V 1 H -1 V 4 H -6 A 3 3 0 0 1 -9 1 Z" fill="#241f31"/>
-        <path d="M -9 -2 L -11 -3 V -1 L -9 0 Z" fill="#241f31"/>
-        <path d="M 8.953 -2 L 10.953 -3 L 10.953 -1 L 8.953 0 L 8.953 -2 Z" fill="#241f31"/>
-        <path d="M -3.376 6.319 C -1.376 8.319 1.972 8.033 5.305 5.366" stroke-width="1.5" stroke-linecap="round" stroke="#241f31" fill="none"/>
+        <path d="M -9 -2 H 9 V 1 A 3 3 0 0 1 6 4 H 1 V 1 H -1 V 4 H -6 A 3 3 0 0 1 -9 1 Z" style="fill: url(&quot;#gradient-3&quot;);"/>
       </g>
     </g>
-    <g style="" transform="matrix(0.822505, 0, 0, 0.733861, -85.025688, 14.954055)">
-      <rect x="7.574" y="7.065" width="113.679" height="116.207" fill="none" stroke="#99c1f1" stroke-width="2" stroke-dasharray="8 4" rx="4.181" ry="4.181" style=""/>
-    </g>
+    <g style="" transform="matrix(0.822505, 0, 0, 0.733861, -85.025688, 14.954055)"/>
     <g id="svg11300" style="" transform="matrix(0.271662, 0, 0, 0.244248, 75.740456, 69.21566)">
       <title id="title4162">Adwaita Icon Template</title>
       <g transform="matrix(1, 0, 0, 1, 526.086975, -183.839844)" id="g49" style="display:inline;enable-background:new">
@@ -49,4 +55,25 @@
       </g>
     </g>
   </g>
+  <g id="group-1" transform="matrix(1.781442, 0, 0, 2.044286, 120.084885, -74.042412)" style="">
+    <g id="group-2" transform="matrix(1, 0, 0, 1, 25.637362, -85.620529)"/>
+    <g style="" transform="matrix(0.144827, 0, 0, 0.142241, 33.697994, 40.276604)">
+      <g transform="matrix(12.888924, 0, 0, 12.888924, -450.06012, 169.203568)" style="">
+        <path d="M -9 -2.267 L 9 -2.267 L 9 0.733 C 9 2.39 7.657 3.733 6 3.733 L 1 3.733 L 1 0.733 L -1 0.733 L -1 3.733 L -6 3.733 C -7.657 3.733 -9 2.39 -9 0.733 L -9 -2.267 Z" style="fill: url(&quot;#gradient-0&quot;); fill-rule: nonzero; paint-order: fill;"/>
+      </g>
+    </g>
+    <g style="" transform="matrix(0.822505, 0, 0, 0.733861, -85.025688, 14.954055)"/>
+    <g id="group-3" style="" transform="matrix(0.271662, 0, 0, 0.244248, 75.740456, 69.21566)">
+      <title id="bx:title-1">Adwaita Icon Template</title>
+      <g transform="matrix(1, 0, 0, 1, 526.086975, -183.839844)" id="group-4" style="display:inline;enable-background:new">
+        <g style="stroke-width:0.904534" transform="matrix(1.2222219,0,0,1,-268.12825,-10.211197)" id="group-5"/>
+        <g id="group-6" transform="translate(0,2)">
+          <g id="group-7" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+          <g id="group-8" transform="matrix(0.8,0,0,0.8,-457.2,35.6)" style="fill:#5e5c64;stroke-width:1.25"/>
+          <g style="fill:#c0bfbc;stroke-width:1.25" transform="matrix(0.8,0,0,0.8,-457.2,28.4)" id="group-9"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <path style="fill: url(&quot;#gradient-1&quot;);" d="M 92.103 42.273 H 92.103 A 8 8 0 0 0 100.103 50.273 V 50.273 A 8 8 0 0 0 92.103 58.273 H 92.103 A 8 8 0 0 0 84.103 50.273 V 50.273 A 8 8 0 0 0 92.103 42.273 Z" bx:shape="rect 84.103 42.273 16 16 2 13 13 2@5d6c2290"/>
 </svg>
