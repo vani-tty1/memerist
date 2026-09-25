@@ -3,9 +3,11 @@
 data/io.github.vani_tty1.memerist.desktop.in
 data/io.github.vani_tty1.memerist.gschema.xml
 src/main.c
+src/meme-preferences-dialog.c
 src/meme-welcome-dialog.c
 src/meme-window.blp
 src/meme-window.c
+src/preferences-dialog.blp
 src/shortcuts-dialog.blp
 src/template-window.blp
 src/theme-switcher.blp
