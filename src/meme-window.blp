@@ -52,7 +52,7 @@ template $MemeWindow: Adw.ApplicationWindow {
   default-height: 750;
 
   Adw.Breakpoint phone_bp {
-    condition ("max-width: 900px")
+    condition ("max-width: 1000px")
 
     setters {
       split_view.collapsed: true;
@@ -213,7 +213,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
               Button footer_add_emoji_button {
                 icon-name: "face-smile-symbolic";
-                tooltip-text: _("Add Emoji Layer");
+                tooltip-text: _("Add Emoji");
                 sensitive: bind add_emoji_button.sensitive;
               }
 
@@ -586,7 +586,7 @@ template $MemeWindow: Adw.ApplicationWindow {
                       child: Adw.StatusPage {
                         icon-name: "image-x-generic-symbolic";
                         title: _("Nothing Loaded");
-                        description: _("Open a file to start editing ");
+                        description: _("Open an image tp start editing.");
                         hexpand: true;
                         vexpand: true;
 
@@ -746,7 +746,7 @@ template $MemeWindow: Adw.ApplicationWindow {
 
                   Button add_emoji_button {
                     icon-name: "face-smile-symbolic";
-                    tooltip-text: _("Add Emoji Layer");
+                    tooltip-text: _("Add Emoji");
                     sensitive: false;
                   }
 
@@ -1059,6 +1059,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Adw.ActionRow {
+                title: _("Aspect Ratio");
                 Box {
                   halign: center;
                   hexpand: true;
