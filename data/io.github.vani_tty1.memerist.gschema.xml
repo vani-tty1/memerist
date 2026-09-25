@@ -42,5 +42,11 @@
 			<summary>First run welcome dialog dismissed</summary>
 			<description>Whether the first-run welcome dialog has already been shown and dismissed</description>
 		</key>
+
+		<key name="reduce-quality-on-drag" type="b">
+			<default>true</default>
+			<summary>Reduce preview quality while dragging</summary>
+			<description>Whether to temporarily render the canvas at a lower resolution while moving, resizing, or cropping a layer, to keep the preview responsive on large images</description>
+		</key>
 	</schema>
 </schemalist>
