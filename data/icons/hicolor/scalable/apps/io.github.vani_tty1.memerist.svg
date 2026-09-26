@@ -21,16 +21,16 @@
   <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="11.999989" x2="115.999989" y1="64" y2="64">
     <stop offset="0" stop-color="#3d3846"/>
     <stop offset="0.05" stop-color="#77767b"/>
-    <stop offset="0.1" style="stop-color: rgb(28, 36, 62);"/>
-    <stop offset="0.9" style="stop-color: rgb(24, 33, 60);"/>
+    <stop offset="0.1" style="stop-color: rgb(86, 84, 92);"/>
+    <stop offset="0.9" style="stop-color: rgb(85, 83, 91);"/>
     <stop offset="0.95" stop-color="#77767b"/>
     <stop offset="1" stop-color="#3d3846"/>
   </linearGradient>
   <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="12" x2="112.041023" y1="60" y2="80.988281">
-    <stop offset="0" style="stop-color: rgb(26, 34, 61);"/>
-    <stop offset="0.384" style="stop-color: rgb(27, 35, 62);"/>
-    <stop offset="0.721" style="stop-color: rgb(25, 34, 60);"/>
-    <stop offset="1" style="stop-color: rgb(24, 33, 60);"/>
+    <stop offset="0" style="stop-color: rgb(122, 121, 125);"/>
+    <stop offset="0.384" style="stop-color: rgb(149, 148, 146);"/>
+    <stop offset="0.721" style="stop-color: rgb(119, 118, 123);"/>
+    <stop offset="1" style="stop-color: rgb(104, 102, 111);"/>
   </linearGradient>
   <path d="m 20 22 h 88 c 4.417969 0 8 3.582031 8 8 v 78 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -78 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#a)"/>
   <path d="m 20 12 h 88 c 4.417969 0 8 3.582031 8 8 v 80 c 0 4.417969 -3.582031 8 -8 8 h -88 c -4.417969 0 -8 -3.582031 -8 -8 v -80 c 0 -4.417969 3.582031 -8 8 -8 z m 0 0" fill="url(#b)"/>
@@ -76,4 +76,5 @@
     </g>
   </g>
   <path style="fill: url(&quot;#gradient-1&quot;);" d="M 92.103 42.273 H 92.103 A 8 8 0 0 0 100.103 50.273 V 50.273 A 8 8 0 0 0 92.103 58.273 H 92.103 A 8 8 0 0 0 84.103 50.273 V 50.273 A 8 8 0 0 0 92.103 42.273 Z" bx:shape="rect 84.103 42.273 16 16 2 13 13 2@5d6c2290"/>
+  <g fill="#62c9ea" transform="matrix(1, 0, 0, 1, 69.120003, -1.28)"/>
 </svg>

@@ -82,6 +82,19 @@
 
 	<releases>
 
+	    <release version="2.4.1" date="2026-09-26">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>Adjust app icon for better contrast</li>
+				    <li>Fix typo on msg when no image is loaded</li>
+				</ul>
+			</description>
+		  </release>
+
 	    <release version="2.4.0" date="2026-09-25">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>

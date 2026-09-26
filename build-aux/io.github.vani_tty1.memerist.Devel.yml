@@ -24,7 +24,6 @@ modules:
     buildsystem: meson
     config-opts:
       - -Dprofile=development
-      - -Dapp_id_suffix=.Devel
     sources:
       - type: dir
         path: ..
