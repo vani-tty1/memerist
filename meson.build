@@ -1,5 +1,5 @@
 project('memerist', 'c',
-          version: '2.4.0',
+          version: '2.4.1',
     meson_version: '>= 1.0.0',
   default_options: [ 'warning_level=2', 'werror=false', 'c_std=gnu11', ],
 )
@@ -8,7 +8,11 @@ i18n = import('i18n')
 gnome = import('gnome')
 cc = meson.get_compiler('c')
 
-app_id = 'io.github.vani_tty1.memerist' + get_option('app_id_suffix')
+if get_option('profile') == 'development'
+  app_id = 'io.github.vani_tty1.memerist.Devel'
+else
+  app_id = 'io.github.vani_tty1.memerist'
+endif
 
 
 config_h = configuration_data()

@@ -43,7 +43,7 @@ check-deps:
 	fi
 
 $(BUILD)/build.ninja:
-	meson setup $(BUILD) -Dprofile=development -Dapp_id_suffix=.Devel
+	meson setup $(BUILD) -Dprofile=development
 
 $(REL)/build.ninja:
 	meson setup --buildtype=release $(REL)
