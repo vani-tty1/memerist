@@ -42,11 +42,19 @@
 
     <categories>
         <category>Graphics</category>
+        <category>Graphics</category>
+        <category>2DGraphics</category>
+        <category>RasterGraphics</category>
     </categories>
 
     <keywords>
-        <keyword>GTK</keyword>
-        <keyword>VectorGraphics</keyword>
+        <keyword>Meme</keyword>
+        <keyword>Memes</keyword>
+        <keyword>Image</keyword>
+        <keyword>Editor</keyword>
+        <keyword>Caption</keyword>
+        <keyword>GIF</keyword>
+        <keyword>Annotate</keyword>
     </keywords>
 
     <translation type="gettext">memerist</translation>
