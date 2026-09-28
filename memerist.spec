@@ -1,6 +1,6 @@
 Name:           memerist
-Version:        2.4.0
-Release:        2%{?dist}
+Version:        2.4.1
+Release:        1%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -36,9 +36,6 @@ A simple meme editor for Linux
 
 
 %changelog
-* Fri Sep 25 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.4.0-1
-- Added Italian Translation
-- Redesigned app icon
-- New snap align feature
-- Emoji;s can be used and inserted as a layer
-- New preferences option in main menu
+* Mon Sep 28 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.4.1-1
+- Adjust app icon for better contrast
+- Fix typo on msg when no image is loaded
