@@ -25,7 +25,7 @@ jobs:
     name: "Flatpak"
     needs: lint
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     strategy:
       matrix:
