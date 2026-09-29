@@ -255,6 +255,9 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers,
         scale = 800.0 / (double)orig_w;
     }
 
+    if (!layers && !bw && !cinematic && !deep_fry && scale == 1.0)
+        return g_object_ref(bg);
+
     render_w = orig_w * scale;
     render_h = orig_h * scale;
     surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, render_w, render_h);

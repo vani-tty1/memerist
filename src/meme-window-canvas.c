@@ -52,7 +52,7 @@ void render_meme (MemeWindow *self) {
     }
     gtk_widget_queue_draw(GTK_WIDGET(self->meme_preview));
 
-    if (crop_active || (is_dragging && !is_crop_drag)) {
+    if (crop_active || (is_dragging && !is_crop_drag) || !self->selected_layer) {
         tex = gdk_texture_new_for_pixbuf(self->final_meme);
     } else {
         tex = meme_render_editor_overlay(
