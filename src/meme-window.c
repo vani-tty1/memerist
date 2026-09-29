@@ -64,6 +64,7 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_widget_set_sensitive(GTK_WIDGET(self->clear_button), FALSE);
     self->zoom_level = 1.0;
     gtk_widget_set_size_request(GTK_WIDGET(self->meme_preview), -1, -1); 
+    meme_release_memory ();
 }
 
 void on_copy_clipboard_clicked (MemeWindow *self) {

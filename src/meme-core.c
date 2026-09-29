@@ -1,5 +1,20 @@
 #include "meme-core.h"
 #include <MagickWand/MagickWand.h>
+#include <malloc.h>
+
+static guint release_memory_id = 0;
+
+static gboolean release_memory_cb (gpointer data) {
+    release_memory_id = 0;
+    malloc_trim (0);
+    return G_SOURCE_REMOVE;
+}
+
+void meme_release_memory (void) {
+    if (release_memory_id)
+        g_source_remove (release_memory_id);
+    release_memory_id = g_timeout_add (300, release_memory_cb, NULL);
+}
 
 ImageLayer * meme_layer_copy (const ImageLayer *src) {
     ImageLayer *dst = g_new0 (ImageLayer, 1);

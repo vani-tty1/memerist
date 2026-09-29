@@ -194,5 +194,6 @@ void on_delete_layer_clicked (MemeWindow *self) {
         self->selected_layer = NULL;
         sync_ui_with_layer(self);
         render_meme(self);
+        meme_release_memory ();
     }
 }
