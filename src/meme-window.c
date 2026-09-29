@@ -391,7 +391,6 @@ static void meme_window_init (MemeWindow *self) {
     g_signal_connect_swapped (self->footer_exit_draw_button, "clicked", G_CALLBACK (on_exit_draw_editing_clicked), self);
     g_signal_connect (self->bw_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
     g_signal_connect (self->footer_bw_button, "toggled", G_CALLBACK (on_deep_fry_toggled), self);
-    populate_template_gallery (self);
     
     motion = gtk_event_controller_motion_new ();
     gtk_widget_add_controller (GTK_WIDGET (self->meme_preview), motion);

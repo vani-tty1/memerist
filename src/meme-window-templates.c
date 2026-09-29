@@ -24,6 +24,7 @@
 #include "meme-canvas.h"
 #include <glib/gstdio.h>
 #include <stdio.h>
+#define TEMPLATE_THUMB_SIZE 240
 
 static void set_template_select_mode (MemeWindow *self, gboolean active);
 static void update_template_gallery_empty_state (MemeWindow *self);
@@ -33,6 +34,10 @@ void on_open_template_window_clicked (MemeWindow *self) {
     //its just like seeing her, for the first time again.
     if (self->template_select_mode)
         set_template_select_mode (self, FALSE);
+    if (!g_object_get_data (G_OBJECT (self->template_gallery), "populated")) {
+        g_object_set_data (G_OBJECT (self->template_gallery), "populated", GINT_TO_POINTER (1));
+        populate_template_gallery (self);
+    }
     adw_dialog_present (self->template_window, GTK_WIDGET (self));
 }
 
@@ -45,36 +50,39 @@ static gboolean is_user_template (const char *path) {
     return g_str_has_prefix (path, user_dir);
 }
 
+static GtkWidget * make_thumbnail_picture (const char *full_path) {
+    GdkPixbuf *pb;
+    GtkWidget *picture;
+
+    if (g_str_has_prefix (full_path, "resource://"))
+        pb = gdk_pixbuf_new_from_resource_at_scale (full_path + 11,
+                 TEMPLATE_THUMB_SIZE, TEMPLATE_THUMB_SIZE, TRUE, NULL);
+    else
+        pb = gdk_pixbuf_new_from_file_at_scale (full_path,
+                 TEMPLATE_THUMB_SIZE, TEMPLATE_THUMB_SIZE, TRUE, NULL);
+    if (!pb)
+        return gtk_picture_new ();
+    {
+        GdkTexture *texture = gdk_texture_new_for_pixbuf (pb);
+        picture = gtk_picture_new_for_paintable (GDK_PAINTABLE (texture));
+        g_object_unref (texture);
+        g_object_unref (pb);
+    }
+    return picture;
+}
+
 static void add_file_to_gallery (MemeWindow *self, const char *full_path) {
     GtkWidget *picture;
     gint64 *mtime = g_new0(gint64, 1);
 
+    picture = make_thumbnail_picture (full_path);
+
     if (g_str_has_prefix (full_path, "resource://")) {
-        picture = gtk_picture_new_for_resource (full_path + 11);
         *mtime = 0; // Built-in resources are technically the oldest
-    } else if (g_str_has_suffix (full_path, ".gif")) {
-        GStatBuf stat_buf;
-        GdkPixbuf *frame = gdk_pixbuf_new_from_file (full_path, NULL);
-
-        if (frame) {
-            GdkTexture *texture = gdk_texture_new_for_pixbuf (frame);
-            picture = gtk_picture_new_for_paintable (GDK_PAINTABLE (texture));
-            g_object_unref (texture);
-            g_object_unref (frame);
-        } else {
-            picture = gtk_picture_new ();
-        }
-
-        if (g_stat (full_path, &stat_buf) == 0) {
-            *mtime = stat_buf.st_mtime;
-        }
     } else {
         GStatBuf stat_buf;
-        picture = gtk_picture_new_for_filename (full_path);
-
-        if (g_stat(full_path, &stat_buf) == 0) {
+        if (g_stat (full_path, &stat_buf) == 0)
             *mtime = stat_buf.st_mtime;
-        }
     }
 
     gtk_picture_set_can_shrink (GTK_PICTURE (picture), TRUE);
