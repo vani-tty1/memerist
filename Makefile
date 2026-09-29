@@ -16,6 +16,7 @@ all: check-deps $(BUILD)/build.ninja
 
 release: check-deps $(REL)/build.ninja
 	meson compile -C $(REL)
+	meson dist -C $(REL) --allow-dirty
 
 check-deps:
 	@failed=0; \
@@ -62,15 +63,13 @@ test: all
 install: release
 	meson install -C $(REL)
 
-dist: $(REL)/build.ninja
-	meson dist -C $(REL) --allow-dirty
-
 clean:
 	rm -rf $(BUILD) $(REL) meson-dist/
 
 reconfigure:
 	meson setup --reconfigure $(BUILD)
+	meson setup --reconfigure $(REL)
 
 help:
-	@echo "Targets: all (debug), release, run, run-release, test, install, dist, clean, reconfigure, check-deps"
+	@echo "Targets: all (debug), release, run, run-release, test, install, clean, reconfigure, check-deps"
 	@echo "Usage:   make run ARGS='--my-flag'"
