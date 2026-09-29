@@ -33,6 +33,30 @@ void meme_layer_list_free (GList *list) {
     g_list_free_full (list, (GDestroyNotify)meme_layer_free);
 }
 
+#define MEME_MAGICK_MEMORY_LIMIT (128ULL * 1024 * 1024)
+#define MEME_MAGICK_MAP_LIMIT    (256ULL * 1024 * 1024)
+
+static void
+cap_magick_resource (ResourceType type, MagickSizeType cap)
+{
+    MagickSizeType current = MagickGetResourceLimit (type);
+    if (cap < current)
+        MagickSetResourceLimit (type, cap);
+}
+
+void
+meme_magick_init (void)
+{
+    static gsize inited = 0;
+
+    if (g_once_init_enter (&inited)) {
+        MagickWandGenesis ();
+        cap_magick_resource (MemoryResource, MEME_MAGICK_MEMORY_LIMIT);
+        cap_magick_resource (MapResource, MEME_MAGICK_MAP_LIMIT);
+        g_once_init_leave (&inited, 1);
+    }
+}
+
 static MagickWand *pixbuf_to_wand(GdkPixbuf *pb) {
     int w = gdk_pixbuf_get_width(pb);
     int h = gdk_pixbuf_get_height(pb);
@@ -78,7 +102,7 @@ GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, doubl
     MagickWand *wand;
     GdkPixbuf *out;
 
-    MagickWandGenesis();
+    meme_magick_init();
     wand = pixbuf_to_wand(src);
     MagickModulateImage(wand, 100.0, sat * 100.0, 100.0);
     if (contrast != 1.0) {
@@ -86,7 +110,6 @@ GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, doubl
     }
     out = wand_to_pixbuf(wand);
     DestroyMagickWand(wand);
-    MagickWandTerminus();
     return out;
 }
 
@@ -95,7 +118,7 @@ GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
     int w, h;
     GdkPixbuf *out;
 
-    MagickWandGenesis();
+    meme_magick_init();
     wand = pixbuf_to_wand(src);
     w = MagickGetImageWidth(wand);
     h = MagickGetImageHeight(wand);
@@ -109,7 +132,6 @@ GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
 
     out = wand_to_pixbuf(wand);
     DestroyMagickWand(wand);
-    MagickWandTerminus();
     return out;
 }
 
@@ -117,16 +139,32 @@ GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src) {
 GdkPixbuf *
 meme_core_apply_black_and_white(GdkPixbuf *src)
 {
-    MagickWand *wand;
     GdkPixbuf *out;
+    int w, h, nc, rs, x, y;
+    guchar *pixels;
 
-    MagickWandGenesis();
-    wand = pixbuf_to_wand(src);
-    MagickModulateImage(wand, 100.0, 0.0, 100.0);
-    out = wand_to_pixbuf(wand);
-    DestroyMagickWand(wand);
-    MagickWandTerminus();
+    if (!src)
+        return NULL;
 
+    out = gdk_pixbuf_copy (src);
+    if (!out)
+        return NULL;
+
+    w = gdk_pixbuf_get_width (out);
+    h = gdk_pixbuf_get_height (out);
+    nc = gdk_pixbuf_get_n_channels (out);
+    rs = gdk_pixbuf_get_rowstride (out);
+    pixels = gdk_pixbuf_get_pixels (out);
+
+    for (y = 0; y < h; y++) {
+        guchar *p = pixels + (gsize) y * rs;
+        for (x = 0; x < w; x++, p += nc) {
+            guchar mx = MAX (p[0], MAX (p[1], p[2]));
+            guchar mn = MIN (p[0], MIN (p[1], p[2]));
+            guchar gray = (guchar) (((int) mx + (int) mn + 1) / 2);
+            p[0] = p[1] = p[2] = gray;
+        }
+    }
     return out;
 }
 

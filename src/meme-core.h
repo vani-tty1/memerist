@@ -69,6 +69,7 @@ ImageLayer *meme_layer_copy (const ImageLayer *src);
 void meme_layer_free (gpointer data);
 GList *meme_layer_list_copy (GList *src);
 void meme_layer_list_free (GList *list);
+void meme_magick_init (void);
 
 GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gboolean deep_fry);
 GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, double contrast);

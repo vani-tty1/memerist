@@ -4,6 +4,10 @@
 #include <glib/gstdio.h>
 #include <gio/gio.h>
 #include <MagickWand/MagickWand.h>
+#include <malloc.h>
+
+#define MEME_GIF_PREVIEW_BUDGET (128u * 1024u * 1024u)
+#define MEME_GIF_MAX_FRAMES     200u
 
 typedef struct {
     GFile *dest_file;
@@ -23,6 +27,36 @@ static void gif_export_data_free(gpointer data) {
         meme_layer_list_free(ctx->layers_copy);
     }
     g_free(ctx);
+}
+
+static void
+dialog_pause_animation (MemeWindow *self)
+{
+    meme_window_pause_gif_animation (self);
+}
+
+static void
+dialog_resume_animation (MemeWindow *self)
+{
+    if (!gtk_toggle_button_get_active (self->crop_mode_button))
+        meme_window_resume_gif_animation (self);
+}
+
+static GtkFileDialog *
+new_image_dialog (void)
+{
+    GtkFileDialog *dialog = gtk_file_dialog_new ();
+    GtkFileFilter *filter = gtk_file_filter_new ();
+    GListStore *filters = g_list_store_new (GTK_TYPE_FILE_FILTER);
+
+    gtk_file_filter_set_name (filter, "Images");
+    gtk_file_filter_add_pixbuf_formats (filter);
+    g_list_store_append (filters, filter);
+    gtk_file_dialog_set_filters (dialog, G_LIST_MODEL (filters));
+    gtk_file_dialog_set_default_filter (dialog, filter);
+    g_object_unref (filter);
+    g_object_unref (filters);
+    return dialog;
 }
 
 static void
@@ -166,35 +200,54 @@ GArray *
 meme_gif_decode_frames (const char *path) {
     MagickWand *source_wand, *coalesced;
     GArray *frames;
-    int frame_count = 0;
+    gsize frame_bytes;
+    guint n_total, limit, stride, idx;
 
-    MagickWandGenesis ();
+    meme_magick_init ();
     source_wand = NewMagickWand ();
     if (MagickReadImage (source_wand, path) != MagickTrue) {
         DestroyMagickWand (source_wand);
-        MagickWandTerminus ();
         return NULL;
     }
     coalesced = MagickCoalesceImages (source_wand);
     DestroyMagickWand (source_wand);
+    if (!coalesced)
+        return NULL;
+
+    n_total = (guint) MagickGetNumberImages (coalesced);
+    limit = MIN (n_total, MEME_GIF_MAX_FRAMES);
+
+    MagickSetFirstIterator (coalesced);
+    frame_bytes = (gsize) MagickGetImageWidth (coalesced) *
+                  (gsize) MagickGetImageHeight (coalesced) * 4;
+    MagickResetIterator (coalesced);
+
+    stride = 1;
+    if (frame_bytes > 0 && (gsize) limit * frame_bytes > MEME_GIF_PREVIEW_BUDGET)
+        stride = (guint) (((gsize) limit * frame_bytes + MEME_GIF_PREVIEW_BUDGET - 1) /
+                          MEME_GIF_PREVIEW_BUDGET);
 
     frames = g_array_new (FALSE, FALSE, sizeof (GifFrame));
 
-    MagickResetIterator (coalesced);
-    while (MagickNextImage (coalesced) != MagickFalse && frame_count < 200) {
-        GdkPixbuf *pix = magick_frame_to_pixbuf (coalesced);
-        GifFrame gf;
+    idx = 0;
+    while (idx < limit && MagickNextImage (coalesced) != MagickFalse) {
+        guint delay_ms = MAX ((int) MagickGetImageDelay (coalesced) * 10, 20);
 
-        if (!pix)
-            continue;
-
-        gf.pixbuf = pix;
-        gf.delay_ms = MAX ((int) MagickGetImageDelay (coalesced) * 10, 20);
-        g_array_append_val (frames, gf);
-        frame_count++;
+        if (idx % stride == 0) {
+            GdkPixbuf *pix = magick_frame_to_pixbuf (coalesced);
+            if (pix) {
+                GifFrame gf;
+                gf.pixbuf = pix;
+                gf.delay_ms = delay_ms;
+                g_array_append_val (frames, gf);
+            }
+        } else if (frames->len > 0) {
+            g_array_index (frames, GifFrame, frames->len - 1).delay_ms += delay_ms;
+        }
+        idx++;
     }
     DestroyMagickWand (coalesced);
-    MagickWandTerminus ();
+    malloc_trim (0);
 
     if (frames->len == 0) {
         g_array_free (frames, TRUE);
@@ -221,7 +274,7 @@ static gboolean
 on_gif_preview_tick (gpointer user_data) {
     MemeWindow *self = MEME_WINDOW (user_data);
     GifFrame *frame;
-    GdkPixbuf *copy;
+    GdkPixbuf *ref;
 
     if (!self->gif_frames || self->gif_frames->len == 0) {
         self->gif_timeout_id = 0;
@@ -237,9 +290,9 @@ on_gif_preview_tick (gpointer user_data) {
     frame = &g_array_index (self->gif_frames, GifFrame, self->gif_frame_index);
 
 
-    copy = gdk_pixbuf_copy (frame->pixbuf);
+    ref = g_object_ref (frame->pixbuf);
     g_clear_object (&self->template_image);
-    self->template_image = copy;
+    self->template_image = ref;
     render_meme (self);
 
     self->gif_timeout_id = g_timeout_add (frame->delay_ms, on_gif_preview_tick, self);
@@ -356,7 +409,7 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
 
     GifExportData *ctx = (GifExportData *)task_data;
 
-    MagickWandGenesis();
+    meme_magick_init();
     source_wand = NewMagickWand();
     if (MagickReadImage(source_wand, ctx->source_path) != MagickTrue) {
         ExceptionType severity;
@@ -366,7 +419,6 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
                                  desc ? desc : "unknown error");
         if (desc) MagickRelinquishMemory(desc);
         DestroyMagickWand(source_wand);
-        MagickWandTerminus();
         return;
     }
     coalesced = MagickCoalesceImages(source_wand);
@@ -411,11 +463,15 @@ static void export_gif_thread(GTask *task, gpointer source_object, gpointer task
 
     optimized = MagickOptimizeImageLayers(wand);
     dest_path = g_file_get_path(ctx->dest_file);
-    MagickWriteImages(optimized ? optimized : wand, dest_path, MagickTrue);
-
-    if (optimized) DestroyMagickWand(optimized);
-    DestroyMagickWand(wand);
-    MagickWandTerminus();
+    if (optimized) {
+        DestroyMagickWand(wand);
+        wand = NULL;
+        MagickWriteImages(optimized, dest_path, MagickTrue);
+        DestroyMagickWand(optimized);
+    } else {
+        MagickWriteImages(wand, dest_path, MagickTrue);
+        DestroyMagickWand(wand);
+    }
     g_free(dest_path);
 
     g_task_return_boolean(task, TRUE);
@@ -519,7 +575,9 @@ static void on_save_project_response (GObject *s, GAsyncResult *r, gpointer d) {
 
     GtkFileDialog *dialog = GTK_FILE_DIALOG (s);
     MemeWindow *self = MEME_WINDOW (d);
-    GFile *file = gtk_file_dialog_save_finish (dialog, r, NULL);
+    GFile *file;
+    dialog_resume_animation (self);
+    file = gtk_file_dialog_save_finish (dialog, r, NULL);
     if (!file) return;
 
     keyfile = g_key_file_new ();
@@ -597,6 +655,7 @@ void myapp_window_save_project(MemeWindow *self) {
     g_list_store_append(filters, filter);
     gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
     gtk_file_dialog_set_initial_name(dialog, "project.meme");
+    dialog_pause_animation(self);
     gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_save_project_response, self);
     g_object_unref(filter); g_object_unref(filters); g_object_unref(dialog);
     gtk_popover_popdown(self->file_popover);
@@ -673,7 +732,9 @@ static void on_project_load_contents_finished(GObject *source_object, GAsyncResu
 static void on_load_project_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
-    GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
+    GFile *file;
+    dialog_resume_animation(self);
+    file = gtk_file_dialog_open_finish(dialog, r, NULL);
     if(file) g_file_load_contents_async(file, NULL, on_project_load_contents_finished, self);
 }
 
@@ -687,6 +748,7 @@ void on_load_project_clicked(MemeWindow *self) {
     filters = g_list_store_new(GTK_TYPE_FILE_FILTER);
     g_list_store_append(filters, filter);
     gtk_file_dialog_set_filters(dialog, G_LIST_MODEL(filters));
+    dialog_pause_animation(self);
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_project_response, self);
     g_object_unref(filter); g_object_unref(filters); g_object_unref(dialog);
     gtk_popover_popdown(self->file_popover);
@@ -695,7 +757,11 @@ void on_load_project_clicked(MemeWindow *self) {
 static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
-    GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
+    GError *error = NULL;
+    GFile *file;
+    dialog_resume_animation(self);
+    file = gtk_file_dialog_open_finish(dialog, r, &error);
+    g_clear_error(&error);
     if (file) {
         meme_window_open_file (self, file);
         g_object_unref (file);
@@ -703,7 +769,8 @@ static void on_load_image_response(GObject *s, GAsyncResult *r, gpointer d) {
 }
 
 void on_load_image_clicked(MemeWindow *self) {
-    GtkFileDialog *dialog = gtk_file_dialog_new();
+    GtkFileDialog *dialog = new_image_dialog();
+    dialog_pause_animation(self);
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_load_image_response, self);
     g_object_unref(dialog);
     gtk_popover_popdown(self->file_popover);
@@ -712,12 +779,18 @@ void on_load_image_clicked(MemeWindow *self) {
 static void on_add_image_response(GObject *s, GAsyncResult *r, gpointer d) {
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
-    GFile *file = gtk_file_dialog_open_finish(dialog, r, NULL);
+    GError *error = NULL;
+    GFile *file;
+    dialog_resume_animation(self);
+    file = gtk_file_dialog_open_finish(dialog, r, &error);
+    g_clear_error(&error);
     if (file) {
         char *path = g_file_get_path(file);
         ImageLayer *new_layer = g_new0(ImageLayer, 1);
-        new_layer->pixbuf = gdk_pixbuf_new_from_file(path, NULL);
-        if (new_layer->pixbuf) {
+        new_layer->pixbuf = path ? gdk_pixbuf_new_from_file(path, NULL) : NULL;
+        if (!new_layer->pixbuf) {
+            meme_layer_free(new_layer);
+        } else {
             push_undo(self);
             new_layer->width = gdk_pixbuf_get_width(new_layer->pixbuf);
             new_layer->height = gdk_pixbuf_get_height(new_layer->pixbuf);
@@ -731,7 +804,8 @@ static void on_add_image_response(GObject *s, GAsyncResult *r, gpointer d) {
 }
 
 void on_add_image_clicked(MemeWindow *self) {
-    GtkFileDialog *dialog = gtk_file_dialog_new();
+    GtkFileDialog *dialog = new_image_dialog();
+    dialog_pause_animation(self);
     gtk_file_dialog_open(dialog, GTK_WINDOW(self), NULL, on_add_image_response, self);
     g_object_unref(dialog);
 }
@@ -741,7 +815,9 @@ static void on_export_file_response(GObject *s, GAsyncResult *r, gpointer d) {
 
     GtkFileDialog *dialog = GTK_FILE_DIALOG(s);
     MemeWindow *self = MEME_WINDOW(d);
-    GFile *file = gtk_file_dialog_save_finish(dialog, r, NULL);
+    GFile *file;
+    dialog_resume_animation(self);
+    file = gtk_file_dialog_save_finish(dialog, r, NULL);
     if (!file) return;
 
     format = g_object_get_data(G_OBJECT(dialog), "export-format");
@@ -860,6 +936,7 @@ static void on_format_chosen(GObject *s, GAsyncResult *r, gpointer d) {
 
     g_object_set_data(G_OBJECT(dialog), "export-format", (gpointer)format);
 
+    dialog_pause_animation(self);
     gtk_file_dialog_save(dialog, GTK_WINDOW(self), NULL, on_export_file_response, self);
 
     g_free(filename);
