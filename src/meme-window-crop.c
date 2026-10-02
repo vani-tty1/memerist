@@ -233,3 +233,68 @@ void on_apply_crop_clicked (MemeWindow *self) {
     gtk_toggle_button_set_active(self->crop_mode_button, FALSE);
     g_clear_object (&self->crop_session_template_snapshot);
 }
+
+// I can sense the memes that are gonna be created with this feature.
+// Remember lads, with great power comes great responsibility
+
+// Refuse absurd canvases rather than abort on allocation.
+#define MEME_MAX_CANVAS_PIXELS (100 * 1000 * 1000)
+void on_apply_margins_clicked (MemeWindow *self) {
+    int top, right, bottom, left, iw, ih, nw, nh;
+    GdkRGBA color;
+    GdkPixbuf *padded;
+    GList *l;
+
+    if (!self->template_image) return;
+
+    top    = (int) gtk_spin_button_get_value (self->margin_top_spin);
+    right  = (int) gtk_spin_button_get_value (self->margin_right_spin);
+    bottom = (int) gtk_spin_button_get_value (self->margin_bottom_spin);
+    left   = (int) gtk_spin_button_get_value (self->margin_left_spin);
+    if (top == 0 && right == 0 && bottom == 0 && left == 0) return;
+
+    iw = gdk_pixbuf_get_width (self->template_image);
+    ih = gdk_pixbuf_get_height (self->template_image);
+    nw = iw + left + right;
+    nh = ih + top + bottom;
+
+    if ((gint64) nw * (gint64) nh > MEME_MAX_CANVAS_PIXELS) {
+        adw_toast_overlay_add_toast (self->copy_clip_feedback,
+                                     adw_toast_new ("Margins too large for this image"));
+        return;
+    }
+
+    color = *gtk_color_dialog_button_get_rgba (GTK_COLOR_DIALOG_BUTTON (self->margin_color_btn));
+    padded = meme_core_pad_pixbuf (self->template_image, top, right, bottom, left, &color);
+    if (!padded) {
+        adw_toast_overlay_add_toast (self->copy_clip_feedback,
+                                     adw_toast_new ("Could not allocate the expanded canvas"));
+        return;
+    }
+
+    push_undo (self);
+
+    for (l = self->layers; l != NULL; l = l->next) {
+        ImageLayer *layer = (ImageLayer *) l->data;
+        layer->x = (layer->x * iw + left) / (double) nw;
+        layer->y = (layer->y * ih + top)  / (double) nh;
+    }
+
+    g_object_unref (self->template_image);
+    self->template_image = padded;
+    meme_window_transform_gif_frames_pad (self, top, right, bottom, left, &color);
+
+    g_clear_object (&self->crop_session_template_snapshot);
+    self->crop_session_template_snapshot = g_object_ref (self->template_image);
+
+    self->crop_x = 0.0; self->crop_y = 0.0;
+    self->crop_w = 1.0; self->crop_h = 1.0;
+
+    gtk_spin_button_set_value (self->margin_top_spin, 0);
+    gtk_spin_button_set_value (self->margin_right_spin, 0);
+    gtk_spin_button_set_value (self->margin_bottom_spin, 0);
+    gtk_spin_button_set_value (self->margin_left_spin, 0);
+
+    apply_zoom (self);
+    render_meme (self);
+}

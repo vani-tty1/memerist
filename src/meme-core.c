@@ -213,3 +213,26 @@ GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gbo
     if (!own) g_object_ref(result);
     return result;
 }
+
+GdkPixbuf *meme_core_pad_pixbuf (GdkPixbuf *src, int top, int right, int bottom, int left, const GdkRGBA *color) {
+    GdkPixbuf *dst;
+    int w, h;
+    guint32 fill;
+
+    if (!src) return NULL;
+    top = MAX (top, 0); right = MAX (right, 0);
+    bottom = MAX (bottom, 0); left = MAX (left, 0);
+
+    w = gdk_pixbuf_get_width (src);
+    h = gdk_pixbuf_get_height (src);
+    dst = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, w + left + right, h + top + bottom);
+    if (!dst) return NULL;
+
+    fill = ((guint32) (CLAMP (color->red,   0.0, 1.0) * 255.0 + 0.5) << 24) |
+           ((guint32) (CLAMP (color->green, 0.0, 1.0) * 255.0 + 0.5) << 16) |
+           ((guint32) (CLAMP (color->blue,  0.0, 1.0) * 255.0 + 0.5) <<  8) |
+            (guint32) (CLAMP (color->alpha, 0.0, 1.0) * 255.0 + 0.5);
+    gdk_pixbuf_fill (dst, fill);
+    gdk_pixbuf_copy_area (src, 0, 0, w, h, dst, left, top);
+    return dst;
+}

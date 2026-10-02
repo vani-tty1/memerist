@@ -1091,6 +1091,98 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
 
               Adw.ActionRow {
+                title: _("Margin Top");
+
+                SpinButton margin_top_spin {
+                  valign: center;
+                  climb-rate: 1;
+                  digits: 0;
+                  numeric: true;
+                  adjustment: Adjustment {
+                    lower: 0;
+                    upper: 4000;
+                    value: 0;
+                    step-increment: 1;
+                    page-increment: 10;
+                  };
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Margin Right");
+
+                SpinButton margin_right_spin {
+                  valign: center;
+                  climb-rate: 1;
+                  digits: 0;
+                  numeric: true;
+                  adjustment: Adjustment {
+                    lower: 0;
+                    upper: 4000;
+                    value: 0;
+                    step-increment: 1;
+                    page-increment: 10;
+                  };
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Margin Bottom");
+
+                SpinButton margin_bottom_spin {
+                  valign: center;
+                  climb-rate: 1;
+                  digits: 0;
+                  numeric: true;
+                  adjustment: Adjustment {
+                    lower: 0;
+                    upper: 4000;
+                    value: 0;
+                    step-increment: 1;
+                    page-increment: 10;
+                  };
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Margin Left");
+                subtitle: _("pixels");
+
+                SpinButton margin_left_spin {
+                  valign: center;
+                  climb-rate: 1;
+                  digits: 0;
+                  numeric: true;
+                  adjustment: Adjustment {
+                    lower: 0;
+                    upper: 4000;
+                    value: 0;
+                    step-increment: 1;
+                    page-increment: 10;
+                  };
+                }
+              }
+
+              Adw.ActionRow {
+                title: _("Margin Options");
+
+                [suffix]
+                ColorDialogButton margin_color_btn {
+                  valign: center;
+
+                  dialog: ColorDialog {
+                    with-alpha: true;
+                  };
+                }
+                Button margin_apply_button {
+                  label: _("Apply Margins");
+                  valign: center;
+
+                  clicked => $on_apply_margins_clicked() swapped;
+                }
+              }
+
+              Adw.ActionRow {
                 halign: center;
                 hexpand: true;
                 Button apply_crop_button {

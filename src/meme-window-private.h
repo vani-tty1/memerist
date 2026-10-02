@@ -47,6 +47,8 @@ struct _MemeWindow {
     GtkButton *delete_layer_button;
     GtkButton *rotate_left_button, *rotate_right_button, *flip_h_button, *flip_v_button;
     GtkButton *crop_square_button, *crop_43_button, *crop_169_button;
+    GtkSpinButton *margin_top_spin, *margin_right_spin, *margin_bottom_spin, *margin_left_spin;
+    GtkWidget  *margin_color_btn;
     GtkButton *save_project_button, *load_project_button;   
     GdkPixbuf *template_image, *final_meme;
     GList *layers, *undo_stack, *redo_stack;
@@ -119,13 +121,11 @@ void apply_zoom(MemeWindow *self);
 void update_template_image(MemeWindow *self, GdkPixbuf *new_pixbuf);
 void update_undo_redo_sensitivity(MemeWindow *self);
 
-/* meme-window-canvas.c */
 void     on_deep_fry_toggled (GtkToggleButton *btn, MemeWindow *self);
 void     on_zoom_in_clicked (MemeWindow *self);
 void     on_zoom_out_clicked (MemeWindow *self);
 gboolean on_canvas_scroll (GtkEventControllerScroll *ctrl, double dx, double dy, MemeWindow *self);
 
-/* meme-window-layers.c */
 void on_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *self);
 void on_text_changed (MemeWindow *self);
 void on_layer_text_changed (MemeWindow *self);
@@ -135,7 +135,6 @@ void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self);
 void on_layer_control_changed (MemeWindow *self);
 void on_delete_layer_clicked (MemeWindow *self);
 
-/* meme-window-crop.c */
 void     draw_crop_overlay (GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data);
 void     on_rotate_clicked (GtkWidget *btn, MemeWindow *self);
 void     on_flip_clicked (GtkWidget *btn, MemeWindow *self);
@@ -148,9 +147,9 @@ void     on_exit_draw_editing_clicked (MemeWindow *self);
 void     on_draw_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *self);
 void     on_draw_width_changed (MemeWindow *self);
 void     on_cancel_crop_clicked (MemeWindow *self);
+void     on_apply_margins_clicked (MemeWindow *self);
 void     on_apply_crop_clicked (MemeWindow *self);
 
-/* meme-window-templates.c */
 void  on_open_template_window_clicked (MemeWindow *self);
 void  populate_template_gallery (MemeWindow *self);
 void  update_restore_templates_sensitivity (MemeWindow *self);
@@ -172,3 +171,4 @@ void     meme_window_resume_gif_animation (MemeWindow *self);
 void     meme_window_transform_gif_frames_rotate (MemeWindow *self, gboolean clockwise);
 void     meme_window_transform_gif_frames_flip (MemeWindow *self, gboolean horizontal);
 void     meme_window_transform_gif_frames_crop (MemeWindow *self, int x, int y, int w, int h);
+void     meme_window_transform_gif_frames_pad (MemeWindow *self, int top, int right, int bottom, int left, const GdkRGBA *color);

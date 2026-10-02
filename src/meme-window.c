@@ -170,6 +170,12 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_square_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_43_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, crop_169_button);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, margin_top_spin);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, margin_right_spin);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, margin_bottom_spin);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, margin_left_spin);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, margin_color_btn);
+    gtk_widget_class_bind_template_callback (widget_class, on_apply_margins_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_apply_crop_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_cancel_crop_clicked);
     gtk_widget_class_bind_template_callback (widget_class, on_open_template_window_clicked);
@@ -275,6 +281,10 @@ static void meme_window_init (MemeWindow *self) {
     self->draw_points = NULL;
     self->draw_line_width = 8.0;
     self->draw_color = (GdkRGBA) { 0.91, 0.1, 0.15, 1.0 };
+    {
+        GdkRGBA white = { 1.0, 1.0, 1.0, 1.0 };
+        gtk_color_dialog_button_set_rgba (GTK_COLOR_DIALOG_BUTTON (self->margin_color_btn), &white);
+    }
     g_signal_connect (self->text_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
     g_signal_connect (self->stroke_color_btn, "notify::rgba", G_CALLBACK (on_color_changed), self);
     

@@ -373,6 +373,23 @@ meme_window_transform_gif_frames_crop (MemeWindow *self, int x, int y, int w, in
 }
 
 void
+meme_window_transform_gif_frames_pad (MemeWindow *self, int top, int right, int bottom, int left, const GdkRGBA *color) {
+    guint i;
+
+    if (!self->gif_frames)
+        return;
+
+    for (i = 0; i < self->gif_frames->len; i++) {
+        GifFrame *f = &g_array_index (self->gif_frames, GifFrame, i);
+        GdkPixbuf *padded = meme_core_pad_pixbuf (f->pixbuf, top, right, bottom, left, color);
+        if (!padded)
+            continue;
+        g_object_unref (f->pixbuf);
+        f->pixbuf = padded;
+    }
+}
+
+void
 meme_window_stop_gif_animation (MemeWindow *self) {
     if (self->gif_timeout_id) {
         g_source_remove (self->gif_timeout_id);

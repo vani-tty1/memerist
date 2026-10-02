@@ -76,3 +76,4 @@ GdkPixbuf *meme_core_apply_effects(GdkPixbuf *composite, gboolean cinematic, gbo
 GdkPixbuf *meme_core_apply_saturation_contrast(GdkPixbuf *src, double sat, double contrast);
 GdkPixbuf *meme_core_apply_deep_fry(GdkPixbuf *src);
 GdkPixbuf *meme_core_apply_black_and_white (GdkPixbuf *src);
+GdkPixbuf *meme_core_pad_pixbuf (GdkPixbuf *src, int top, int right, int bottom, int left, const GdkRGBA *color);
