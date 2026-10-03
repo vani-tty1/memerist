@@ -24,6 +24,7 @@ myapp_sources = [
   'meme-window-templates.c',
   'meme-theme-switcher.c',
   'meme-canvas.c',
+  'meme-drag-preview.c',
   'meme-fileio.c',
   'meme-renderer.c',
   'meme-welcome-dialog.c',
