@@ -10,6 +10,10 @@ GdkPixbuf *meme_apply_deep_fry (GdkPixbuf *src);
 
 GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers, gboolean cinematic, gboolean deep_fry, gboolean bw, gboolean fast_mode);
 
+gboolean meme_render_drag_split (GdkPixbuf *bg, GList *layers, ImageLayer *moving,
+                                 GdkTexture **below, GdkTexture **above,
+                                 GdkTexture **layer_tex);
+
 GdkTexture *meme_render_editor_overlay (GdkPixbuf *composite, 
                                         GList *layers, 
                                         ImageLayer *selected_layer,

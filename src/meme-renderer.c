@@ -228,6 +228,32 @@ static void meme_layer_ensure_text_pixbuf(ImageLayer *layer, int bg_width) {
     pango_font_description_free(desc);
 }
 
+static void meme_draw_layer(cairo_t *cr, ImageLayer *layer, int img_w, int img_h, gboolean fast_mode) {
+    cairo_save(cr);
+
+    cairo_translate(cr, layer->x * img_w, layer->y * img_h);
+    cairo_rotate(cr, layer->rotation);
+    cairo_scale(cr, layer->scale, layer->scale);
+
+    if (layer->blend_mode == BLEND_MULTIPLY) cairo_set_operator(cr, CAIRO_OPERATOR_MULTIPLY);
+    else if (layer->blend_mode == BLEND_SCREEN) cairo_set_operator(cr, CAIRO_OPERATOR_SCREEN);
+    else if (layer->blend_mode == BLEND_OVERLAY) cairo_set_operator(cr, CAIRO_OPERATOR_OVERLAY);
+    else cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+
+    if (layer->pixbuf) {
+        cairo_pattern_t *pat;
+
+        gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
+
+        pat = cairo_get_source(cr);
+        cairo_pattern_set_filter(pat, fast_mode ? CAIRO_FILTER_FAST : CAIRO_FILTER_GOOD);
+
+        if (layer->opacity < 1.0) cairo_paint_with_alpha(cr, layer->opacity);
+        else cairo_paint(cr);
+    }
+    cairo_restore(cr);
+}
+
 GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers,
                                 gboolean cinematic,
                                 gboolean deep_fry, gboolean bw,
@@ -275,32 +301,8 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers,
 
     cairo_scale(cr, scale, scale);
 
-    for (GList *l = layers; l != NULL; l = l->next) {
-        ImageLayer *layer = (ImageLayer *)l->data;
-        cairo_save(cr);
-
-        cairo_translate(cr, layer->x * orig_w, layer->y * orig_h);
-        cairo_rotate(cr, layer->rotation);
-        cairo_scale(cr, layer->scale, layer->scale);
-
-        if (layer->blend_mode == BLEND_MULTIPLY) cairo_set_operator(cr, CAIRO_OPERATOR_MULTIPLY);
-        else if (layer->blend_mode == BLEND_SCREEN) cairo_set_operator(cr, CAIRO_OPERATOR_SCREEN);
-        else if (layer->blend_mode == BLEND_OVERLAY) cairo_set_operator(cr, CAIRO_OPERATOR_OVERLAY);
-        else cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-
-        if (layer->pixbuf) {
-            cairo_pattern_t *pat;
-
-            gdk_cairo_set_source_pixbuf(cr, layer->pixbuf, -layer->width / 2.0, -layer->height / 2.0);
-
-            pat = cairo_get_source(cr);
-            cairo_pattern_set_filter(pat, fast_mode ? CAIRO_FILTER_FAST : CAIRO_FILTER_GOOD);
-
-            if (layer->opacity < 1.0) cairo_paint_with_alpha(cr, layer->opacity);
-            else cairo_paint(cr);
-        }
-        cairo_restore(cr);
-    }
+    for (GList *l = layers; l != NULL; l = l->next)
+        meme_draw_layer(cr, (ImageLayer *)l->data, orig_w, orig_h, fast_mode);
 
     cairo_surface_flush(surf);
     cairo_destroy(cr);
@@ -322,6 +324,80 @@ GdkPixbuf *meme_render_composite(GdkPixbuf *bg, GList *layers,
         }
     }
     return comp;
+}
+
+#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+#define MEME_CAIRO_MEMORY_FORMAT GDK_MEMORY_B8G8R8A8_PREMULTIPLIED
+#else
+#define MEME_CAIRO_MEMORY_FORMAT GDK_MEMORY_A8R8G8B8_PREMULTIPLIED
+#endif
+
+
+static GdkTexture *meme_texture_from_surface(cairo_surface_t *surf) {
+    int w = cairo_image_surface_get_width(surf);
+    int h = cairo_image_surface_get_height(surf);
+    int stride = cairo_image_surface_get_stride(surf);
+    GBytes *bytes;
+    GdkTexture *tex;
+
+    cairo_surface_flush(surf);
+    bytes = g_bytes_new_with_free_func(cairo_image_surface_get_data(surf),
+                                       (gsize)stride * h,
+                                       (GDestroyNotify)cairo_surface_destroy, surf);
+    tex = gdk_memory_texture_new(w, h, MEME_CAIRO_MEMORY_FORMAT, bytes, stride);
+    g_bytes_unref(bytes);
+    return tex;
+}
+
+static GdkTexture *meme_render_stack_texture(GdkPixbuf *bg, int w, int h, GList *first, GList *stop) {
+    cairo_surface_t *surf;
+    cairo_t *cr;
+    GList *l;
+
+    if (bg && first == stop)
+        return gdk_texture_new_for_pixbuf(bg);
+
+    surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+    cr = cairo_create(surf);
+    if (bg) {
+        gdk_cairo_set_source_pixbuf(cr, bg, 0.0, 0.0);
+        cairo_paint(cr);
+    }
+    for (l = first; l != stop; l = l->next)
+        meme_draw_layer(cr, (ImageLayer *)l->data, w, h, FALSE);
+    cairo_destroy(cr);
+    return meme_texture_from_surface(surf);
+}
+
+gboolean meme_render_drag_split(GdkPixbuf *bg, GList *layers, ImageLayer *moving,
+                                GdkTexture **below, GdkTexture **above, GdkTexture **layer_tex) {
+    GList *node, *l;
+    int w, h;
+
+    *below = NULL;
+    *above = NULL;
+    *layer_tex = NULL;
+    if (!bg || !moving) return FALSE;
+
+    w = gdk_pixbuf_get_width(bg);
+    h = gdk_pixbuf_get_height(bg);
+
+    for (l = layers; l != NULL; l = l->next)
+        meme_layer_ensure_text_pixbuf((ImageLayer *)l->data, w);
+
+    if (!moving->pixbuf) return FALSE;
+    node = g_list_find(layers, moving);
+    if (!node) return FALSE;
+
+    for (l = node->next; l != NULL; l = l->next)
+        if (((ImageLayer *)l->data)->blend_mode != BLEND_NORMAL)
+            return FALSE;
+
+    *below = meme_render_stack_texture(bg, w, h, layers, node);
+    if (node->next)
+        *above = meme_render_stack_texture(NULL, w, h, node->next, NULL);
+    *layer_tex = gdk_texture_new_for_pixbuf(moving->pixbuf);
+    return TRUE;
 }
 
 void meme_draw_crop_chrome (cairo_t *cr, double w, double h,
