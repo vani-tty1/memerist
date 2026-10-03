@@ -37,6 +37,7 @@ void on_clear_clicked (MemeWindow *self) {
     gtk_stack_set_visible_child_name (self->content_stack, "empty");
     g_clear_object (&self->template_image);
     g_clear_object (&self->final_meme);
+    g_clear_object (&self->drag_preview);
     g_clear_object (&self->crop_session_template_snapshot);
     if (self->layers) { meme_layer_list_free (self->layers); self->layers = NULL; }
     free_history_stack (&self->undo_stack); free_history_stack (&self->redo_stack);

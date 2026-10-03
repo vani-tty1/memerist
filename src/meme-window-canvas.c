@@ -23,10 +23,67 @@
 #include "meme-window-private.h"
 #include "meme-canvas.h"
 
+gboolean meme_window_begin_layer_drag (MemeWindow *self) {
+    ImageLayer *layer = self->selected_layer;
+    GdkTexture *below = NULL, *above = NULL, *layer_tex = NULL;
+    MemeDragLayerState state;
+    gboolean cinematic, deepfry, bw, reduce_quality_on_drag;
+
+    g_clear_object (&self->drag_preview);
+
+    if (!layer || !self->template_image) return FALSE;
+    if (self->drag_type != DRAG_TYPE_IMAGE_MOVE &&
+        self->drag_type != DRAG_TYPE_IMAGE_RESIZE) return FALSE;
+
+    cinematic = gtk_toggle_button_get_active (self->cinematic_button);
+    deepfry = gtk_toggle_button_get_active (self->deep_fry_button);
+    bw = gtk_toggle_button_get_active (self->bw_button);
+    reduce_quality_on_drag = g_settings_get_boolean (self->template_settings, "reduce-quality-on-drag");
+
+    if (bw) return FALSE;
+
+    if ((cinematic || deepfry) && !reduce_quality_on_drag) return FALSE;
+
+    if (!meme_render_drag_split (self->template_image, self->layers, layer,
+                                 &below, &above, &layer_tex))
+        return FALSE;
+
+    self->drag_preview = meme_drag_preview_new (below, above, layer_tex);
+    g_clear_object (&below);
+    g_clear_object (&above);
+    g_clear_object (&layer_tex);
+
+    meme_drag_preview_state_from_layer (&state, layer);
+    meme_drag_preview_set_state (self->drag_preview, &state);
+    gtk_picture_set_paintable (self->meme_preview, GDK_PAINTABLE (self->drag_preview));
+    return TRUE;
+}
+
+void meme_window_update_layer_drag (MemeWindow *self) {
+    MemeDragLayerState state;
+
+    if (!self->drag_preview || !self->selected_layer) return;
+    meme_drag_preview_state_from_layer (&state, self->selected_layer);
+    meme_drag_preview_set_state (self->drag_preview, &state);
+}
+
+void meme_window_end_layer_drag (MemeWindow *self) {
+    g_clear_object (&self->drag_preview);
+}
+
 void render_meme (MemeWindow *self) {
     gboolean is_dragging, is_crop_drag, crop_active, cinematic, deepfry, bw_button;
     gboolean reduce_quality_on_drag, use_fast_preview;
     GdkTexture *tex;
+
+    if (self->drag_preview) {
+        if (self->drag_type == DRAG_TYPE_IMAGE_MOVE ||
+            self->drag_type == DRAG_TYPE_IMAGE_RESIZE) {
+            meme_window_update_layer_drag (self);
+            return;
+        }
+        g_clear_object (&self->drag_preview);
+    }
 
     if (!self->template_image) return;
     

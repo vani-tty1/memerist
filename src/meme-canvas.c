@@ -197,7 +197,9 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *sel
             self->selected_layer = layer;
             self->drag_obj_start_scale = layer->scale;
             self->drag_start_x = ix * img_w; self->drag_start_y = iy * img_h; 
-            sync_ui_with_layer(self); render_meme(self); return;
+            sync_ui_with_layer(self);
+            if (!meme_window_begin_layer_drag(self)) render_meme(self);
+            return;
         }
 
         if (ix >= l_left && ix <= l_right && iy >= l_top && iy <= l_bot) {
@@ -207,7 +209,9 @@ void on_drag_begin (GtkGestureDrag *gesture, double x, double y, MemeWindow *sel
             self->drag_obj_start_x = layer->x; self->drag_obj_start_y = layer->y;
             self->drag_start_x = ix; self->drag_start_y = iy;
             self->snap_guide_v_active = FALSE; self->snap_guide_h_active = FALSE;
-            sync_ui_with_layer(self); render_meme(self); return;
+            sync_ui_with_layer(self);
+            if (!meme_window_begin_layer_drag(self)) render_meme(self);
+            return;
         }
     }
     if (self->selected_layer) { self->selected_layer = NULL; sync_ui_with_layer(self); render_meme(self); }
@@ -261,8 +265,8 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
         double cdx = (self->drag_start_x + offset_x/s) - cx, cdy = (self->drag_start_y + offset_y/s) - cy;
         double dist_s = sqrt(sdx*sdx + sdy*sdy), dist_c = sqrt(cdx*cdx + cdy*cdy);
         if (dist_s > 5.0) self->selected_layer->scale = CLAMP(self->drag_obj_start_scale * (dist_c/dist_s), 0.1, 5.0);
-        if (self->selected_layer->type == LAYER_TYPE_TEXT) {
-            self->selected_layer->pixbuf = NULL;
+        if (self->selected_layer->type == LAYER_TYPE_TEXT && !self->drag_preview) {
+            g_clear_object (&self->selected_layer->pixbuf);
         }
     } else if (self->drag_type == DRAG_TYPE_DRAW_STROKE && self->draw_points) {
         double start_x, start_y, wx, wy, pix, piy;
@@ -279,6 +283,10 @@ void on_drag_update (GtkGestureDrag *gesture, double offset_x, double offset_y, 
     if (self->drag_type == DRAG_TYPE_CROP_MOVE || self->drag_type == DRAG_TYPE_CROP_RESIZE ||
         self->drag_type == DRAG_TYPE_DRAW_STROKE) {
         gtk_widget_queue_draw(GTK_WIDGET(self->crop_overlay_area));
+    } else if (self->drag_preview) {
+        meme_window_update_layer_drag(self);
+        if (self->drag_type == DRAG_TYPE_IMAGE_MOVE)
+            gtk_widget_queue_draw(GTK_WIDGET(self->crop_overlay_area));
     } else {
         render_meme(self);
         if (self->drag_type == DRAG_TYPE_IMAGE_MOVE)
@@ -319,6 +327,11 @@ void on_drag_end (GtkGestureDrag *g, double x, double y, MemeWindow *self) {
         g_array_free (self->draw_points, TRUE);
         self->draw_points = NULL;
     }
+    if (self->drag_preview && self->drag_type == DRAG_TYPE_IMAGE_RESIZE &&
+        self->selected_layer && self->selected_layer->type == LAYER_TYPE_TEXT) {
+        g_clear_object (&self->selected_layer->pixbuf);
+    }
+    meme_window_end_layer_drag(self);
     self->drag_type = DRAG_TYPE_NONE;
     render_meme(self);
 }

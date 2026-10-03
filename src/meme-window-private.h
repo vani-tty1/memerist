@@ -3,6 +3,7 @@
 #include <adwaita.h>
 #include "meme-core.h"
 #include "meme-renderer.h"
+#include "meme-drag-preview.h"
 
 typedef struct {
     GdkPixbuf *pixbuf;
@@ -51,6 +52,7 @@ struct _MemeWindow {
     GtkWidget  *margin_color_btn;
     GtkButton *save_project_button, *load_project_button;   
     GdkPixbuf *template_image, *final_meme;
+    MemeDragPreview *drag_preview;   /* non-NULL while a layer is dragged on the GPU */
     GList *layers, *undo_stack, *redo_stack;
     ImageLayer *selected_layer; 
     DragType drag_type;
@@ -116,6 +118,9 @@ struct _MemeWindow {
 
 void sync_ui_with_layer(MemeWindow *self);
 void render_meme(MemeWindow *self);
+gboolean meme_window_begin_layer_drag(MemeWindow *self);
+void meme_window_update_layer_drag(MemeWindow *self);
+void meme_window_end_layer_drag(MemeWindow *self);
 void on_clear_clicked(MemeWindow *self);
 void apply_zoom(MemeWindow *self);
 void update_template_image(MemeWindow *self, GdkPixbuf *new_pixbuf);
