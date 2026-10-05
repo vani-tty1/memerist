@@ -131,6 +131,8 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, layer_group);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, open_template_row);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, transform_group);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, sidebar_toolbar_group);
+    gtk_widget_class_bind_template_child (widget_class, MemeWindow, resources_group);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, draw_group);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, draw_mode_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, draw_color_btn);
