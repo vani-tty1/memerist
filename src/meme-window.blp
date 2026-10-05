@@ -980,7 +980,7 @@ template $MemeWindow: Adw.ApplicationWindow {
               }
             }
 
-            Adw.PreferencesGroup {
+            Adw.PreferencesGroup resources_group {
               title: _("Resources");
               Adw.ActionRow open_template_row {
                 title: _("Templates");
@@ -1146,7 +1146,6 @@ template $MemeWindow: Adw.ApplicationWindow {
 
               Adw.ActionRow {
                 title: _("Margin Left");
-                subtitle: _("pixels");
 
                 SpinButton margin_left_spin {
                   valign: center;

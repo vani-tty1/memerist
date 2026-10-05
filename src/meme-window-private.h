@@ -15,6 +15,8 @@ struct _MemeWindow {
     AdwPreferencesGroup *layer_group;
     AdwActionRow *open_template_row;
     AdwPreferencesGroup *transform_group;
+    AdwPreferencesGroup *sidebar_toolbar_group;
+    AdwPreferencesGroup *resources_group;
     AdwPreferencesGroup *draw_group;
     AdwOverlaySplitView *split_view;
     AdwToastOverlay *copy_clip_feedback;

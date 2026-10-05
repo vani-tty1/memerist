@@ -90,6 +90,25 @@
 
 	<releases>
 
+	  	  <release version="2.5.0" date="2026-10-05">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>Cut down peak memory usage</li>
+				    <li>Reworked renderer for faster preview rendering on untouched images</li>
+				    <li>Lazy load templates and decode template images at reduced size</li>
+				    <li>Trim memory usage after clearing canvas</li>
+				    <li>New canvas size extender feature on the Crop and Rotate tool</li>
+				    <li>Improved layer dragging and rendering</li>
+				    <li>Offload drag and layer resize processing to the GPU</li>
+				    <li>Minor UI changes and enhancements</li>
+				</ul>
+			</description>
+		  </release>
+
 	    <release version="2.4.1" date="2026-09-26">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>

@@ -139,6 +139,9 @@ void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     if (active && gtk_toggle_button_get_active (self->draw_mode_button))
         gtk_toggle_button_set_active (self->draw_mode_button, FALSE);
     gtk_widget_set_visible (GTK_WIDGET (self->transform_group), active);
+    gtk_widget_set_visible (GTK_WIDGET (self->resources_group), !active);
+    gtk_widget_set_visible (GTK_WIDGET (self->sidebar_toolbar_group),
+        !active && adw_application_window_get_current_breakpoint (ADW_APPLICATION_WINDOW (self)) == NULL);
     gtk_widget_set_visible (GTK_WIDGET (self->layer_group), !active);
     gtk_widget_set_visible (GTK_WIDGET (self->layer_group), !active && self->selected_layer != NULL);
     if (active) {
