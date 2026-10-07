@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: memerist\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 17:47+0800\n"
+"POT-Creation-Date: 2026-10-05 21:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -192,7 +192,7 @@ msgstr ""
 msgid "Crop & Rotate"
 msgstr ""
 
-#: src/meme-window.blp:203 src/meme-window.blp:737 src/meme-window.blp:1119
+#: src/meme-window.blp:203 src/meme-window.blp:737 src/meme-window.blp:1211
 msgid "Draw"
 msgstr ""
 
@@ -201,7 +201,7 @@ msgid "Add Text Layer"
 msgstr ""
 
 #: src/meme-window.blp:216 src/meme-window.blp:749
-msgid "Add Emoji Layer"
+msgid "Add Emoji"
 msgstr ""
 
 #: src/meme-window.blp:222 src/meme-window.blp:755
@@ -276,7 +276,7 @@ msgstr ""
 msgid "Flip Vertical"
 msgstr ""
 
-#: src/meme-window.blp:389 src/meme-window.blp:1096
+#: src/meme-window.blp:389 src/meme-window.blp:1188
 msgid "Apply Crop"
 msgstr ""
 
@@ -284,11 +284,11 @@ msgstr ""
 msgid "Cancel Crop"
 msgstr ""
 
-#: src/meme-window.blp:421 src/meme-window.blp:1123
+#: src/meme-window.blp:421 src/meme-window.blp:1215
 msgid "Pen Color"
 msgstr ""
 
-#: src/meme-window.blp:432 src/meme-window.blp:1136
+#: src/meme-window.blp:432 src/meme-window.blp:1228
 msgid "Pen Width"
 msgstr ""
 
@@ -313,7 +313,7 @@ msgid "Font Size"
 msgstr ""
 
 #: src/meme-window.blp:545
-msgid "Delete Text Layer"
+msgid "Delete Text"
 msgstr ""
 
 #: src/meme-window.blp:588
@@ -321,7 +321,7 @@ msgid "Nothing Loaded"
 msgstr ""
 
 #: src/meme-window.blp:589
-msgid "Open a file to start editing "
+msgid "Open an image to start editing."
 msgstr ""
 
 #: src/meme-window.blp:599
@@ -388,15 +388,43 @@ msgstr ""
 msgid "Flip"
 msgstr ""
 
-#: src/meme-window.blp:1106
-msgid "Cancel"
+#: src/meme-window.blp:1062
+msgid "Aspect Ratio"
+msgstr ""
+
+#: src/meme-window.blp:1094
+msgid "Margin Top"
+msgstr ""
+
+#: src/meme-window.blp:1112
+msgid "Margin Right"
+msgstr ""
+
+#: src/meme-window.blp:1130
+msgid "Margin Bottom"
+msgstr ""
+
+#: src/meme-window.blp:1148
+msgid "Margin Left"
+msgstr ""
+
+#: src/meme-window.blp:1166
+msgid "Margin Options"
 msgstr ""
 
 #: src/meme-window.blp:1177
+msgid "Apply Margins"
+msgstr ""
+
+#: src/meme-window.blp:1198
+msgid "Cancel"
+msgstr ""
+
+#: src/meme-window.blp:1269
 msgid "Exporting GIF.."
 msgstr ""
 
-#: src/meme-window.blp:1182
+#: src/meme-window.blp:1274
 msgid "Processing frames, please wait."
 msgstr ""
 
@@ -413,12 +441,13 @@ msgid "Performance"
 msgstr ""
 
 #: src/preferences-dialog.blp:18
-msgid "Reduce Quality While Dragging"
+msgid "Automatic Layer Optimization"
 msgstr ""
 
 #: src/preferences-dialog.blp:19
 msgid ""
-"Temporarily render at a lower resolution while moving, resizing, or cropping."
+"Temporarily render at a lower resolution while moving, and/or resizing "
+"layers."
 msgstr ""
 
 #: src/shortcuts-dialog.blp:10
@@ -431,36 +460,41 @@ msgctxt "shortcut window"
 msgid "Toggle Left Panel"
 msgstr ""
 
-#: src/shortcuts-dialog.blp:22
-msgid "Editing"
+#: src/shortcuts-dialog.blp:21
+msgctxt "shortcut window"
+msgid "Open Preferences"
 msgstr ""
 
-#: src/shortcuts-dialog.blp:25
-msgctxt "shortcut window"
-msgid "Undo"
+#: src/shortcuts-dialog.blp:27
+msgid "Editing"
 msgstr ""
 
 #: src/shortcuts-dialog.blp:30
 msgctxt "shortcut window"
-msgid "Redo"
+msgid "Undo"
 msgstr ""
 
 #: src/shortcuts-dialog.blp:35
 msgctxt "shortcut window"
-msgid "Save Project"
+msgid "Redo"
 msgstr ""
 
 #: src/shortcuts-dialog.blp:40
 msgctxt "shortcut window"
-msgid "Copy to Clipboard"
+msgid "Save Project"
 msgstr ""
 
 #: src/shortcuts-dialog.blp:45
+msgctxt "shortcut window"
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: src/shortcuts-dialog.blp:50
 msgctxt "shortcuts window"
 msgid "Export"
 msgstr ""
 
-#: src/shortcuts-dialog.blp:49
+#: src/shortcuts-dialog.blp:54
 msgctxt "shortcuts window"
 msgid "Clear All"
 msgstr ""
