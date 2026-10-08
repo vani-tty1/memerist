@@ -42,3 +42,39 @@
 .theme-switcher checkbutton.dark radio {
   background-color: var(--dark-bg);
 }
+
+checkbutton.accent-swatch {
+  padding: 3px;
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  min-width: 0;
+  min-height: 0;
+}
+
+checkbutton.accent-swatch:checked {
+  border-color: var(--swatch);
+}
+
+checkbutton.accent-swatch radio,
+checkbutton.accent-swatch radio:checked {
+  -gtk-icon-source: none;
+  background-image: none;
+  background-color: var(--swatch);
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 9999px;
+}
+
+.accent-swatch.blue { --swatch: #3584e4; }
+.accent-swatch.teal { --swatch: #2190a4; }
+.accent-swatch.green { --swatch: #3a944a; }
+.accent-swatch.yellow { --swatch: #c88800; }
+.accent-swatch.orange { --swatch: #ed5b00; }
+.accent-swatch.red { --swatch: #e62d42; }
+.accent-swatch.pink { --swatch: #d56199; }
+.accent-swatch.purple { --swatch: #9141ac; }
+.accent-swatch.slate { --swatch: #6f8396; }

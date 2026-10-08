@@ -22,6 +22,93 @@ Adw.PreferencesDialog preferences_dialog {
       //TODO: add more performance related settings
     }
 
+    Adw.PreferencesGroup {
+      title: _("Appearance");
+      description: _("Accent color for Memerist only. Reset to follow the system.");
+
+      header-suffix: Gtk.Button accent_reset_button {
+        label: _("Reset");
+        valign: center;
+        styles ["flat"]
+      };
+
+      Adw.PreferencesRow {
+        activatable: false;
+
+        child: Gtk.Box {
+          halign: center;
+          spacing: 14;
+          margin-top: 18;
+          margin-bottom: 18;
+          margin-start: 12;
+          margin-end: 12;
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "blue"]
+            action-name: "prefs.accent-color";
+            action-target: "'blue'";
+            tooltip-text: _("Blue");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "teal"]
+            action-name: "prefs.accent-color";
+            action-target: "'teal'";
+            tooltip-text: _("Teal");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "green"]
+            action-name: "prefs.accent-color";
+            action-target: "'green'";
+            tooltip-text: _("Green");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "yellow"]
+            action-name: "prefs.accent-color";
+            action-target: "'yellow'";
+            tooltip-text: _("Yellow");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "orange"]
+            action-name: "prefs.accent-color";
+            action-target: "'orange'";
+            tooltip-text: _("Orange");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "red"]
+            action-name: "prefs.accent-color";
+            action-target: "'red'";
+            tooltip-text: _("Red");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "pink"]
+            action-name: "prefs.accent-color";
+            action-target: "'pink'";
+            tooltip-text: _("Pink");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "purple"]
+            action-name: "prefs.accent-color";
+            action-target: "'purple'";
+            tooltip-text: _("Purple");
+          }
+
+          Gtk.CheckButton {
+            styles ["accent-swatch", "slate"]
+            action-name: "prefs.accent-color";
+            action-target: "'slate'";
+            tooltip-text: _("Slate");
+          }
+        };
+      }
+    }
+
     // TODO: Add more Adw.PreferencesGroup blocks here for other settings categories
   }
 }
