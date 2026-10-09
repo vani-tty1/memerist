@@ -31,6 +31,12 @@
 			<description>Preferred color scheme: 'light', 'dark', or 'default'</description>
 		</key>
 
+		<key name="accent-color" type="s">
+			<default>'default'</default>
+			<summary>Accent color</summary>
+			<description>App accent color: 'default' (follow the system), 'blue', 'teal', 'green', 'yellow', 'orange', 'red', 'pink', 'purple' or 'slate'</description>
+		</key>
+
 		<key name="hidden-templates" type="as">
 			<default>[]</default>
 			<summary>Hidden built-in templates</summary>

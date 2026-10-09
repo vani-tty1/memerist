@@ -24,6 +24,7 @@
 #include "meme-window.h"
 #include "meme-welcome-dialog.h"
 #include "meme-preferences-dialog.h"
+#include "meme-accent.h"
 #include "config.h"
 #include <epoxy/gl.h>
 #include "gdk/gdk.h"
@@ -238,6 +239,7 @@ meme_application_startup (GApplication *app)
 {
 
   G_APPLICATION_CLASS (meme_application_parent_class)->startup (app);
+  meme_accent_init ();
   g_action_map_add_action_entries (G_ACTION_MAP (app),
                                    app_actions,
                                    G_N_ELEMENTS (app_actions),

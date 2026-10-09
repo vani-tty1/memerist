@@ -16,6 +16,7 @@ blueprints = custom_target('blueprints',
 myapp_sources = [
   'main.c',
   'meme-application.c',
+  'meme-accent.c',
   'meme-core.c',
   'meme-window.c',
   'meme-window-canvas.c',
