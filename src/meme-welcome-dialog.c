@@ -17,17 +17,17 @@ static const WelcomePage welcome_pages[] = {
         N_("Create and edit memes quickly, right on your desktop or your phone."),
     },
     {
-        NULL, "/io/github/vani_tty1/memerist/screenshot/welcome_ss.png", 96,
+        NULL, "/io/github/vani_tty1/memerist/screenshot/welcome_ss.png", 120,
         N_("Start from a Template"),
         N_("Pick one of the built-in templates, or import your own image to get going."),
     },
     {
-        "document-edit-symbolic", NULL, 96,
+        NULL, "/io/github/vani_tty1/memerist/screenshot/filters.png", 120,
         N_("Add Text & Filters"),
         N_("Drop in captions, crop and rotate, and apply filters like deep-fry or black & white."),
     },
     {
-        "document-save-symbolic", NULL, 96,
+        NULL, "/io/github/vani_tty1/memerist/screenshot/export.png", 120,
         N_("Export & Share"),
         N_("Export your finished meme as an image, or copy it straight to the clipboard."),
     },

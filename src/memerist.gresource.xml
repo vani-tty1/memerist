@@ -33,5 +33,7 @@
     <file>templates/template22.png</file>
     <file>templates/template23.jpeg</file>
     <file>screenshot/welcome_ss.png</file>
+    <file>screenshot/filters.png</file>
+    <file>screenshot/export.png</file>
   </gresource>
 </gresources>
