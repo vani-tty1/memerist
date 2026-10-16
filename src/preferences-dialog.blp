@@ -23,6 +23,74 @@ Adw.PreferencesDialog preferences_dialog {
     }
 
     Adw.PreferencesGroup {
+      title: _("Text");
+
+      header-suffix: Gtk.Button text_reset_button {
+        label: _("Reset");
+        valign: center;
+        sensitive: bind remember_text_row.active inverted;
+        styles ["flat"]
+      };
+
+      Adw.SwitchRow remember_text_row {
+        title: _("Remember Last Used Style");
+        subtitle: _("New text layers start with the options you used last. Turn off to choose a fixed default style below.");
+      }
+
+      Adw.ActionRow {
+        title: _("Text Color");
+        sensitive: bind remember_text_row.active inverted;
+
+        [suffix]
+        Gtk.ColorDialogButton default_text_color_btn {
+          valign: center;
+
+          dialog: Gtk.ColorDialog {
+            with-alpha: false;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Stroke Color");
+        sensitive: bind remember_text_row.active inverted;
+
+        [suffix]
+        Gtk.ColorDialogButton default_stroke_color_btn {
+          valign: center;
+
+          dialog: Gtk.ColorDialog {
+            with-alpha: false;
+          };
+        }
+      }
+
+      Adw.ActionRow {
+        title: _("Font");
+        sensitive: bind remember_text_row.active inverted;
+
+        [suffix]
+        Gtk.FontDialogButton default_font_btn {
+          valign: center;
+
+          dialog: Gtk.FontDialog {};
+        }
+      }
+
+      Adw.SpinRow default_font_size_row {
+        title: _("Font Size");
+        sensitive: bind remember_text_row.active inverted;
+
+        adjustment: Gtk.Adjustment {
+          lower: 10;
+          upper: 300;
+          value: 60;
+          step-increment: 5;
+        };
+      }
+    }
+
+    Adw.PreferencesGroup {
       title: _("Appearance");
       description: _("Accent color for Memerist only. Reset to follow the system.");
 

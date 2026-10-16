@@ -31,6 +31,17 @@ void on_color_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
         if (tc) self->selected_layer->text_color = *tc;
         if (sc) self->selected_layer->stroke_color = *sc;
 
+        if (g_settings_get_boolean (self->template_settings, "remember-text-style")) {
+            if (tc) {
+                g_autofree char *str = gdk_rgba_to_string (tc);
+                g_settings_set_string (self->template_settings, "text-color", str);
+            }
+            if (sc) {
+                g_autofree char *str = gdk_rgba_to_string (sc);
+                g_settings_set_string (self->template_settings, "text-stroke-color", str);
+            }
+        }
+
         g_clear_object(&self->selected_layer->pixbuf);
         render_meme(self);
     }
@@ -49,6 +60,8 @@ void on_layer_text_changed (MemeWindow *self) {
         
         self->selected_layer->text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
         self->selected_layer->font_size = gtk_spin_button_get_value (self->layer_font_size);
+        if (g_settings_get_boolean (self->template_settings, "remember-text-style"))
+            g_settings_set_double (self->template_settings, "text-font-size", self->selected_layer->font_size);
 
         g_clear_object(&self->selected_layer->pixbuf);
         render_meme (self);
@@ -62,7 +75,21 @@ void on_add_text_clicked (MemeWindow *self) {
     new_layer = g_new0 (ImageLayer, 1);
     new_layer->type = LAYER_TYPE_TEXT;
     new_layer->text = g_strdup ("Text");
-    new_layer->font_size = 60.0;
+
+    /* Start from the last used text options (white fill / black outline by default) */
+    {
+        g_autofree char *fill = g_settings_get_string (self->template_settings, "text-color");
+        g_autofree char *stroke = g_settings_get_string (self->template_settings, "text-stroke-color");
+        g_autofree char *font = g_settings_get_string (self->template_settings, "text-font");
+
+        if (!gdk_rgba_parse (&new_layer->text_color, fill))
+            gdk_rgba_parse (&new_layer->text_color, "rgb(255,255,255)");
+        if (!gdk_rgba_parse (&new_layer->stroke_color, stroke))
+            gdk_rgba_parse (&new_layer->stroke_color, "rgb(0,0,0)");
+        if (font[0] != '\0')
+            new_layer->font_family = g_strdup (font);
+        new_layer->font_size = g_settings_get_double (self->template_settings, "text-font-size");
+    }
     new_layer->x = 0.5; new_layer->y = 0.5;
     new_layer->scale = 1.0; new_layer->opacity = 1.0;
     new_layer->blend_mode = BLEND_NORMAL;
@@ -112,6 +139,8 @@ void on_font_changed (GObject *object, GParamSpec *pspec, MemeWindow *self) {
         if (desc) {
             g_free (self->selected_layer->font_family);
             self->selected_layer->font_family = pango_font_description_to_string (desc);
+            if (g_settings_get_boolean (self->template_settings, "remember-text-style"))
+                g_settings_set_string (self->template_settings, "text-font", self->selected_layer->font_family);
             render_meme (self);
             self->selected_layer->pixbuf = NULL;
         }

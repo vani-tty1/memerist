@@ -54,5 +54,36 @@
 			<summary>Reduce preview quality while dragging</summary>
 			<description>Whether to temporarily render the canvas at a lower resolution while moving, resizing, or cropping a layer, to keep the preview responsive on large images</description>
 		</key>
+
+		<key name="remember-text-style" type="b">
+			<default>true</default>
+			<summary>Remember last used text style</summary>
+			<description>Whether new text layers start with the last used text options. When false, the text options below act as fixed defaults</description>
+		</key>
+
+		<key name="text-color" type="s">
+			<default>'rgb(255,255,255)'</default>
+			<summary>Default text color</summary>
+			<description>Fill color used for new text layers. Updated whenever the text color is changed</description>
+		</key>
+
+		<key name="text-stroke-color" type="s">
+			<default>'rgb(0,0,0)'</default>
+			<summary>Default text outline color</summary>
+			<description>Outline color used for new text layers. Updated whenever the stroke color is changed</description>
+		</key>
+
+		<key name="text-font" type="s">
+			<default>''</default>
+			<summary>Default text font</summary>
+			<description>Pango font description used for new text layers. Empty means the built-in default (Sans Bold)</description>
+		</key>
+
+		<key name="text-font-size" type="d">
+			<range min="10.0" max="300.0"/>
+			<default>60.0</default>
+			<summary>Default text font size</summary>
+			<description>Font size used for new text layers. Updated whenever the font size is changed</description>
+		</key>
 	</schema>
 </schemalist>
