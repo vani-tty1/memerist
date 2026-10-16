@@ -159,8 +159,29 @@ void on_crop_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     render_meme(self);
 }
 
+static void set_tools_locked_for_drawing (MemeWindow *self, gboolean locked)
+{
+    gboolean enabled = !locked && self->template_image != NULL;
+
+    GtkWidget *widgets[] = {
+        GTK_WIDGET (self->add_image_button),
+        GTK_WIDGET (self->crop_mode_button),
+        GTK_WIDGET (self->add_text_button),
+        GTK_WIDGET (self->add_emoji_button),
+        GTK_WIDGET (self->copy_clipboard_button),
+        GTK_WIDGET (self->global_filters_button),
+        GTK_WIDGET (self->export_button),
+        GTK_WIDGET (self->clear_button),
+        NULL
+    };
+
+    for (int i = 0; widgets[i]; i++)
+        gtk_widget_set_sensitive (widgets[i], enabled);
+}
+
 void on_draw_mode_toggled (GtkToggleButton *btn, MemeWindow *self) {
     gboolean active = gtk_toggle_button_get_active (btn);
+    set_tools_locked_for_drawing (self, active);
     if (active && gtk_toggle_button_get_active (self->crop_mode_button))
         gtk_toggle_button_set_active (self->crop_mode_button, FALSE);
     gtk_widget_set_visible (GTK_WIDGET (self->draw_group), active);
