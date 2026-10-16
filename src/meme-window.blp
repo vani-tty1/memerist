@@ -90,44 +90,6 @@ template $MemeWindow: Adw.ApplicationWindow {
             tooltip-text: _("Toggle Sidebar (F9)");
             action-name: "win.toggle-sidebar";
           }
-          [start]
-          MenuButton {
-              icon-name: "document-open-symbolic";
-              tooltip-text: _("File Options");
-
-              popover: Popover file_popover{
-                  Box {
-                      orientation: vertical;
-                      spacing: 4;
-                      margin-top: 6; margin-bottom: 6; margin-start: 6; margin-end: 6;
-
-                      Button load_image_button {
-                          styles ["flat"]
-                          child: Adw.ButtonContent {
-                              icon-name: "image-x-generic-symbolic";
-                              label: _("Open Base Image");
-                          };
-                      }
-                      Button load_project_button {
-                          styles ["flat"]
-                          child: Adw.ButtonContent {
-                              icon-name: "folder-new-symbolic";
-                              label: _("Load Project");
-                          };
-                      }
-                      Button save_project_button {
-                          styles ["flat"]
-                          sensitive: false;
-                          child: Adw.ButtonContent {
-                              icon-name: "media-floppy-symbolic";
-                              label: _("Save Project");
-
-                          };
-                      }
-
-                  }
-              };
-          }
 
           [end]
           MenuButton main_menu_button {
@@ -815,6 +777,16 @@ template $MemeWindow: Adw.ApplicationWindow {
                   halign: center;
                   spacing: 6;
                   styles["toolbar",]
+                  Button load_project_button {
+                    icon-name: "folder-new-symbolic";
+                    tooltip-text: _("Load Project");
+                    sensitive: true;
+                  }
+                  Button save_project_button {
+                    icon-name: "media-floppy-symbolic";
+                    tooltip-text: _("Save Project");
+                    sensitive: false;
+                  }
                   Button undo_button {
                     icon-name: "edit-undo-symbolic";
                     tooltip-text: _("Undo (Ctrl+Z)");

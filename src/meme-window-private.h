@@ -33,7 +33,7 @@ struct _MemeWindow {
     GtkMenuButton *main_menu_button;    
     GtkButton *export_button, *copy_clipboard_button, *zoom_in, *zoom_out;
     GtkButton *undo_button, *redo_button;
-    GtkButton *load_image_button, *pill_btn_open_image, *clear_button, *add_image_button;
+    GtkButton *pill_btn_open_image, *clear_button, *add_image_button;
     GtkButton *import_template_button, *delete_template_button;
     GtkButton *select_all_button;
     GtkButton *select_mode_button;
@@ -54,7 +54,7 @@ struct _MemeWindow {
     GtkWidget  *margin_color_btn;
     GtkButton *save_project_button, *load_project_button;   
     GdkPixbuf *template_image, *final_meme;
-    MemeDragPreview *drag_preview;   /* non-NULL while a layer is dragged on the GPU */
+    MemeDragPreview *drag_preview;
     GList *layers, *undo_stack, *redo_stack;
     ImageLayer *selected_layer; 
     DragType drag_type;
@@ -85,7 +85,6 @@ struct _MemeWindow {
     guint     gif_frame_index;
     guint     gif_timeout_id;
     GtkBox *export_loading_screen;
-    GtkPopover *file_popover;
 
     GtkButton *footer_add_image_button, *footer_add_text_button;
     GtkButton *footer_copy_clipboard_button, *footer_delete_layer_button;

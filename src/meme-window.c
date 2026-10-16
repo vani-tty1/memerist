@@ -153,7 +153,6 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, undo_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, redo_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, export_button);
-    gtk_widget_class_bind_template_child (widget_class, MemeWindow, load_image_button);
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, pill_btn_open_image);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, clear_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, add_image_button);
@@ -192,7 +191,6 @@ static void meme_window_class_init (MemeWindowClass *klass) {
     gtk_widget_class_bind_template_child(widget_class, MemeWindow, copy_clip_feedback);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, text_color_btn);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, stroke_color_btn);
-    gtk_widget_class_bind_template_child(widget_class, MemeWindow, file_popover);
 
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_add_image_button);
     gtk_widget_class_bind_template_child (widget_class, MemeWindow, footer_crop_mode_button);
@@ -310,7 +308,6 @@ static void meme_window_init (MemeWindow *self) {
     g_signal_connect_swapped (buffer, "changed", G_CALLBACK (on_layer_text_changed), self);
     g_signal_connect_swapped (self->layer_font_size, "value-changed", G_CALLBACK (on_layer_text_changed), self);
     
-    g_signal_connect_swapped (self->load_image_button, "clicked", G_CALLBACK (on_load_image_clicked), self);
     g_signal_connect_swapped (self->pill_btn_open_image, "clicked", G_CALLBACK(on_load_image_clicked), self);
     g_signal_connect_swapped (self->clear_button, "clicked", G_CALLBACK (on_clear_clicked), self);
     g_signal_connect_swapped (self->add_image_button, "clicked", G_CALLBACK (on_add_image_clicked), self);
