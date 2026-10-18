@@ -1,7 +1,7 @@
 project('memerist', 'c',
-          version: '2.5.0',
-    meson_version: '>= 1.0.0',
-  default_options: [ 'warning_level=2', 'werror=false', 'c_std=gnu11', ],
+          version: '2.6.0',
+    meson_version: '>= 1.7.0',
+  default_options: [ 'warning_level=2', 'werror=false', 'c_std=gnu23', ],
 )
 
 i18n = import('i18n')
@@ -44,7 +44,7 @@ test_c_args = [
   '-Werror=missing-include-dirs',
   '-Werror=nonnull',
   '-Werror=overflow',
-  '-Werror=parenthesis',
+  '-Werror=parentheses',
   '-Werror=pointer-arith',
   '-Werror=pointer-to-int-cast',
   '-Werror=redundant-decls',

@@ -90,6 +90,23 @@
 
 	<releases>
 
+	  	  <release version="2.6.0" date="2026-10-18">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>New accent color changer</li>
+				    <li>New settings for default text styles</li>
+				    <li>Add additional screenshots in the welcome screen</li>
+				    <li>Other tools are now disabled while drawing to prevent conflicts</li>
+				    <li>Relocate Save and Load project btn's</li>
+				    <li>Removed redundant buttons cluttering the UI</li>
+				</ul>
+			</description>
+		  </release>
+
 	  	  <release version="2.5.0" date="2026-10-05">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>
