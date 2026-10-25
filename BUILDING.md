@@ -13,11 +13,11 @@ You can choose between two build manifest for GNOME Builder to use found in the 
 1. The normal one which does not have the devel build options set, this is same setup used 
 for the official [flatpak build](https://github.com/flathub/io.github.vani_tty1.memerist).
 
-2. The one that ends with `.Devel` which the name suggest for development purposes, this setup adds .Devel to the APP_ID
-and makes the header bar have stripes and sets the build profile to `development`. This will result in a bigger build dir and
-consumes more memory as it contains more debug symbols, so used this when you want to experiment with the source code.
+2. The one that ends with `.Devel` which the name suggest for development purposes, this sets the build profile to `development`.
+This will result in a bigger build dir and consumes more memory as it contains more debug symbols, 
+so use this when you want to experiment with the source code.
  
-**If you'd rather not use Builder, follow the manual instructions below.**
+> **NOTE:** If you'd rather not use Builder, follow the manual instructions below.
 
 
 
@@ -25,21 +25,21 @@ consumes more memory as it contains more debug symbols, so used this when you wa
 ### Prerequisites
 
 Install the following development packages:
+> NOTE: on some distros, the development headers are separate with the base package so you may need to install the devel packages(e.g. `gtk4-devel`)  
 
-| Package               | Purpose                          |
-|------------------------|-----------------------------------|
+| Package              	 | Purpose                          |
+|------------------------|----------------------------------|
 | `gcc`                  | C compiler                       |
 | `make`                 | Build automation                 |
-| `gtk4-devel`           | Core UI toolkit                  |
-| `libadwaita-devel`     | GNOME design components          |
+| `gtk4`          		 | Core UI toolkit                  |
+| `libadwaita`    		 | GNOME design components          |
 | `meson`                | Build system                     |
 | `ninja`                | Build backend                    |
 | `blueprint-compiler`   | UI markup compiler               |
-| `libepoxy-devel`       | OpenGL stuff                     |
-| `ImageMagick`          | GIF export support               |
-| `ImageMagick-devel`    | MagickWand API for image processing libraries  |
+| `libepoxy`       		 | OpenGL stuff                     |
+| `ImageMagick`          | GIF export support and MagickWand API for image processing libraries  |
 | `pkgconf`              | Provides `pkg-config`            |
-| `glib2-devel`          | Provides `glib-compile-schemas`  |
+| `glib2`         		 | Provides `glib-compile-schemas`  |
 | `gettext`              | Provides `msgfmt`, `msginit`, `msgmerge`, `xgettext` for translations    |
 
 
