@@ -20,7 +20,7 @@
             <li>Let it Happen</li>
         </ul>
     </description>
-    <developer id="io.github.vani_tty1.memerist">
+    <developer id="io.github.vani_tty1">
         <name>Giovanni Rafanan</name>
     </developer>
 
@@ -29,6 +29,8 @@
     <url type="vcs-browser">https://github.com/vani-tty1/memerist</url>
     <url type="help">https://github.com/vani-tty1/memerist/discussions</url>
     <url type="contact">https://github.com/vani-tty1</url>
+    <url type="translate">https://github.com/vani-tty1/memerist/tree/main/po</url>
+    <url type="faq">https://github.com/vani-tty1/memerist/blob/main/README.md</url>
 
     <requires>
         <display_length compare="ge">360</display_length>
