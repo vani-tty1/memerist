@@ -78,7 +78,11 @@ static void add_file_to_gallery (MemeWindow *self, const char *full_path) {
     picture = make_thumbnail_picture (full_path);
 
     if (g_str_has_prefix (full_path, "resource://")) {
-        *mtime = 0; // Built-in resources are technically the oldest
+        const char *base = strrchr (full_path, '/');
+        base = base ? base + 1 : full_path;
+        *mtime = g_str_has_prefix (base, "template")
+                 ? g_ascii_strtoll (base + strlen ("template"), NULL, 10)
+                 : 0;
     } else {
         GStatBuf stat_buf;
         if (g_stat (full_path, &stat_buf) == 0)
@@ -294,6 +298,11 @@ static void on_copy_import_finished(GObject *source_object, GAsyncResult *res, g
     GError *error = NULL;
     
     if(g_file_copy_finish(source_file, res, &error)){
+        GFile *dest_file = g_file_new_for_path (dest_path);
+        g_file_set_attribute_uint64 (dest_file, G_FILE_ATTRIBUTE_TIME_MODIFIED,
+                                     g_get_real_time () / G_USEC_PER_SEC,
+                                     G_FILE_QUERY_INFO_NONE, NULL, NULL);
+        g_object_unref (dest_file);
         add_file_to_gallery(self, dest_path);
         update_template_gallery_empty_state (self);
     }else{
