@@ -1,5 +1,5 @@
 Name:           memerist
-Version:        2.6.0
+Version:        2.6.1
 Release:        1%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
@@ -36,5 +36,4 @@ A simple meme editor for Linux
 
 
 %changelog
-* Sun Oct 18 2026 Giovanni Rafanan <giovannirafanan609@gmail.com> - 2.6.0-1
-- See repo release page for details
+%autochangelog
