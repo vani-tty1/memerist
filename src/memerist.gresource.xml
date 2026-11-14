@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/io/github/vani_tty1/memerist">
     <file preprocess="xml-stripblanks">meme-window.ui</file>
@@ -32,8 +32,14 @@
     <file>templates/template21.png</file>
     <file>templates/template22.png</file>
     <file>templates/template23.jpeg</file>
+    <file>templates/template24.jpg</file>
+    <file>templates/template25.png</file>
+    <file>templates/template26.png</file>
+    <file>templates/template27.jpg</file>
+    <file>templates/template28.jpg</file>
     <file>screenshot/welcome_ss.png</file>
     <file>screenshot/filters.png</file>
     <file>screenshot/export.png</file>
   </gresource>
 </gresources>
+
