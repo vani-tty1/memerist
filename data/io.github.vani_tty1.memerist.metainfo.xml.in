@@ -92,6 +92,20 @@
 
 	<releases>
 
+	  	  <release version="2.6.1" date="2026-11-14">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>
+			    This is a stable release with the following changes:
+			  </p>
+				<ul>
+				    <li>Sort recently added templates by added date including built in ones</li>
+				    <li>Adjust initial window size</li>
+				    <li>Add more templates</li>
+				</ul>
+			</description>
+		  </release>
+
 	  	  <release version="2.6.0" date="2026-10-18">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
 			<description>
