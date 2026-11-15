@@ -101,16 +101,45 @@ meme_window_load_pixbuf (MemeWindow *self, GdkPixbuf *pixbuf,
     meme_window_start_gif_animation (self);
 }
 
+static void on_project_load_contents_finished (
+    GObject *source_object,
+    GAsyncResult *res,
+    gpointer user_data
+);
+
 void
 meme_window_open_file (MemeWindow *self, GFile *file)
 {
     GError *error = NULL;
     gboolean is_gif;
     GdkPixbuf *pixbuf;
-    char *path = g_file_get_path (file);
+    char *path;
+    char *basename;
+
+    basename = g_file_get_basename (file);
+
+    /* Route Memerist projects to the project loader, not GdkPixbuf. */
+    if (basename && g_str_has_suffix (basename, ".meme")) {
+        g_free (basename);
+
+        /* Keep a separate reference for the asynchronous callback. */
+        g_file_load_contents_async (
+            g_object_ref (file),
+            NULL,
+            on_project_load_contents_finished,
+            self
+        );
+        return;
+    }
+
+    g_free (basename);
+
+    path = g_file_get_path (file);
     if (!path) {
-        adw_toast_overlay_add_toast (self->copy_clip_feedback,
-                                      adw_toast_new ("Couldn't open that item, try saving the image locally first"));
+        adw_toast_overlay_add_toast (
+            self->copy_clip_feedback,
+            adw_toast_new ("Couldn't open that item, try saving the image locally first")
+        );
         return;
     }
 
@@ -118,8 +147,10 @@ meme_window_open_file (MemeWindow *self, GFile *file)
     pixbuf = gdk_pixbuf_new_from_file (path, &error);
 
     if (!pixbuf) {
-        char *err_msg = g_strdup_printf ("Couldn't open image: %s",
-                                          error ? error->message : "unknown error");
+        char *err_msg = g_strdup_printf (
+            "Couldn't open image: %s",
+            error ? error->message : "unknown error"
+        );
         AdwToast *toast = adw_toast_new (err_msg);
         adw_toast_overlay_add_toast (self->copy_clip_feedback, toast);
         g_free (err_msg);

@@ -90,6 +90,10 @@
         </screenshot>
     </screenshots>
 
+    <provides>
+        <mediatype>application/x-meme</mediatype>
+    </provides>
+
 	<releases>
 
 	  	  <release version="2.6.1" date="2026-11-14">
@@ -335,7 +339,7 @@
 			</description>
 		  </release>
 
-		
+
 		<release version="0.8.1" date="2026-05-23">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
@@ -363,7 +367,7 @@
                 </ul>
             </description>
         </release>
-      
+
 		 <release version="0.7.2" date="2026-05-11">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
@@ -373,7 +377,7 @@
                 </ul>
             </description>
         </release>
-		
+
         <release version="0.7.1" date="2026-05-08">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
@@ -389,7 +393,7 @@
             </description>
         </release>
 
-        
+
         <release version="0.7.0" date="2026-04-18">
             <url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
             <description translate="no">
@@ -650,4 +654,3 @@
         </release>
     </releases>
 </component>
-
