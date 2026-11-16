@@ -33,6 +33,10 @@ install_data(
   install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )
 
+install_data('io.github.vani_tty1.memerist.xml',
+  install_dir: join_paths(get_option('datadir'), 'mime', 'packages')
+)
+
 gnome.compile_schemas(
   build_by_default: true,
   depend_files: files('io.github.vani_tty1.memerist.gschema.xml'),
