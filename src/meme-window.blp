@@ -1145,25 +1145,20 @@ template $MemeWindow: Adw.ApplicationWindow {
                     with-alpha: true;
                   };
                 }
-                Button margin_apply_button {
-                  label: _("Apply Margins");
-                  valign: center;
-
-                  clicked => $on_apply_margins_clicked() swapped;
-                }
               }
 
               Adw.ActionRow {
                 halign: center;
                 hexpand: true;
                 Button apply_crop_button {
-                  label: _("Apply Crop");
+                  label: _("Apply Changes");
                   valign: center;
 
                   styles [
                     "suggested-action",
                   ]
 
+                  clicked => $on_apply_margins_clicked() swapped;
                   clicked => $on_apply_crop_clicked() swapped;
                 }
                 Button cancel_crop_button {
