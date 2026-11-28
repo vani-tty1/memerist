@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
     <id>io.github.vani_tty1.memerist</id>
     <metadata_license>CC0-1.0</metadata_license>
@@ -95,6 +95,18 @@
     </provides>
 
 	<releases>
+
+	  	  <release version="2.6.2" date="2026-11-28">
+			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
+			<description>
+			  <p>This is a stable release with the following changes:</p>
+				<ul>
+				    <li>Update to latest ImageMagick</li>
+				    <li>Merge Apply Crop and Apply Margins into one btn</li>
+				    <li>Added support for opening .meme project files directly in the file manager</li>
+				</ul>
+			</description>
+		  </release>
 
 	  	  <release version="2.6.1" date="2026-11-14">
 			<url type="details">https://github.com/vani-tty1/memerist/releases/latest/</url>
@@ -654,3 +666,4 @@
         </release>
     </releases>
 </component>
+

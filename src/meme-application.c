@@ -94,6 +94,7 @@ meme_application_about_action (GSimpleAction *action,
     AdwDialog *dialog;
     static const char *developers[] = {"Giovanni Rafanan <giovannirafanan609@gmail.com>", NULL};
     static const char *designers[] = {"Giovanni Rafanan <giovannirafanan609@gmail.com>", NULL};
+    const char *special_thanks[] = {"arewelibadwaitayet https://arewelibadwaitayet.com/", NULL};
 
     display = gdk_display_get_default();
     ctx = gdk_display_create_gl_context(display, &err);
@@ -147,6 +148,7 @@ meme_application_about_action (GSimpleAction *action,
     adw_about_dialog_set_designers (ADW_ABOUT_DIALOG (dialog), designers);
     adw_about_dialog_set_debug_info (ADW_ABOUT_DIALOG (dialog), debug_text);
     adw_about_dialog_set_debug_info_filename (ADW_ABOUT_DIALOG (dialog), "meme-debug.txt");
+    adw_about_dialog_add_acknowledgement_section (ADW_ABOUT_DIALOG(dialog), "Special Thanks", special_thanks);
 
     adw_dialog_present (dialog, GTK_WIDGET (window));
 }
