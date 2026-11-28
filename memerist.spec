@@ -1,6 +1,6 @@
 Name:           memerist
 Version:        2.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A simple meme editor for Linux
 License:        GPL-3.0-or-later
 URL:            https://github.com/vani-tty1/memerist
@@ -33,6 +33,7 @@ A simple meme editor for Linux
 %{_datadir}/icons/hicolor/scalable/apps/io.github.vani_tty1.memerist.svg
 %{_datadir}/icons/hicolor/symbolic/apps/io.github.vani_tty1.memerist-symbolic.svg
 %{_datadir}/metainfo/io.github.vani_tty1.memerist.metainfo.xml
+%{_datadir}/mime/packages/io.github.vani_tty1.memerist.xml
 
 
 %changelog
